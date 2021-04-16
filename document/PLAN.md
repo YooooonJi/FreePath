@@ -64,3 +64,9 @@ Google Play에서 제공하는 대표적인 지도 모바일 애플리케이션�
 ### 2. 서비스 요구사항 기능 명세
 
 ![image](/uploads/19ca0f8fb5bc3e4a2d53458e7d4d07e5/image.png)
+
+### 3. 애플리케이션 아키텍쳐
+
+#### 1)	다이어그램
+
+![eee](/uploads/92579a79c8ed2b4f686adcd04ad5d4cf/eee.png)
