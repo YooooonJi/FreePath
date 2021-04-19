@@ -2,10 +2,12 @@
 
 ### 개인 맞춤형 대중교통 안내 서비스
 
-### SETTINGS
+### Main Dashboard
 
-![settings](/uploads/c65da188d310aa3d349960f1b494c081/settings.PNG)
+![요구1](/uploads/a496c261efbed5125ed485adc2d2462f/요구1.JPG)
 
-#### USER
+### Settings, USER
 
-![USER](/uploads/b2ea42e98b8b49a14110c53cf4737973/USER.png)
+![요구2](/uploads/0b105eebed7e97f6355fe14f6ad1020a/요구2.JPG)
+
+
