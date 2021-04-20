@@ -8,6 +8,6 @@
 
 ### Settings, USER
 
-![요구2](/uploads/0b105eebed7e97f6355fe14f6ad1020a/요구2.JPG)
+![기능_명세](/uploads/29a06a419c7a42af83a55ea286c8dea9/기능_명세.png)
 
 
