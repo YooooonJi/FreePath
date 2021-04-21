@@ -20,9 +20,9 @@ public class RouteController {
 	@Autowired
 	private RouteService routeService;
 	
-	@GetMapping("/api")
 	@ApiOperation(value = "Api 확인")
-	public void readApi() {
-		return;
+	@GetMapping("/api")
+	public String readApi() {
+		return routeService.readApi();
 	}
 }
