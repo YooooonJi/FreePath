@@ -1,21 +1,13 @@
-import { StatusBar } from "expo-status-bar";
+import "react-native-gesture-handler";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import MainNavigation from "./src/navigation/navigation";
 
-export default function App() {
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>안녕하세요!!! A104입니다!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <MainNavigation />
+    </>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+export default App;
