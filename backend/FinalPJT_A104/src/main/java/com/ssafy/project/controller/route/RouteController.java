@@ -3,6 +3,7 @@ package com.ssafy.project.controller.route;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,5 +25,12 @@ public class RouteController {
 	@GetMapping("/api")
 	public String readApi() {
 		return routeService.readApi();
+	}
+	
+	@ApiOperation(value="경로 찾기 api")
+	@PostMapping("/find")
+	public Object findRoute(@Valid @RequestBody RouteFindRequest routeFindRequest) {
+		return ;
+		
 	}
 }
