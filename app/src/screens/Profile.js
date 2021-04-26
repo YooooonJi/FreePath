@@ -8,18 +8,8 @@ const ProfileView = styled.View`
   background-color: white;
 `;
 
-const MoveButton = styled.Button``;
-
-const Profile = ({ navigation }) => {
-  const onPressMoveHome = () => {
-    navigation.navigate("Home");
-  };
-
-  return (
-    <ProfileView>
-      <MoveButton onPress={onPressMoveHome} title="홈 이동" />
-    </ProfileView>
-  );
+const Profile = () => {
+  return <ProfileView></ProfileView>;
 };
 
 export default Profile;
