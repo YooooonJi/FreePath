@@ -6,11 +6,11 @@ import lombok.Data;
 public class RouteFindRequest {
 	
 	//출발지 x,y
-	private float SX;
-	private float SY;
+	private float startX;
+	private float startY;
 	//도착지 x,y
-	private float EX;
-	private float EY;
+	private float endX;
+	private float endY;
 	//도착시간
 	private String arriveTime;
 }

@@ -14,9 +14,9 @@ import com.ssafy.project.model.route.RouteFindRequest;
 public class RouteServiceImpl implements RouteService {
 
 	@Override
-	public String findRoute(RouteFindRequest routeFindRequest) {
-		//대중교통 길찾기 api(실행시킬때 본인 api 키 값으로 바꾸기)
-		final String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX="+routeFindRequest.getSX()+"&SY="+routeFindRequest.getSY()+"&EX="+routeFindRequest.getEX()+"&EY="+routeFindRequest.getEY()+"&apiKey=D6BmCrs4iH/PLaOQ390EUYI9%2BAdf8B55184hmV7GpSA";
+	public Object findRoute(RouteFindRequest routeFindRequest) {
+		String apiKey="D6BmCrs4iH/PLaOQ390EUYI9%2BAdf8B55184hmV7GpSA";
+		final String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX="+routeFindRequest.getStartX()+"&SY="+routeFindRequest.getStartY()+"&EX="+routeFindRequest.getEndX()+"&EY="+routeFindRequest.getEndY()+"&apiKey="+apiKey;
 		
 		StringBuffer sb = new StringBuffer();
 		
