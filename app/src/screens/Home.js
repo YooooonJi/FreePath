@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native";
 import carousel_0 from "../assets/images/carousel_0.jpg";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import Card from "../components/Home/Card";
 
 const HomeView = styled.View`
   display: flex;
@@ -47,8 +48,8 @@ const BoardContainer = styled.View`
   width: 100%;
   height: 1000px;
   background-color: white;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
 `;
 
 const BoardLabelBox = styled.View`
@@ -57,6 +58,8 @@ const BoardLabelBox = styled.View`
   justify-content: space-between;
   align-items: flex-end;
   width: 100%;
+  padding-right: 10px;
+  padding-left: 10px;
   margin-top: 20px;
 `;
 
@@ -68,7 +71,7 @@ const BoardLabelTagText = styled.Text`
 
 const BoardLabelSetupText = styled.Text`
   color: #d41d1d;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: bold;
 `;
 
@@ -83,7 +86,7 @@ const CardContainer = styled.View`
   display: flex;
   justify-content: center;
   align-items: center;
-  elevation: 5;
+  elevation: 3;
 `;
 
 const Home = () => {
@@ -104,6 +107,11 @@ const Home = () => {
               <BoardLabelTagText>내 알림</BoardLabelTagText>
               <BoardLabelSetupText>알림 관리</BoardLabelSetupText>
             </BoardLabelBox>
+            <Card
+              title={"멀티캠퍼스 역삼"}
+              address={"서울특별시 강남구 역삼동 테헤란로 212"}
+              time={"10:30 AM"}
+            ></Card>
             <CardContainer>
               <Icon
                 name={"add-circle"}
