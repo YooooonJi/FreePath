@@ -5,8 +5,10 @@ import { ScrollView } from "react-native";
 import carousel_0 from "../assets/images/carousel_0.jpg";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Card from "../components/Home/Card";
+import Menu from "../components/Common/Menu";
+import MenuButton from "../components/Common/MenuButton";
 
-const HomeView = styled.View`
+const HomeContainer = styled.View`
   display: flex;
   align-items: center;
   background-color: white;
@@ -89,11 +91,12 @@ const CardContainer = styled.View`
   elevation: 3;
 `;
 
-const Home = () => {
+const Home = ({ setPopMenu }) => {
   return (
     <SafeAreaView>
       <ScrollView>
-        <HomeView>
+        <HomeContainer>
+          <MenuButton setPopMenu={setPopMenu}></MenuButton>
           <CarouselContainer>
             <CarouselImage source={carousel_0}></CarouselImage>
             <CarouselTextBox>
@@ -120,7 +123,7 @@ const Home = () => {
               ></Icon>
             </CardContainer>
           </BoardContainer>
-        </HomeView>
+        </HomeContainer>
       </ScrollView>
     </SafeAreaView>
   );

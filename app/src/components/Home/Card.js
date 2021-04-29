@@ -8,7 +8,7 @@ const CardView = styled.View`
   width: 100%;
   height: 100px;
   border-radius: 10px;
-  background-color: #f9f1f7;
+  background-color: ${(props) => props.theme.card.bg};
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -26,7 +26,7 @@ const CardOnOffBox = styled.View`
   width: 50px;
   height: 50px;
   border-radius: 25px;
-  background-color: #dd5254;
+  background-color: ${(props) => props.theme.card.circle.bg};
   margin-right: 10px;
   display: flex;
   justify-content: center;
@@ -34,7 +34,7 @@ const CardOnOffBox = styled.View`
 `;
 
 const CardOnOffText = styled.Text`
-  color: #ffffff;
+  color: ${(props) => props.theme.card.circle.text};
   font-size: 14px;
   font-weight: bold;
 `;
@@ -46,29 +46,33 @@ const CardInfoBox = styled.View`
 
 const CardTitleText = styled.Text`
   font-size: 22px;
-  font-weight: bold;
+  line-height: 25px;
+  font-family: "6";
+  color: ${(props) => props.theme.card.title};
 `;
 
 const CardAddressText = styled.Text`
-  margin-top: 3px;
-  margin-bottom: 6px;
+  margin-top: 8px;
+  margin-bottom: 8px;
   margin-left: 1px;
+  color: ${(props) => props.theme.card.addr};
   font-size: 12px;
-  font-weight: bold;
-  color: #7d797c;
+  line-height: 14px;
+  font-family: "4";
 `;
 
 const CardTimeTagBox = styled.View`
-  background-color: #e7e8b7;
+  background-color: ${(props) => props.theme.card.time.bg};
   padding: 2px 8px;
   border-radius: 10px;
   align-self: flex-start;
 `;
 
 const CardTimeTagText = styled.Text`
-  color: #958164;
-  font-weight: bold;
+  color: ${(props) => props.theme.card.time.text};
   font-size: 12px;
+  line-height: 14px;
+  font-family: "5";
 `;
 
 const CardRightBox = styled.View`
@@ -81,7 +85,7 @@ const CardRightBox = styled.View`
 `;
 
 const TimeLeftText = styled.Text`
-  color: #7d797c;
+  color: ${(props) => props.theme.card.timer};
   font-weight: bold;
   font-size: 15px;
   margin-top: 10px;
