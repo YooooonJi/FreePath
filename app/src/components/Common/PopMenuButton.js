@@ -15,9 +15,13 @@ const MenuButtonContainer = styled.TouchableOpacity`
   padding: 5px;
 `;
 
+const IconMenu = styled(Icon)`
+  color: white;
+`;
+
 const MenuButton = ({ setPopMenu }) => (
   <MenuButtonContainer onPress={() => setPopMenu(true)}>
-    <Icon name="menu" size={20} color="white" />
+    <IconMenu name="menu" size={20} />
   </MenuButtonContainer>
 );
 

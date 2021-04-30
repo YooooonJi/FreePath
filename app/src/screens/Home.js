@@ -5,18 +5,18 @@ import { ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Carousel from "../assets/images/carousel_0.jpg";
 import Card from "../components/Home/Card";
-import MenuButton from "../components/Common/MenuButton";
+import MenuButton from "../components/Common/PopMenuButton";
 
 const HomeContainer = styled.View`
   display: flex;
   align-items: center;
-  background-color: white;
   height: 100%;
 `;
 
 // 캐러셀 컴포넌트 분리 예정
 
 const CarouselContainer = styled.View`
+  position: relative;
   width: 100%;
   height: 200px;
 `;
@@ -27,19 +27,28 @@ const CarouselImage = styled.Image`
   height: 100%;
 `;
 
+const CarouselBgOpacity = styled.View`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0.3;
+  background-color: ${(props) => props.theme.carousel.bg};
+`;
+
 const CarouselTextBox = styled.View`
   display: flex;
   justify-content: flex-end;
   height: 100%;
   padding-left: 20px;
   padding-bottom: 40px;
-  background-color: rgba(0, 0, 0, 0.3);
 `;
 
 const CarouselText = styled.Text`
-  color: white;
+  color: ${(props) => props.theme.carousel.text};
   font-size: 18px;
-  font-weight: bold;
+  line-height: 20px;
+  font-family: "5";
+  margin-top: 5px;
 `;
 
 // 보드 컴포넌트 분리 예정
@@ -48,7 +57,7 @@ const BoardContainer = styled.View`
   display: flex;
   width: 100%;
   height: 1000px;
-  background-color: white;
+  background-color: ${(props) => props.theme.board.bg};
   padding-left: 10px;
   padding-right: 10px;
 `;
@@ -65,15 +74,17 @@ const BoardLabelBox = styled.View`
 `;
 
 const BoardLabelTagText = styled.Text`
-  color: black;
+  color: ${(props) => props.theme.board.label.title};
   font-size: 15px;
-  font-weight: bold;
+  line-height: 17px;
+  font-family: "5";
 `;
 
 const BoardLabelSetupText = styled.Text`
-  color: #d41d1d;
+  color: ${(props) => props.theme.board.label.setup};
   font-size: 15px;
-  font-weight: bold;
+  line-height: 17px;
+  font-family: "5";
 `;
 
 // 카드 컴포넌트 분리 예정
@@ -83,11 +94,15 @@ const CardContainer = styled.View`
   width: 100%;
   height: 80px;
   border-radius: 10px;
-  background-color: #f9f1f7;
+  background-color: ${(props) => props.theme.card.bg};
   display: flex;
   justify-content: center;
   align-items: center;
   elevation: 3;
+`;
+
+const IconAddCircle = styled(Icon)`
+  color: ${(props) => props.theme.card.add};
 `;
 
 const Home = ({ setPopMenu }) => (
@@ -97,6 +112,7 @@ const Home = ({ setPopMenu }) => (
         <MenuButton setPopMenu={setPopMenu} />
         <CarouselContainer>
           <CarouselImage source={Carousel} />
+          <CarouselBgOpacity></CarouselBgOpacity>
           <CarouselTextBox>
             <CarouselText>늦은 밤,</CarouselText>
             <CarouselText>당신의 귀가를</CarouselText>
@@ -114,7 +130,7 @@ const Home = ({ setPopMenu }) => (
             time="10:30 AM"
           />
           <CardContainer>
-            <Icon name="add-circle" size={40} color="rgba(0, 0, 0, 0.3)" />
+            <IconAddCircle name="add-circle" size={40} />
           </CardContainer>
         </BoardContainer>
       </HomeContainer>
