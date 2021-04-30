@@ -9,4 +9,4 @@ const GlobalText = styled.Text`
   font-family: "5"; // 숫자가 클 수록 굵음 1~6
 `;
 
-export { GlobalText };
+export default { GlobalText };

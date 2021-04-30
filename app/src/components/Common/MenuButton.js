@@ -15,12 +15,10 @@ const MenuButtonContainer = styled.TouchableOpacity`
   padding: 5px;
 `;
 
-const MenuButton = ({ setPopMenu }) => {
-  return (
-    <MenuButtonContainer onPress={() => setPopMenu(true)}>
-      <Icon name={"menu"} size={20} color={"white"}></Icon>
-    </MenuButtonContainer>
-  );
-};
+const MenuButton = ({ setPopMenu }) => (
+  <MenuButtonContainer onPress={() => setPopMenu(true)}>
+    <Icon name="menu" size={20} color="white" />
+  </MenuButtonContainer>
+);
 
 export default MenuButton;

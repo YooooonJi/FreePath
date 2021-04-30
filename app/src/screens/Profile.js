@@ -8,8 +8,6 @@ const ProfileView = styled.View`
   background-color: white;
 `;
 
-const Profile = () => {
-  return <ProfileView></ProfileView>;
-};
+const Profile = () => <ProfileView />;
 
 export default Profile;

@@ -2,10 +2,9 @@ import React from "react";
 import styled from "styled-components/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native";
-import carousel_0 from "../assets/images/carousel_0.jpg";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import Carousel from "../assets/images/carousel_0.jpg";
 import Card from "../components/Home/Card";
-import Menu from "../components/Common/Menu";
 import MenuButton from "../components/Common/MenuButton";
 
 const HomeContainer = styled.View`
@@ -91,42 +90,36 @@ const CardContainer = styled.View`
   elevation: 3;
 `;
 
-const Home = ({ setPopMenu }) => {
-  return (
-    <SafeAreaView>
-      <ScrollView>
-        <HomeContainer>
-          <MenuButton setPopMenu={setPopMenu}></MenuButton>
-          <CarouselContainer>
-            <CarouselImage source={carousel_0}></CarouselImage>
-            <CarouselTextBox>
-              <CarouselText>늦은 밤,</CarouselText>
-              <CarouselText>당신의 귀가를</CarouselText>
-              <CarouselText>책임지겠습니다.</CarouselText>
-            </CarouselTextBox>
-          </CarouselContainer>
-          <BoardContainer>
-            <BoardLabelBox>
-              <BoardLabelTagText>내 알림</BoardLabelTagText>
-              <BoardLabelSetupText>알림 관리</BoardLabelSetupText>
-            </BoardLabelBox>
-            <Card
-              title={"멀티캠퍼스 역삼"}
-              address={"서울특별시 강남구 역삼동 테헤란로 212"}
-              time={"10:30 AM"}
-            ></Card>
-            <CardContainer>
-              <Icon
-                name={"add-circle"}
-                size={40}
-                color={"rgba(0, 0, 0, 0.3)"}
-              ></Icon>
-            </CardContainer>
-          </BoardContainer>
-        </HomeContainer>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+const Home = ({ setPopMenu }) => (
+  <SafeAreaView>
+    <ScrollView>
+      <HomeContainer>
+        <MenuButton setPopMenu={setPopMenu} />
+        <CarouselContainer>
+          <CarouselImage source={Carousel} />
+          <CarouselTextBox>
+            <CarouselText>늦은 밤,</CarouselText>
+            <CarouselText>당신의 귀가를</CarouselText>
+            <CarouselText>책임지겠습니다.</CarouselText>
+          </CarouselTextBox>
+        </CarouselContainer>
+        <BoardContainer>
+          <BoardLabelBox>
+            <BoardLabelTagText>내 알림</BoardLabelTagText>
+            <BoardLabelSetupText>알림 관리</BoardLabelSetupText>
+          </BoardLabelBox>
+          <Card
+            title="멀티캠퍼스 역삼"
+            address="서울특별시 강남구 역삼동 테헤란로 212"
+            time="10:30 AM"
+          />
+          <CardContainer>
+            <Icon name="add-circle" size={40} color="rgba(0, 0, 0, 0.3)" />
+          </CardContainer>
+        </BoardContainer>
+      </HomeContainer>
+    </ScrollView>
+  </SafeAreaView>
+);
 
 export default Home;

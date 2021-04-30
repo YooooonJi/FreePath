@@ -91,27 +91,25 @@ const TimeLeftText = styled.Text`
   margin-top: 10px;
 `;
 
-const Card = ({ title, address, time }) => {
-  return (
-    <CardView>
-      <CardLeftBox>
-        <CardOnOffBox>
-          <Icon name={"map"} size={20} color={"#FFFFFF"}></Icon>
-          <CardOnOffText>ON</CardOnOffText>
-        </CardOnOffBox>
-        <CardInfoBox>
-          <CardTitleText>{title}</CardTitleText>
-          <CardAddressText>{address}</CardAddressText>
-          <CardTimeTagBox>
-            <CardTimeTagText>{time}</CardTimeTagText>
-          </CardTimeTagBox>
-        </CardInfoBox>
-      </CardLeftBox>
-      <CardRightBox>
-        <TimeLeftText>1시간 15분 후</TimeLeftText>
-      </CardRightBox>
-    </CardView>
-  );
-};
+const Card = ({ title, address, time }) => (
+  <CardView>
+    <CardLeftBox>
+      <CardOnOffBox>
+        <Icon name="map" size={20} color="#FFFFFF" />
+        <CardOnOffText>ON</CardOnOffText>
+      </CardOnOffBox>
+      <CardInfoBox>
+        <CardTitleText>{title}</CardTitleText>
+        <CardAddressText>{address}</CardAddressText>
+        <CardTimeTagBox>
+          <CardTimeTagText>{time}</CardTimeTagText>
+        </CardTimeTagBox>
+      </CardInfoBox>
+    </CardLeftBox>
+    <CardRightBox>
+      <TimeLeftText>1시간 15분 후</TimeLeftText>
+    </CardRightBox>
+  </CardView>
+);
 
 export default Card;
