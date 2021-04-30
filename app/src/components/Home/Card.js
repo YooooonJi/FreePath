@@ -36,24 +36,25 @@ const CardOnOffBox = styled.View`
 const CardOnOffText = styled.Text`
   color: ${(props) => props.theme.card.circle.text};
   font-size: 14px;
-  font-weight: bold;
+  line-height: 16px;
+  font-family: "5";
 `;
 
 const CardInfoBox = styled.View`
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
 `;
 
 const CardTitleText = styled.Text`
-  font-size: 22px;
-  line-height: 25px;
-  font-family: "6";
+  font-size: 20px;
+  line-height: 23px;
+  font-family: "5";
   color: ${(props) => props.theme.card.title};
 `;
 
 const CardAddressText = styled.Text`
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin-top: 4px;
+  margin-bottom: 6px;
   margin-left: 1px;
   color: ${(props) => props.theme.card.addr};
   font-size: 12px;
@@ -61,18 +62,15 @@ const CardAddressText = styled.Text`
   font-family: "4";
 `;
 
-const CardTimeTagBox = styled.View`
-  background-color: ${(props) => props.theme.card.time.bg};
-  padding: 2px 8px;
-  border-radius: 10px;
-  align-self: flex-start;
-`;
-
 const CardTimeTagText = styled.Text`
+  align-self: flex-start;
   color: ${(props) => props.theme.card.time.text};
+  background-color: ${(props) => props.theme.card.time.bg};
+  border-radius: 10px;
   font-size: 12px;
   line-height: 14px;
-  font-family: "5";
+  font-family: "4";
+  padding: 4px 8px 2px 8px;
 `;
 
 const CardRightBox = styled.View`
@@ -82,13 +80,15 @@ const CardRightBox = styled.View`
   height: 100%;
   display: flex;
   align-items: flex-end;
+  padding-right: 10px;
 `;
 
 const TimeLeftText = styled.Text`
   color: ${(props) => props.theme.card.timer};
-  font-weight: bold;
-  font-size: 15px;
-  margin-top: 10px;
+  font-size: 12px;
+  line-height: 14px;
+  font-family: "5";
+  margin-top: 12px;
 `;
 
 const Card = ({ title, address, time }) => (
@@ -101,9 +101,7 @@ const Card = ({ title, address, time }) => (
       <CardInfoBox>
         <CardTitleText>{title}</CardTitleText>
         <CardAddressText>{address}</CardAddressText>
-        <CardTimeTagBox>
-          <CardTimeTagText>{time}</CardTimeTagText>
-        </CardTimeTagBox>
+        <CardTimeTagText>{time}</CardTimeTagText>
       </CardInfoBox>
     </CardLeftBox>
     <CardRightBox>

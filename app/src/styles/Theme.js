@@ -1,37 +1,58 @@
 // 앱 테마색 설정
 
+const colors = {
+  white: "#FFFFFF",
+  black: "#000000",
+  mandy: "#DD5254",
+  prim: "#F9F1F7",
+  bonjour: "#EDE9EC",
+  shadylady: "#ADA9AC",
+  fallgreen: "#E7E8B7",
+  domino: "#958164",
+};
+
 const DefaultTheme = {
+  carousel: {
+    bg: colors.black,
+    text: colors.white,
+  },
+  board: {
+    bg: colors.white,
+    label: {
+      title: colors.black,
+      setup: colors.mandy,
+    },
+  },
   card: {
-    bg: "#F9F1F7",
-    title: "#000000",
-    addr: "#7D797C",
-    timer: "#7D797C",
+    bg: colors.prim,
+    title: colors.black,
+    addr: colors.shadylady,
+    timer: colors.mandy,
     time: {
-      bg: "#E7E8B7",
-      text: "#958164",
+      bg: colors.fallgreen,
+      text: colors.domino,
     },
     circle: {
-      bg: "#DD5254",
-      text: "#FFFFFF",
+      bg: colors.mandy,
+      text: colors.white,
     },
+    add: colors.shadylady,
+  },
+  menu: {
+    title: colors.black,
+    circle: colors.black,
+    login: {
+      info: colors.mandy,
+    },
+    line: colors.bonjour,
+    copyright: colors.shadylady,
   },
 };
 
-const DarkTheme = {
-  card: {
-    bg: "#000000",
-    title: "#FFFFFF",
-    addr: "#7D797C",
-    timer: "#FFFFFF",
-    time: {
-      bg: "#E7E8B7",
-      text: "#958164",
-    },
-    circle: {
-      bg: "#DD5254",
-      text: "#FFFFFF",
-    },
-  },
-};
+// const DarkTheme = {
+// };
 
-export default { DefaultTheme, DarkTheme };
+export default {
+  DefaultTheme,
+  //  DarkTheme
+};
