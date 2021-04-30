@@ -10,6 +10,7 @@ const PathDetailContainer = styled.View`
 `;
 
 const TypeContainer = styled.View`
+  background-color: ${(props) => props.color};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,6 +21,7 @@ const TypeContainer = styled.View`
 `;
 
 const NumberContainer = styled.View`
+  background-color: ${(props) => props.color};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,10 +46,10 @@ const StopText = styled.Text`
 const PathDetail = ({type, number, stop, color}) => {
   return (
     <PathDetailContainer>
-      <TypeContainer style={{ backgroundColor: color }}>
+      <TypeContainer color={ color }>
         <Icon name={type === "bus" ? "directions-bus" : "tram"} size={20} color={"#ffffff"}></Icon>   
       </TypeContainer>
-      <NumberContainer style={{ backgroundColor: color }}>
+      <NumberContainer color={ color }>
         <NumberText>{number}</NumberText>
       </NumberContainer>
       <StopText>{stop}</StopText>

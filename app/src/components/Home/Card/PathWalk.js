@@ -9,6 +9,7 @@ const PathWalkContainer = styled.View`
   justify-content: center;
   margin-left: -10px;
   min-width: 60px;
+  width: ${(props) => props.width};
   height: 20px;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -23,7 +24,7 @@ const PathWalkText = styled.Text`
 
 const PathWalk = ({minute, width}) => {
     return (
-        <PathWalkContainer style={{ width: width }}>
+        <PathWalkContainer width={ width }>
             <Icon name={"directions-walk"} size={15} color={"#968282"}></Icon>
             <PathWalkText>{minute}분</PathWalkText>
         </PathWalkContainer>

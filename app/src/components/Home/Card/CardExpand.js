@@ -27,16 +27,19 @@ const PathContainer = styled.View`
   width: 100%;
 `;
 
-const PointBox = styled.View`
+const DepartureBox = styled.View`
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1;
-  margin-left: -10px;
   height: 20px;
   width: 20px;
   border-radius: 10px;
   background-color: #f46262;
+`;
+
+const ArrivalBox = styled(DepartureBox)`
+  margin-left: -10px;
 `;
 
 const DetailContainer = styled.View`
@@ -49,17 +52,17 @@ const CardExpand = () => {
   return (
     <CardExpandView>
       <PathContainer>
-        <PointBox>
+        <ArrivalBox>
           <Icon name={"flag"} size={15} color={"#ffffff"}></Icon>
-        </PointBox>
+        </ArrivalBox>
         <PathWalk minute={6} width={6 * screenWidth / 44}></PathWalk>
         <PathTransport minute={8} width={8 * screenWidth / 44} color={"#19bf66"}></PathTransport>
         <PathWalk minute={2} width={2 * screenWidth / 44}></PathWalk>
         <PathTransport minute={22} width={22 * screenWidth / 44} color={"#d1d2a2"}></PathTransport>
         <PathWalk minute={6} width={6 * screenWidth / 44}></PathWalk>
-        <PointBox style={{ marginLeft: 0 }}>
+        <DepartureBox>
           <Icon name={"place"} size={15} color={"#ffffff"}></Icon>
-        </PointBox>
+        </DepartureBox>
       </PathContainer>
       <DetailContainer>
         <PathDetail type={"bus"} number={5714} stop={"당산푸르지오아파트 승차"} color={"#d1d2a2"}></PathDetail>
