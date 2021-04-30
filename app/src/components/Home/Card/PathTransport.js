@@ -19,12 +19,13 @@ const PathTransportText = styled.Text`
   font-family: "5";
 `;
 
-const PathTransport = ({minute, width, color}) => {
-    return (
-        <PathTransportContainer style={{ width: width, backgroundColor: color }}>
-            <PathTransportText>{minute}분</PathTransportText>
-        </PathTransportContainer>
-    )
-}
+const PathTransport = ({ minute, width, color }) => (
+  <PathTransportContainer style={{ width, backgroundColor: color }}>
+    <PathTransportText>
+      {minute}
+      분
+    </PathTransportText>
+  </PathTransportContainer>
+);
 
 export default PathTransport;
