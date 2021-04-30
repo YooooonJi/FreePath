@@ -1,19 +1,25 @@
 import React, { useState } from "react";
-import MainNavigation from "./src/navigation/navigation";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider } from "styled-components/native";
+import { useFonts } from "expo-font";
+import MainNavigation from "./src/navigation/navigation";
 import Theme from "./src/styles/Theme";
 import Menu from "./src/components/Common/Menu";
-import { useFonts } from "expo-font";
+import NotoSansKRBlack from "./src/assets/fonts/NotoSansKR-Black.otf";
+import NotoSansKRBold from "./src/assets/fonts/NotoSansKR-Bold.otf";
+import NotoSansKRMedium from "./src/assets/fonts/NotoSansKR-Medium.otf";
+import NotoSansKRRegular from "./src/assets/fonts/NotoSansKR-Regular.otf";
+import NotoSansKRLight from "./src/assets/fonts/NotoSansKR-Light.otf";
+import NotoSansKRThin from "./src/assets/fonts/NotoSansKR-Thin.otf";
 
 const App = () => {
   const [loaded] = useFonts({
-    6: require("./src/assets/fonts/NotoSansKR-Black.otf"),
-    5: require("./src/assets/fonts/NotoSansKR-Bold.otf"),
-    4: require("./src/assets/fonts/NotoSansKR-Medium.otf"),
-    3: require("./src/assets/fonts/NotoSansKR-Regular.otf"),
-    2: require("./src/assets/fonts/NotoSansKR-Light.otf"),
-    1: require("./src/assets/fonts/NotoSansKR-Thin.otf"),
+    6: NotoSansKRBlack,
+    5: NotoSansKRBold,
+    4: NotoSansKRMedium,
+    3: NotoSansKRRegular,
+    2: NotoSansKRLight,
+    1: NotoSansKRThin,
   });
 
   const [darkMode, setDarkMode] = useState(false);

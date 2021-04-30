@@ -43,23 +43,21 @@ const ThemeButton = styled.TouchableOpacity`
   height: 20px;
 `;
 
-const Menu = ({ setPopMenu, darkMode, setDarkMode }) => {
-  return (
-    <MenuContainer onPress={() => setPopMenu(false)}>
-      <MenuBox>
-        <MenuTop>
-          <ServiceTitle>프리패스</ServiceTitle>
-          <ThemeButton
-            onPress={() => {
-              setDarkMode(!darkMode);
-            }}
-          >
-            <Icon name={"circle-half-full"} size={20} color={"black"}></Icon>
-          </ThemeButton>
-        </MenuTop>
-      </MenuBox>
-    </MenuContainer>
-  );
-};
+const Menu = ({ setPopMenu, darkMode, setDarkMode }) => (
+  <MenuContainer onPress={() => setPopMenu(false)}>
+    <MenuBox>
+      <MenuTop>
+        <ServiceTitle>프리패스</ServiceTitle>
+        <ThemeButton
+          onPress={() => {
+            setDarkMode(!darkMode);
+          }}
+        >
+          <Icon name="circle-half-full" size={20} color="black" />
+        </ThemeButton>
+      </MenuTop>
+    </MenuBox>
+  </MenuContainer>
+);
 
 export default Menu;

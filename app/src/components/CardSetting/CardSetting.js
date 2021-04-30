@@ -102,65 +102,63 @@ const ButtonText = styled.Text`
   font-weight: bold;
 `;
 
-const CardSetting = () => {
-  return (
-    <CardSettingView>
-      <TitleText>알림 추가</TitleText>
-      <SubTitleContainer>
-        <SubTitleText>알림 이름</SubTitleText>
-      </SubTitleContainer>
-      <InputContainer>
-        <InputText>알림 이름을 입력해주세요. (최대 10글자)</InputText>
-      </InputContainer>
-      <SubTitleContainer>
-        <SubTitleText>종류 선택</SubTitleText>
-      </SubTitleContainer>
-      <SelectContainer>
-        <SelectBox>
-          <Icon name={"directions-bus"} size={15} color={"#FFFFFF"}></Icon>
-          <SelectText>버스</SelectText>
-        </SelectBox>
-        <SelectBox>
-          <Icon name={"tram"} size={15} color={"#FFFFFF"}></Icon>
-          <SelectText>지하철</SelectText>
-        </SelectBox>
-        <SelectBox>
-          <Icon name={"map"} size={15} color={"#FFFFFF"}></Icon>
-          <SelectText>경로</SelectText>
-        </SelectBox>
-      </SelectContainer>
-      <InputContainer>
-        <InputText>정류장을 입력해주세요.</InputText>
-        <Icon name={"search"} size={15} color={"rgba(0, 0, 0, 0.5)"}></Icon>
-      </InputContainer>
-      <InputContainer>
-        <InputText>버스를 입력해주세요.</InputText>
-        <Icon name={"search"} size={15} color={"rgba(0, 0, 0, 0.5)"}></Icon>
-      </InputContainer>
-      <SubTitleContainer>
-        <SubTitleText>출발 시간 설정</SubTitleText>
-        <Icon name={"info"} size={15} color={"#000000"}></Icon>
-      </SubTitleContainer>
-      <SelectContainer>
-        <SelectBox>
-          <Icon name={"bedtime"} size={15} color={"#FFFFFF"}></Icon>
-          <SelectText>막차</SelectText>
-        </SelectBox>
-        <SelectBox>
-          <Icon name={"access-time"} size={15} color={"#FFFFFF"}></Icon>
-          <SelectText>시간 선택</SelectText>
-        </SelectBox>
-      </SelectContainer>
-      <ButtonContainer>
-        <ButtonBox>
-          <ButtonText>저장</ButtonText>
-        </ButtonBox>
-        <ButtonBox>
-          <ButtonText>취소</ButtonText>
-        </ButtonBox>
-      </ButtonContainer>
-    </CardSettingView>
-  )
-}
+const CardSetting = () => (
+  <CardSettingView>
+    <TitleText>알림 추가</TitleText>
+    <SubTitleContainer>
+      <SubTitleText>알림 이름</SubTitleText>
+    </SubTitleContainer>
+    <InputContainer>
+      <InputText>알림 이름을 입력해주세요. (최대 10글자)</InputText>
+    </InputContainer>
+    <SubTitleContainer>
+      <SubTitleText>종류 선택</SubTitleText>
+    </SubTitleContainer>
+    <SelectContainer>
+      <SelectBox>
+        <Icon name="directions-bus" size={15} color="#FFFFFF" />
+        <SelectText>버스</SelectText>
+      </SelectBox>
+      <SelectBox>
+        <Icon name="tram" size={15} color="#FFFFFF" />
+        <SelectText>지하철</SelectText>
+      </SelectBox>
+      <SelectBox>
+        <Icon name="map" size={15} color="#FFFFFF" />
+        <SelectText>경로</SelectText>
+      </SelectBox>
+    </SelectContainer>
+    <InputContainer>
+      <InputText>정류장을 입력해주세요.</InputText>
+      <Icon name="search" size={15} color="rgba(0, 0, 0, 0.5)" />
+    </InputContainer>
+    <InputContainer>
+      <InputText>버스를 입력해주세요.</InputText>
+      <Icon name="search" size={15} color="rgba(0, 0, 0, 0.5)" />
+    </InputContainer>
+    <SubTitleContainer>
+      <SubTitleText>출발 시간 설정</SubTitleText>
+      <Icon name="info" size={15} color="#000000" />
+    </SubTitleContainer>
+    <SelectContainer>
+      <SelectBox>
+        <Icon name="bedtime" size={15} color="#FFFFFF" />
+        <SelectText>막차</SelectText>
+      </SelectBox>
+      <SelectBox>
+        <Icon name="access-time" size={15} color="#FFFFFF" />
+        <SelectText>시간 선택</SelectText>
+      </SelectBox>
+    </SelectContainer>
+    <ButtonContainer>
+      <ButtonBox>
+        <ButtonText>저장</ButtonText>
+      </ButtonBox>
+      <ButtonBox>
+        <ButtonText>취소</ButtonText>
+      </ButtonBox>
+    </ButtonContainer>
+  </CardSettingView>
+);
 
 export default CardSetting;
