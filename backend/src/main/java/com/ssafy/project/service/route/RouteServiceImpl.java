@@ -37,13 +37,19 @@ public class RouteServiceImpl implements RouteService {
 			JSONObject response=(JSONObject)obj.get("result");
 			JSONArray path = (JSONArray) response.get("path");
 			
+<<<<<<< HEAD
 			//세부 경로들 계산
 			for (int i = 0; i < path.size()-1; i++) {
 				System.out.println("======================================");
+=======
+			//세부 경로들
+			for (int i = 0; i < path.size()-1; i++) {
+>>>>>>> 90ac0fb0ccfaefbc024951045b998fb9278af022
 				JSONObject infos=(JSONObject)path.get(i);
 				
 				//pathType : 1=지하철, 2=버스, 3=지하철+버스
 				long pathType=(Long)infos.get("pathType");
+<<<<<<< HEAD
 				System.out.println("pathType: "+pathType);
 				
 				//step1.경로 전체 소요시간 구하기
@@ -51,10 +57,21 @@ public class RouteServiceImpl implements RouteService {
 				int totalTime=Integer.parseInt(String.valueOf(info.get("totalTime")));
 				
 				//step2.출발시간(도착시간-소요시간)구하기
+=======
+				System.out.print(pathType+" ");
+				
+				JSONObject info=(JSONObject)infos.get("info");
+				
+				long totalTimeTmp=(long)info.get("totalTime");
+				int totalTime=(int)totalTimeTmp;
+				
+				//출발시간 구하기
+>>>>>>> 90ac0fb0ccfaefbc024951045b998fb9278af022
 				String[] time=routeFindRequest.getArriveTime().split(":");
 				int hour=Integer.parseInt(time[0]);
 				int minute=Integer.parseInt(time[1]);
 				String startTime=(hour*60+minute-totalTime)/60+":"+(hour*60+minute-totalTime)%60;
+<<<<<<< HEAD
 				System.out.println("실시간 반영 전 출발시간:"+startTime);
 				
 				//step3.첫 대중교통의 실시간 정보 반영한 출발시간 구하기
@@ -145,6 +162,16 @@ try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
 			sb.append(br.readLine());
 			
+=======
+				
+				System.out.println("start:"+startTime);
+				String first=(String)info.get("firstStartStation");
+				System.out.print(first +" "+totalTime);
+				System.out.println();
+				
+			}
+			
+>>>>>>> 90ac0fb0ccfaefbc024951045b998fb9278af022
 			urlConnection.disconnect();
 
 		} catch (Exception e) {
