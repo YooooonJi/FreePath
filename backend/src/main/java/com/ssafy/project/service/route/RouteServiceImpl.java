@@ -3,6 +3,8 @@ package com.ssafy.project.service.route;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.StringTokenizer;
+
 import javax.net.ssl.HttpsURLConnection;
 
 import org.json.simple.JSONArray;
