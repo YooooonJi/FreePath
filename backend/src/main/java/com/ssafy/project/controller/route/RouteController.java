@@ -37,9 +37,4 @@ public class RouteController {
 		return routeService.findLast(routeFindRequest);
 	}
 	
-	@ApiOperation(value = "Api 확인")
-	@GetMapping("/api")
-	public String readApi() {
-		return routeService.readApi();
-	}
 }
