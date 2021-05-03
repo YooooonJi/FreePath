@@ -61,7 +61,8 @@ public class RouteServiceImpl implements RouteService {
 				String startTime = (hour * 60 + minute - totalTime) / 60 + ":" + (hour * 60 + minute - totalTime) % 60;
 				System.out.println("실시간 반영 전 출발시간:" + startTime);
 
-				// step3.첫 대중교통의 실시간 정보 반영한 출발시간 구하기
+				//step3.첫 대중교통의 실시간 정보 반영한 출발시간 구하기
+
 				JSONArray subPath = (JSONArray) infos.get("subPath");
 
 				for (int j = 0; j < subPath.size(); j++) {
@@ -151,7 +152,6 @@ public class RouteServiceImpl implements RouteService {
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
 			sb.append(br.readLine());
-
 			urlConnection.disconnect();
 
 		} catch (Exception e) {
@@ -159,31 +159,6 @@ public class RouteServiceImpl implements RouteService {
 		}
 
 		System.out.println(sb);
-		return sb.toString();
-	}
-
-	@Override
-	public String readApi() {
-
-		StringBuffer sb = new StringBuffer();
-		final String openUrl = "https://api.odsay.com/v1/api/searchBusLane?busNo=10&CID=1000&apiKey=D6BmCrs4iH/PLaOQ390EUYI9%2BAdf8B55184hmV7GpSA";
-
-		try {
-			URL url = new URL(openUrl);
-
-			HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-			urlConnection.setRequestMethod("GET");
-
-			BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-
-			sb.append(br.readLine());
-
-			urlConnection.disconnect();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 		return sb.toString();
 	}
 
