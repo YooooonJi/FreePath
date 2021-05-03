@@ -105,14 +105,14 @@ const IconAddCircle = styled(Icon)`
   color: ${(props) => props.theme.card.add};
 `;
 
-const Home = ({ setPopMenu }) => (
+const Home = ({ setPopMenu, setCardSetting }) => (
   <SafeAreaView>
     <ScrollView>
       <HomeContainer>
         <MenuButton setPopMenu={setPopMenu} />
         <CarouselContainer>
           <CarouselImage source={Carousel} />
-          <CarouselBgOpacity></CarouselBgOpacity>
+          <CarouselBgOpacity />
           <CarouselTextBox>
             <CarouselText>늦은 밤,</CarouselText>
             <CarouselText>당신의 귀가를</CarouselText>
@@ -130,12 +130,11 @@ const Home = ({ setPopMenu }) => (
             time="10:30 AM"
           />
           <CardContainer>
-            <IconAddCircle name="add-circle" size={40} />
+            <IconAddCircle name="add-circle" size={40} onPress={() => { setCardSetting(true); }} />
           </CardContainer>
         </BoardContainer>
       </HomeContainer>
     </ScrollView>
   </SafeAreaView>
 );
-
 export default Home;

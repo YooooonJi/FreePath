@@ -9,7 +9,7 @@ import Profile from "../screens/Profile";
 // const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const MainNavigation = ({ setPopMenu }) => (
+const MainNavigation = ({ setPopMenu, setCardSetting }) => (
   <NavigationContainer>
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -39,7 +39,7 @@ const MainNavigation = ({ setPopMenu }) => (
     >
       <Tab.Screen
         name="대시보드"
-        children={() => <Home setPopMenu={setPopMenu} />}
+        children={() => <Home setPopMenu={setPopMenu} setCardSetting={setCardSetting} />}
       />
       <Tab.Screen name="프로필" component={Profile} />
     </Tab.Navigator>
