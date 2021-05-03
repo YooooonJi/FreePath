@@ -43,18 +43,18 @@ const StopText = styled.Text`
   font-family: "4";
 `;
 
-const PathDetail = ({type, number, stop, color}) => {
-  return (
-    <PathDetailContainer>
-      <TypeContainer color={ color }>
-        <Icon name={type === "bus" ? "directions-bus" : "tram"} size={20} color={"#ffffff"}></Icon>   
-      </TypeContainer>
-      <NumberContainer color={ color }>
-        <NumberText>{number}</NumberText>
-      </NumberContainer>
-      <StopText>{stop}</StopText>
-    </PathDetailContainer>
-  )
-}
+const PathDetail = ({
+  type, number, stop, color,
+}) => (
+  <PathDetailContainer>
+    <TypeContainer color={color}>
+      <Icon name={type === "bus" ? "directions-bus" : "tram"} size={20} color="#ffffff" />
+    </TypeContainer>
+    <NumberContainer color={color}>
+      <NumberText>{number}</NumberText>
+    </NumberContainer>
+    <StopText>{stop}</StopText>
+  </PathDetailContainer>
+);
 
 export default PathDetail;

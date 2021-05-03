@@ -187,4 +187,10 @@ public class RouteServiceImpl implements RouteService {
 		return sb.toString();
 	}
 
+	@Override
+	public Object findLast(RouteFindRequest routeFindRequest) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
