@@ -61,7 +61,7 @@ public class RouteServiceImpl implements RouteService {
 				String startTime = (hour * 60 + minute - totalTime) / 60 + ":" + (hour * 60 + minute - totalTime) % 60;
 				System.out.println("실시간 반영 전 출발시간:" + startTime);
 
-				//step3.첫 대중교통의 실시간 정보 반영한 출발시간 구하기
+				// step3.첫 대중교통의 실시간 정보 반영한 출발시간 구하기
 
 				JSONArray subPath = (JSONArray) infos.get("subPath");
 
