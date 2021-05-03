@@ -1,6 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import CardExpand from "./Card/CardExpand";
+
+const CardContainer = styled.View`
+  display: flex;
+  flex-direction: column-reverse;
+`;
 
 const CardView = styled.View`
   margin-top: 15px;
@@ -80,6 +86,7 @@ const CardRightBox = styled.View`
   height: 100%;
   display: flex;
   align-items: flex-end;
+  justify-content: space-between;
   padding-right: 10px;
 `;
 
@@ -91,23 +98,32 @@ const TimeLeftText = styled.Text`
   margin-top: 12px;
 `;
 
-const Card = ({ title, address, time }) => (
-  <CardView>
-    <CardLeftBox>
-      <CardOnOffBox>
-        <Icon name="map" size={20} color="#FFFFFF" />
-        <CardOnOffText>ON</CardOnOffText>
-      </CardOnOffBox>
-      <CardInfoBox>
-        <CardTitleText>{title}</CardTitleText>
-        <CardAddressText>{address}</CardAddressText>
-        <CardTimeTagText>{time}</CardTimeTagText>
-      </CardInfoBox>
-    </CardLeftBox>
-    <CardRightBox>
-      <TimeLeftText>1시간 15분 후</TimeLeftText>
-    </CardRightBox>
-  </CardView>
-);
+const Card = ({ title, address, time }) => {
+  const [expandShow, setExpandShow] = useState(false);
+
+  return (
+    <CardContainer>
+      {expandShow && (
+        <CardExpand />)}
+      <CardView>
+        <CardLeftBox>
+          <CardOnOffBox>
+            <Icon name="map" size={20} color="#FFFFFF" />
+            <CardOnOffText>ON</CardOnOffText>
+          </CardOnOffBox>
+          <CardInfoBox>
+            <CardTitleText>{title}</CardTitleText>
+            <CardAddressText>{address}</CardAddressText>
+            <CardTimeTagText>{time}</CardTimeTagText>
+          </CardInfoBox>
+        </CardLeftBox>
+        <CardRightBox>
+          <TimeLeftText>1시간 15분 후</TimeLeftText>
+          <Icon name={expandShow ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={30} color="rgba(0, 0, 0, 0.5)" onPress={() => { setExpandShow(!expandShow); }} />
+        </CardRightBox>
+      </CardView>
+    </CardContainer>
+  );
+};
 
 export default Card;

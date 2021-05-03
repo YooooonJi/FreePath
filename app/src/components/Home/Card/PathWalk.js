@@ -22,13 +22,14 @@ const PathWalkText = styled.Text`
   font-family: "5";
 `;
 
-const PathWalk = ({minute, width}) => {
-    return (
-        <PathWalkContainer width={ width }>
-            <Icon name={"directions-walk"} size={15} color={"#968282"}></Icon>
-            <PathWalkText>{minute}분</PathWalkText>
-        </PathWalkContainer>
-    )
-}
+const PathWalk = ({ minute, width }) => (
+  <PathWalkContainer width={width}>
+    <Icon name="directions-walk" size={15} color="#968282" />
+    <PathWalkText>
+      {minute}
+      분
+    </PathWalkText>
+  </PathWalkContainer>
+);
 
 export default PathWalk;

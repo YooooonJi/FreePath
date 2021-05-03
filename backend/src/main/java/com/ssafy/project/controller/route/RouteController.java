@@ -31,6 +31,12 @@ public class RouteController {
 		return routeService.findRoute(routeFindRequest);
 	}
 	
+	@ApiOperation(value="막차 경로 찾기 api")
+	@PostMapping("/findLast")
+	public Object findLast(@Valid @RequestBody RouteFindRequest routeFindRequest) {
+		return routeService.findLast(routeFindRequest);
+	}
+	
 	@ApiOperation(value = "Api 확인")
 	@GetMapping("/api")
 	public String readApi() {
