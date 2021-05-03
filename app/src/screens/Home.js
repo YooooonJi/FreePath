@@ -105,7 +105,7 @@ const IconAddCircle = styled(Icon)`
   color: ${(props) => props.theme.card.add};
 `;
 
-const Home = ({ setPopMenu, setCardSetting }) => (
+const Home = ({ setPopMenu, setPopCardAdd }) => (
   <SafeAreaView>
     <ScrollView>
       <HomeContainer>
@@ -130,7 +130,7 @@ const Home = ({ setPopMenu, setCardSetting }) => (
             time="10:30 AM"
           />
           <CardContainer>
-            <IconAddCircle name="add-circle" size={40} onPress={() => { setCardSetting(true); }} />
+            <IconAddCircle name="add-circle" size={40} onPress={() => setPopCardAdd(true)} />
           </CardContainer>
         </BoardContainer>
       </HomeContainer>

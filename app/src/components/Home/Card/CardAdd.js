@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const CardSettingContainer = styled.View`
+const CardAddContainer = styled.View`
   position: absolute;
   display: flex;
   justify-content: center;
@@ -10,13 +10,13 @@ const CardSettingContainer = styled.View`
   height: 100%;
 `;
 
-const CardSettingBgOpacity = styled.TouchableOpacity`
+const CardAddBgOpacity = styled.TouchableOpacity`
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
 `;
 
-const CardSettingInner = styled.View`
+const CardAddInner = styled.View`
   display: flex;
   background-color: white;
   width: 100%;
@@ -116,10 +116,10 @@ const ButtonText = styled.Text`
   font-weight: bold;
 `;
 
-const CardSetting = ({ setCardSetting }) => (
-  <CardSettingContainer>
-    <CardSettingBgOpacity onPress={() => setCardSetting(false)} />
-    <CardSettingInner>
+const CardAdd = ({ setPopCardAdd }) => (
+  <CardAddContainer>
+    <CardAddBgOpacity onPress={() => setPopCardAdd(false)} />
+    <CardAddInner>
       <TitleText>알림 추가</TitleText>
       <SubTitleContainer>
         <SubTitleText>알림 이름</SubTitleText>
@@ -171,11 +171,11 @@ const CardSetting = ({ setCardSetting }) => (
           <ButtonText>저장</ButtonText>
         </ButtonBox>
         <ButtonBox>
-          <ButtonText onPress={() => setCardSetting(false)}>취소</ButtonText>
+          <ButtonText onPress={() => setPopCardAdd(false)}>취소</ButtonText>
         </ButtonBox>
       </ButtonContainer>
-    </CardSettingInner>
-  </CardSettingContainer>
+    </CardAddInner>
+  </CardAddContainer>
 );
 
-export default CardSetting;
+export default CardAdd;
