@@ -101,7 +101,7 @@ const IconChevronRight = styled(Icon)`
 
 const Menu = ({ setPopMenu, darkMode, setDarkMode }) => (
   <MenuContainer>
-    <MenuBgOpacity onPress={() => setPopMenu(false)}></MenuBgOpacity>
+    <MenuBgOpacity onPress={() => setPopMenu(false)} />
     <MenuInner>
       <MenuContents>
         <MenuHead>
@@ -120,7 +120,7 @@ const Menu = ({ setPopMenu, darkMode, setDarkMode }) => (
           </LoginInfoText>
           <IconChevronRight name="chevron-right" size={20} />
         </LoginInfoBox>
-        <SectionLine></SectionLine>
+        <SectionLine />
         <MenuBox>
           <MenuBoxTitle>메뉴이름미정</MenuBoxTitle>
         </MenuBox>

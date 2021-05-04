@@ -20,6 +20,6 @@
     "react/prop-types" : [0],
     "quotes": ["error", "double", { "allowTemplateLiterals": true }],
     "linebreak-style": ["error", "windows"],
-    "react/no-children-prop": 0
+    "react/no-children-prop": [0]
   }
 }

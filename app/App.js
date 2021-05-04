@@ -5,6 +5,7 @@ import { useFonts } from "expo-font";
 import MainNavigation from "./src/navigation/navigation";
 import Theme from "./src/styles/Theme";
 import Menu from "./src/components/Common/Menu/Menu";
+import CardAdd from "./src/components/Home/Card/CardAdd";
 import NotoSansKRBlack from "./src/assets/fonts/NotoSansKR-Black.otf";
 import NotoSansKRBold from "./src/assets/fonts/NotoSansKR-Bold.otf";
 import NotoSansKRMedium from "./src/assets/fonts/NotoSansKR-Medium.otf";
@@ -24,6 +25,7 @@ const App = () => {
 
   const [darkMode, setDarkMode] = useState(false);
   const [popMenu, setPopMenu] = useState(false);
+  const [popCardAdd, setPopCardAdd] = useState(false);
 
   if (!loaded) {
     return null;
@@ -32,13 +34,18 @@ const App = () => {
   return (
     <ThemeProvider theme={darkMode ? Theme.DefaultTheme : Theme.DefaultTheme}>
       <SafeAreaProvider>
-        <MainNavigation setPopMenu={setPopMenu} />
+        <MainNavigation setPopMenu={setPopMenu} setPopCardAdd={setPopCardAdd} />
       </SafeAreaProvider>
       {popMenu && (
         <Menu
           setPopMenu={setPopMenu}
           darkMode={darkMode}
           setDarkMode={setDarkMode}
+        />
+      )}
+      {popCardAdd && (
+        <CardAdd
+          setPopCardAdd={setPopCardAdd}
         />
       )}
     </ThemeProvider>
