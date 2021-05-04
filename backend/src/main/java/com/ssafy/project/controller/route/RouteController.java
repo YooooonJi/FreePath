@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.project.model.route.RouteFindRequest;
+import com.ssafy.project.service.route.FinalRouteService;
 import com.ssafy.project.service.route.RouteService;
 
 import io.swagger.annotations.Api;
@@ -25,6 +26,9 @@ public class RouteController {
 	@Autowired
 	private RouteService routeService;
 	
+	@Autowired
+	private FinalRouteService finalRouteService;
+	
 	@ApiOperation(value="경로 찾기 api")
 	@PostMapping("/find")
 	public Object findRoute(@Valid @RequestBody RouteFindRequest routeFindRequest) {
@@ -34,7 +38,7 @@ public class RouteController {
 	@ApiOperation(value="막차 경로 찾기 api")
 	@PostMapping("/findLast")
 	public Object findLast(@Valid @RequestBody RouteFindRequest routeFindRequest) {
-		return routeService.findLast(routeFindRequest);
+		return finalRouteService.findLast(routeFindRequest);
 	}
 	
 }
