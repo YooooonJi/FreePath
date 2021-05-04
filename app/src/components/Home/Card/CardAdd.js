@@ -53,7 +53,7 @@ const SelectContainer = styled.View`
   flex-direction: row;
 `;
 
-const SelectBox = styled.View`
+const SelectBox = styled.TouchableOpacity`
   margin-right: 10px;
   padding: 5px 10px 5px 10px;
   height: 25px;
@@ -86,10 +86,9 @@ const InputContainer = styled.View`
   elevation: 3;
 `;
 
-const InputText = styled.Text`
-  color: rgba(0, 0, 0, 0.25);
-  font-size: 13px;
-  font-weight: bold;
+const InputBox = styled.TextInput`
+  width: 90%;
+  height: 30px;
 `;
 
 const ButtonContainer = styled.View`
@@ -99,7 +98,7 @@ const ButtonContainer = styled.View`
   justify-content: space-around;
 `;
 
-const ButtonBox = styled.View`
+const ButtonBox = styled.TouchableOpacity`
   width: 150px;
   height: 40px;
   border-radius: 10px;
@@ -125,7 +124,7 @@ const CardAdd = ({ setPopCardAdd }) => (
         <SubTitleText>알림 이름</SubTitleText>
       </SubTitleContainer>
       <InputContainer>
-        <InputText>알림 이름을 입력해주세요. (최대 10글자)</InputText>
+        <InputBox placeholder="알림 이름을 입력해주세요. (최대 10글자)" />
       </InputContainer>
       <SubTitleContainer>
         <SubTitleText>종류 선택</SubTitleText>
@@ -145,11 +144,11 @@ const CardAdd = ({ setPopCardAdd }) => (
         </SelectBox>
       </SelectContainer>
       <InputContainer>
-        <InputText>정류장을 입력해주세요.</InputText>
+        <InputBox placeholder="정류장을 입력해주세요." />
         <Icon name="search" size={15} color="rgba(0, 0, 0, 0.5)" />
       </InputContainer>
       <InputContainer>
-        <InputText>버스를 입력해주세요.</InputText>
+        <InputBox placeholder="버스를 입력해주세요." />
         <Icon name="search" size={15} color="rgba(0, 0, 0, 0.5)" />
       </InputContainer>
       <SubTitleContainer>
@@ -167,11 +166,11 @@ const CardAdd = ({ setPopCardAdd }) => (
         </SelectBox>
       </SelectContainer>
       <ButtonContainer>
-        <ButtonBox>
+        <ButtonBox onPress={() => alert("저장")}>
           <ButtonText>저장</ButtonText>
         </ButtonBox>
-        <ButtonBox>
-          <ButtonText onPress={() => setPopCardAdd(false)}>취소</ButtonText>
+        <ButtonBox onPress={() => setPopCardAdd(false)}>
+          <ButtonText>취소</ButtonText>
         </ButtonBox>
       </ButtonContainer>
     </CardAddInner>
