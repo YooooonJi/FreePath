@@ -10,7 +10,6 @@ const CardContainer = styled.View`
 
 const CardView = styled.View`
   margin-top: 15px;
-  padding: 5px 10px;
   width: 100%;
   height: 100px;
   border-radius: 10px;
@@ -26,6 +25,7 @@ const CardLeftBox = styled.View`
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  padding-left: 10px;
 `;
 
 const CardOnOffBox = styled.View`
@@ -98,7 +98,34 @@ const TimeLeftText = styled.Text`
   margin-top: 12px;
 `;
 
-const Card = ({ title, address, time }) => {
+const CardSetupBox = styled.View`
+  width: 50px;
+  display: flex;
+`;
+
+const CardDeleteBox = styled.View`
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-right-radius: 10px;
+  background-color: ${(props) => props.theme.card.circle.bg};
+`;
+
+const CardEditBox = styled.View`
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom-right-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.25);
+`;
+
+const Card = ({
+  title, address, time, setup,
+}) => {
   const [expandShow, setExpandShow] = useState(false);
 
   return (
@@ -117,10 +144,22 @@ const Card = ({ title, address, time }) => {
             <CardTimeTagText>{time}</CardTimeTagText>
           </CardInfoBox>
         </CardLeftBox>
-        <CardRightBox>
-          <TimeLeftText>1시간 15분 후</TimeLeftText>
-          <Icon name={expandShow ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={30} color="rgba(0, 0, 0, 0.5)" onPress={() => { setExpandShow(!expandShow); }} />
-        </CardRightBox>
+        {!setup && (
+          <CardRightBox>
+            <TimeLeftText>1시간 15분 후</TimeLeftText>
+            <Icon name={expandShow ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={30} color="rgba(0, 0, 0, 0.5)" onPress={() => { setExpandShow(!expandShow); }} />
+          </CardRightBox>
+        )}
+        {setup && (
+          <CardSetupBox>
+            <CardDeleteBox>
+              <Icon name="delete" size={30} color="#ffffff" />
+            </CardDeleteBox>
+            <CardEditBox>
+              <Icon name="edit" size={30} color="#ffffff" />
+            </CardEditBox>
+          </CardSetupBox>
+        )}
       </CardView>
     </CardContainer>
   );
