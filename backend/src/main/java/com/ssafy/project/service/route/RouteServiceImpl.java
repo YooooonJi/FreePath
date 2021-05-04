@@ -75,8 +75,9 @@ public class RouteServiceImpl implements RouteService {
 					if (trafficType == 1) {
 						System.out.println("지하철 실시간 검색");
 						int stationID = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
+						int wayCode = Integer.parseInt(String.valueOf(smallSubPath.get("wayCode")));
 
-						TimeTableSubway(stationID);
+						TimeTableSubway(stationID,wayCode);
 						break;
 					}
 
@@ -112,9 +113,9 @@ public class RouteServiceImpl implements RouteService {
 
 	// 지하철 타임테이블
 	@Override
-	public Object TimeTableSubway(int stationID) {
+	public Object TimeTableSubway(int stationID,int wayCode) {
 
-		final String openUrl = "https://api.odsay.com/v1/api/subwayTimeTable?lang=0&stationID=" + stationID + "&apiKey="
+		final String openUrl = "https://api.odsay.com/v1/api/subwayTimeTable?lang=0&stationID=" + stationID + "&wayCode=" + wayCode + "&apiKey="
 				+ apiKey;
 
 		StringBuffer sb = new StringBuffer();
@@ -158,7 +159,7 @@ public class RouteServiceImpl implements RouteService {
 			e.printStackTrace();
 		}
 
-		System.out.println(sb);
+		//System.out.println(sb);
 		return sb.toString();
 	}
 
