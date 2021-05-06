@@ -57,8 +57,7 @@ const BoardContainer = styled.View`
   display: flex;
   width: 100%;
   height: 1000px;
-  background-color: ${(props) =>
-    !props.setup ? props.theme.board.bg : "rgba(0, 0, 0, 0.5)"};
+  background-color: ${(props) => (!props.setup ? props.theme.board.bg : "rgba(0, 0, 0, 0.5)")};
   padding-left: 10px;
   padding-right: 10px;
 `;
