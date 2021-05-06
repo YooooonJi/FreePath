@@ -9,6 +9,7 @@ const colors = {
   shadylady: "#ADA9AC",
   fallgreen: "#E7E8B7",
   domino: "#958164",
+  havelockblue: "#5B79E1",
 };
 
 const DefaultTheme = {
@@ -46,6 +47,11 @@ const DefaultTheme = {
     },
     line: colors.bonjour,
     copyright: colors.shadylady,
+  },
+  login: {
+    bg: colors.havelockblue,
+    naver: colors.navergreen,
+    kakao: colors.kakaoyellow,
   },
 };
 

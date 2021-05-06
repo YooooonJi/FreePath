@@ -5,7 +5,7 @@ import { ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Carousel from "../assets/images/carousel_0.jpg";
 import Card from "../components/Home/Card";
-import MenuButton from "../components/Common/PopMenuButton";
+import MenuButton from "../components/Common/MenuButton";
 
 const HomeContainer = styled.View`
   display: flex;
@@ -125,7 +125,10 @@ const Home = ({ setPopMenu, setPopCardAdd }) => {
           <BoardContainer setup={setup}>
             <BoardLabelBox>
               <BoardLabelTagText>내 알림</BoardLabelTagText>
-              <BoardLabelSetupText setup={setup} onPress={() => setSetup(!setup)}>
+              <BoardLabelSetupText
+                setup={setup}
+                onPress={() => setSetup(!setup)}
+              >
                 {setup ? "완료" : "편집"}
               </BoardLabelSetupText>
             </BoardLabelBox>
@@ -137,7 +140,11 @@ const Home = ({ setPopMenu, setPopCardAdd }) => {
             />
             {!setup && (
               <CardContainer>
-                <IconAddCircle name="add-circle" size={40} onPress={() => setPopCardAdd(true)} />
+                <IconAddCircle
+                  name="add-circle"
+                  size={40}
+                  onPress={() => setPopCardAdd(true)}
+                />
               </CardContainer>
             )}
           </BoardContainer>
