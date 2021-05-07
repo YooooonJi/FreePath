@@ -53,6 +53,9 @@ const DefaultTheme = {
     naver: colors.navergreen,
     kakao: colors.kakaoyellow,
   },
+  profile: {
+    bg: colors.white,
+  },
 };
 
 // const DarkTheme = {

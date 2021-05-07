@@ -17,7 +17,7 @@ const CardView = styled.View`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  elevation: 3;
+  elevation: 4;
 `;
 
 const CardLeftBox = styled.View`
