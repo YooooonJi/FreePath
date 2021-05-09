@@ -11,19 +11,20 @@ const LoginContainer = styled.View`
   justify-content: space-between;
   width: 100%;
   height: 100%;
-  padding: 30px 20px;
+  padding: 0px 20px;
   background-color: ${(props) => props.theme.login.bg};
 `;
 
 const LoginTopBox = styled.View`
   width: 100%;
-  height: 50%;
+  height: 45%;
 `;
 
 const IconExitButton = styled.TouchableOpacity`
   padding: 10px;
   margin-left: -15px;
   margin-bottom: 80px;
+  margin-top: 30px;
 `;
 
 const IconExit = styled(Icon)`
@@ -61,7 +62,6 @@ const SocialLoginButtonText = styled.Text`
   width: 100%;
   text-align: center;
   font-size: 18px;
-  line-height: 21px;
   font-family: "5";
   color: ${(props) => props.textColor};
 `;
@@ -90,7 +90,6 @@ const EmailLoginButtonText = styled.Text`
   width: 100%;
   text-align: center;
   font-size: 18px;
-  line-height: 20px;
   font-family: "5";
   color: white;
 `;
@@ -101,13 +100,18 @@ const LoginBottomText = styled.Text`
   font-size: 12px;
   line-height: 14px;
   font-family: "4";
-  margin-top: 20px;
+  margin-bottom: 25px;
   color: white;
   text-decoration: underline;
 `;
 
-const Login = ({ setPopLogin }) => {
+const Login = ({ setPopLogin, setPopSignIn }) => {
   const onPressExit = () => {
+    setPopLogin(false);
+  };
+
+  const onPressEmailLogin = () => {
+    setPopSignIn(true);
     setPopLogin(false);
   };
 
@@ -139,7 +143,7 @@ const Login = ({ setPopLogin }) => {
             Google로 로그인
           </SocialLoginButtonText>
         </SocialLoginTouch>
-        <EmailLoginTouch>
+        <EmailLoginTouch onPress={onPressEmailLogin}>
           <EmailLoginButtonText>이메일 로그인/회원가입</EmailLoginButtonText>
         </EmailLoginTouch>
       </LoginButtonBox>

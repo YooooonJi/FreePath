@@ -7,12 +7,14 @@ import Theme from "./src/styles/Theme";
 import Menu from "./src/components/Common/Menu/Menu";
 import CardAdd from "./src/components/Home/Card/CardAdd";
 import Login from "./src/components/Profile/Login";
+import SignIn from "./src/components/Profile/SignIn";
 import NotoSansKRBlack from "./src/assets/fonts/NotoSansKR-Black.otf";
 import NotoSansKRBold from "./src/assets/fonts/NotoSansKR-Bold.otf";
 import NotoSansKRMedium from "./src/assets/fonts/NotoSansKR-Medium.otf";
 import NotoSansKRRegular from "./src/assets/fonts/NotoSansKR-Regular.otf";
 import NotoSansKRLight from "./src/assets/fonts/NotoSansKR-Light.otf";
 import NotoSansKRThin from "./src/assets/fonts/NotoSansKR-Thin.otf";
+import SignUp from "./src/components/Profile/SignUp";
 
 const App = () => {
   const [loaded] = useFonts({
@@ -29,6 +31,8 @@ const App = () => {
   const [popCardAdd, setPopCardAdd] = useState(false);
   const [popLogin, setPopLogin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [popSignIn, setPopSignIn] = useState(false);
+  const [popSignUp, setPopSignUp] = useState(false);
 
   if (!loaded) {
     return null;
@@ -54,7 +58,17 @@ const App = () => {
       )}
       {popCardAdd && <CardAdd setPopCardAdd={setPopCardAdd} />}
       {popLogin && !isLoggedIn && (
-        <Login setPopLogin={setPopLogin} setIsLoggedIn={setIsLoggedIn} />
+        <Login
+          setPopLogin={setPopLogin}
+          setIsLoggedIn={setIsLoggedIn}
+          setPopSignIn={setPopSignIn}
+        />
+      )}
+      {popSignIn && !isLoggedIn && (
+        <SignIn setPopSignIn={setPopSignIn} setPopSignUp={setPopSignUp} />
+      )}
+      {popSignUp && !isLoggedIn && (
+        <SignUp setPopSignIn={setPopSignIn} setPopSignUp={setPopSignUp} />
       )}
     </ThemeProvider>
   );
