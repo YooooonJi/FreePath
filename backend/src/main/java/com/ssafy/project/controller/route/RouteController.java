@@ -1,8 +1,11 @@
 package com.ssafy.project.controller.route;
 
+import java.util.Map;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +40,7 @@ public class RouteController {
 	
 	@ApiOperation(value="막차 경로 찾기 api")
 	@PostMapping("/findLast")
-	public Object findLast(@Valid @RequestBody RouteFindRequest routeFindRequest) {
+	public ResponseEntity<Map<String, Object>> findLast(@Valid @RequestBody RouteFindRequest routeFindRequest) {
 		return finalRouteService.findLast(routeFindRequest);
 	}
 	

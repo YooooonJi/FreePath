@@ -2,9 +2,12 @@ package com.ssafy.project.service.route;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -13,6 +16,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.project.model.api.ApiProperties;
@@ -39,13 +44,16 @@ public class FinalRouteServiceImpl implements FinalRouteService{
 	 * wayCode => 1: 상행, 2: 하행
 	 */
 	@Override
-	public Object findLast(RouteFindRequest routeFindRequest) {
-		
+	public ResponseEntity<Map<String, Object>> findLast(RouteFindRequest routeFindRequest) {
+
+		HttpStatus status = null;
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
 		final String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX="
 				+ routeFindRequest.getStartX() + "&SY=" + routeFindRequest.getStartY() + "&EX="
 				+ routeFindRequest.getEndX() + "&EY=" + routeFindRequest.getEndY() + "&apiKey="
 				+ apiProperties.getKey();
-		
+
 		try {
 			URL url = new URL(openUrl);
 
@@ -58,20 +66,19 @@ public class FinalRouteServiceImpl implements FinalRouteService{
 			JSONObject obj = (JSONObject) parser.parse(br);
 			JSONObject response = (JSONObject) obj.get("result");
 			JSONArray path = (JSONArray) response.get("path");
-			
-			Calendar cal = Calendar.getInstance(); // 오늘 날짜 => 요일을 확인하기 위해서 
+
+			Calendar cal = Calendar.getInstance(); // 오늘 날짜 => 요일을 확인하기 위해서
 			int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK); // 1: 일요일 ~ 7: 토요일
 
 			int lastOneIdx = 0; // 가장 늦게 탈 수 있는 경로의 번호
-			int lastOneTime = 0; // 가장 늦게 탈 수 있는 경로의 출발 시간 (1245 => 12시 45분 출발)
+			int lastOneTime = Integer.MIN_VALUE; // 가장 늦게 탈 수 있는 경로의 출발 시간 (1245 => 12시 45분 출발)
 
 			for (int i = 0; i < path.size(); i++) {
-//				System.out.println(path.get(i));
-//				System.out.println("==================================");
+//				System.out.println("===============" + i + "=================");
 				JSONObject paths = (JSONObject) path.get(i);
 
 				/* pathType => 1: 지하철, 2: 버스, 3: 지하철&버스 --> 이후 개인화 과정에서 필요 */
-				long pathType = (Long) paths.get("pathType");
+				int pathType = Integer.parseInt(String.valueOf(paths.get("pathType")));
 //				System.out.println("pathType: " + pathType);
 
 				/* 경로의 전반적인 정보 */
@@ -80,51 +87,59 @@ public class FinalRouteServiceImpl implements FinalRouteService{
 
 				/* 각 전체 경로 확인 */
 				JSONArray subPath = (JSONArray) paths.get("subPath");
-				int subPathStartTime = 2300; // 해당 경로의 출발 시간 => 막차 시간이기 때문에 시작 시간을 새벽 4시로 우선 설정
+				int subPathStartTime = 2800; // 해당 경로의 출발 시간 => 막차 시간이기 때문에 시작 시간을 새벽 4시로 우선 설정
 
 				for (int j = subPath.size() - 1; j >= 0; j--) {
 					JSONObject smallSubPath = (JSONObject) subPath.get(j);
-					long trafficType = (Long) smallSubPath.get("trafficType");
+					int trafficType = Integer.parseInt(String.valueOf(smallSubPath.get("trafficType")));
 
-					if (j == subPath.size() - 1 && trafficType == 3L) // 마지막 도보 경로 Skip
+					if (j == subPath.size() - 1 && trafficType == 3) // 마지막 도보 경로 Skip
 						continue;
 
-//					System.out.println(smallSubPath);
+//					System.out.println("smallSubPath : " + smallSubPath);
 
-					if (trafficType == 1L) { // 지하철
-						System.out.println("-------------지하철-------------");
-						long subwayStartId = (Long) smallSubPath.get("startID"); // 출발역의 ID
-						long subwayCode = (Long) smallSubPath.get("wayCode"); // 상, 하행 정보
+					if (trafficType == 1) { // 지하철
+//						System.out.println("-------------지하철-------------");
+						int subwayStartId = Integer.parseInt(String.valueOf(smallSubPath.get("startID"))); // 출발역의 ID
+						int subwayCode = Integer.parseInt(String.valueOf(smallSubPath.get("wayCode"))); // 상, 하행 정보
 
 						/* 지하철 막차의 출발 시간 반환 */
 						subPathStartTime = findSubwayStartTime(subwayStartId, subwayCode, subPathStartTime, dayOfWeek);
-
-					} else if (trafficType == 2L) { // 버스
+					} else if (trafficType == 2) { // 버스
 //						System.out.println("-------------버스-------------");
-					} else if (trafficType == 3L) { // 도보
+
+					} else if (trafficType == 3) { // 도보
 //						System.out.println("-------------도보-------------");
+						subPathStartTime -= Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime")));
 					}
 				}
 
 				/* 가장 늦게 탈 수 있는 경로 확인 */
+				if (lastOneTime < subPathStartTime) {
+					lastOneIdx = i;
+					lastOneTime = subPathStartTime;
+				}
 			}
 
+			if (lastOneTime >= 2400) lastOneTime -= 2400;
+			resultMap.put("lastTime", lastOneTime);
+			resultMap.put("lastOne", (JSONObject) path.get(lastOneIdx));
+
 			urlConnection.disconnect();
+			status = HttpStatus.OK;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return "OK";
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 	
-	public int findSubwayStartTime(long subwayStartId, long subwayCode, int startTime, int dayOfWeek) {
+	public int findSubwayStartTime(int subwayStartId, int subwayCode, int startTime, int dayOfWeek) {
+		
+//		System.out.println("startTime : " + startTime);
 		
 		StringTokenizer st = null;
-		
 		int newTime = 0;
-		boolean[] isTime = new boolean[2];
-		
-		System.out.println("startTime : " + startTime);
 
 		final String subwayStationInfoOpenUrl = "https://api.odsay.com/v1/api/subwayTimeTable?lang=0&stationID="
 				+ subwayStartId + "&wayCode=" + subwayCode + "&apiKey=" + apiProperties.getKey();
@@ -164,53 +179,51 @@ public class FinalRouteServiceImpl implements FinalRouteService{
 
 			/* 가장 마지막 시간의 지하철 시간 받아오기 */
 			JSONArray timeList = (JSONArray) wayList.get("time");
-			for (int i = timeList.size() - 1; i >= 0; i--) {
+			o:for (int i = timeList.size() - 1; i >= 0; i--) {
 				JSONObject lastTimeList = (JSONObject) timeList.get(i);
-				
-				long hour = (Long) lastTimeList.get("Idx"); // 시간
-				if(hour >= 24) hour -= 24;
-				System.out.println(hour);
-				
-				if(isTime[0]) continue; // 이미 시간이 정해져 있는 경우, 스킵
-				
-				if(hour == (startTime/100)) { // 우선 동일한 시간인 경우를 확인
-					isTime[0] = true;
-					
+
+				int hour = Integer.parseInt(String.valueOf(lastTimeList.get("Idx"))); // 시간
+//				System.out.println("hour : " + hour);
+
+				if (hour <= (startTime / 100)) { // 우선 동일한 시간인 경우를 확인
+					if ((startTime / 100) == hour && (startTime % 100) == 0) // 시간이 같은데 0분이 경우는 무조건 전 시간 가장 늦은 애로!
+						continue;
+
 					// 1. 시 정하기
-					newTime += ((hour+1)*100);
-					
+					newTime += hour * 100;
+
 					// 2. 분 정하기
-//					while(!isTime[1]) {
-//						newTime -= 100;
-//						if(newTime < 100) newTime += 2300;
-//						
-//						String minute = (String) lastTimeList.get("list");
-//						st = new StringTokenizer(minute, " ");
-//						while(st.hasMoreTokens()) {
-//							System.out.println(st.nextToken());	
-//						}
-//					}
+					String minute = (String) lastTimeList.get("list");
+//					System.out.println("minute : " + minute);
+					st = new StringTokenizer(minute, " ");
+
+					ArrayList<Integer> minuteList = new ArrayList<Integer>();
+					while (st.hasMoreTokens()) {
+						minuteList.add(Integer.parseInt(st.nextToken().substring(0, 2)));
+					}
+					Collections.sort(minuteList, Collections.reverseOrder()); // 내림차순 정렬
+
+					if ((startTime % 100) == 0) {
+						newTime += minuteList.get(0);
+						break o;
+					} else {
+						for (int j = 0; j < minuteList.size(); j++) {
+							if((startTime % 100) >= minuteList.get(j)) {
+								newTime += minuteList.get(j);
+								break o;
+							}
+						}
+					}
+
 				}
 			}
-			
-			if(!isTime[0]) { // 시간도 정해져 있지 않다면 무조건 제일 막차로 선택
-				JSONObject lastTimeList = (JSONObject) timeList.get(timeList.size() - 1);
-				
-				// 시
-				long hour = (Long) lastTimeList.get("Idx"); // 시간
-				if(hour >= 24) hour -= 24;
-				
-				newTime += (hour*100);
-				
-				// 분
-			}
-			
+
 			subwayUrlConnection.disconnect();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		System.out.println(newTime);
+//		System.out.println("newTime : " + newTime);
 		return newTime;
 	}
 }
