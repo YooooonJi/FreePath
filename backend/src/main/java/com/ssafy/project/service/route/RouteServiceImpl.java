@@ -168,17 +168,17 @@ public class RouteServiceImpl implements RouteService {
 			// 세부 경로들 계산
 			for (int i = 0; i < time.size() - 1; i++) {
 				JSONObject smallTime = (JSONObject) time.get(i);
-				int busHour = Integer.parseInt(String.valueOf(smallTime.get("Idx")));
+				int subwayHour = Integer.parseInt(String.valueOf(smallTime.get("Idx")));
 
 				// 버스 시간표 hour과 같을 때, 최소 차이의 minute 구하기
-				if (hour == busHour) {
-					String[] busMinute = String.valueOf(smallTime.get("list")).split(" ");
+				if (hour == subwayHour) {
+					String[] subwayMinute = String.valueOf(smallTime.get("list")).split(" ");
 					int min = Integer.MAX_VALUE;
 
-					for (int j = 0; j < busMinute.length; j++) {
-						int intBusMinute = Integer.parseInt(busMinute[j].substring(0, 2));
-						if (minute >= intBusMinute) {
-							min = Math.min(min, minute - intBusMinute);
+					for (int j = 0; j < subwayMinute.length; j++) {
+						int intSubwayMinute = Integer.parseInt(subwayMinute[j].substring(0, 2));
+						if (minute >= intSubwayMinute) {
+							min = Math.min(min, minute - intSubwayMinute);
 						}
 					}
 
@@ -208,7 +208,7 @@ public class RouteServiceImpl implements RouteService {
 		ArrayList<Integer> busDirTime=new ArrayList<Integer>();
 		
 		//버스노선 상세정보 조회
-		final String openUrl = "https://api.odsay.com/v1/api/busLaneDetail?lang=&busID="+ busID + "&apiKey=" + apiKey;
+		final String openUrl = "https://api.odsay.com/v1/api/busLaneDetail?lang=0&busID="+ busID + "&apiKey=" + apiKey;
 
 		String realStartTime = "";
 
@@ -223,29 +223,29 @@ public class RouteServiceImpl implements RouteService {
 			JSONParser parser = new JSONParser();
 			JSONObject obj = (JSONObject) parser.parse(br);
 			JSONObject response = (JSONObject) obj.get("result");
-			//JSONObject station = (JSONObject) response.get("station");
 			JSONArray station = (JSONArray) response.get("station");
-			
+	
 			for (int i = 0; i < station.size()-1; i++) {
 				JSONObject smallStation1 = (JSONObject) station.get(i);
 				JSONObject smallStation2 = (JSONObject) station.get(i+1);
 				
 				int distance1=Integer.parseInt(String.valueOf(smallStation1.get("stationDistance")));
-				int distance2=Integer.parseInt(String.valueOf(smallStation1.get("stationDistance")));
+				int distance2=Integer.parseInt(String.valueOf(smallStation2.get("stationDistance")));
+				//System.out.println(distance1+" "+distance2);
 				
 				//정류장 별 거리차이를 m-> km로 변환
-				long diffDistance=(distance2-distance1)/1000;
+				double diffDistance=(distance2-distance1)*3/1000;
+				//System.out.println(diffDistance);
 				
 				//버스 속력 20km/h 로 가정, 반올림 하여 시간 계산
-				int diffTime=Math.round(diffDistance*3);
-				
+				int diffTime=(int)Math.ceil(diffDistance);
 				busDirTime.add(diffTime);
 			}
 			
-			System.out.println("버스 정류장별 소요시간");
-			for (int i = 0; i < busDirTime.size(); i++) {
-				System.out.println(busDirTime.get(i));
-			}
+//			System.out.println("버스 정류장별 소요시간");
+//			for (int i = 0; i < busDirTime.size(); i++) {
+//				System.out.println(busDirTime.get(i));
+//			}
 
 			urlConnection.disconnect();
 
