@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Dimensions } from "react-native";
+import firebase from "firebase";
 
 const SignUpContainer = styled.View`
   position: absolute;
@@ -159,6 +160,10 @@ const SignUpBottomText = styled.Text`
 const SignUp = ({ setPopSignUp, setPopSignIn }) => {
   const screenHeight = Dimensions.get("window").height;
 
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [passwordConfirm, setPasswordConfirm] = useState(null);
+
   const onPressExit = () => {
     setPopSignUp(false);
   };
@@ -166,6 +171,20 @@ const SignUp = ({ setPopSignUp, setPopSignIn }) => {
   const onPressSignIn = () => {
     setPopSignIn(true);
     setPopSignUp(false);
+  };
+
+  const signUpWithEmail = () => {
+    if (password === passwordConfirm) {
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          onPressSignIn();
+        })
+        .catch((error) => {
+          alert(`회원가입 실패 : ${error.code}`);
+        });
+    }
   };
 
   return (
@@ -182,25 +201,43 @@ const SignUp = ({ setPopSignUp, setPopSignIn }) => {
           <SignUpInputBox>
             <SignUpInputTag>이메일</SignUpInputTag>
             <SignUpInputInner>
-              <SignUpInputText placeholder="이메일을 입력해주세요." />
+              <SignUpInputText
+                placeholder="이메일을 입력해주세요."
+                onChangeText={setEmail}
+                value={email}
+                textContentType="emailAddress"
+                keyboardType="email-address"
+              />
             </SignUpInputInner>
           </SignUpInputBox>
           <SignUpInputBox>
             <SignUpInputTag>비밀번호</SignUpInputTag>
             <SignUpInputInner>
-              <SignUpInputText placeholder="비밀번호를 입력해주세요." />
+              <SignUpInputText
+                placeholder="비밀번호를 입력해주세요."
+                onChangeText={setPassword}
+                value={password}
+                textContentType="password"
+                secureTextEntry
+              />
             </SignUpInputInner>
           </SignUpInputBox>
           <SignUpInputBox>
             <SignUpInputTag>비밀번호 확인</SignUpInputTag>
             <SignUpInputInner>
-              <SignUpInputText placeholder="비밀번호를 한번 더 입력해주세요." />
+              <SignUpInputText
+                placeholder="비밀번호를 한번 더 입력해주세요."
+                onChangeText={setPasswordConfirm}
+                value={passwordConfirm}
+                textContentType="password"
+                secureTextEntry
+              />
             </SignUpInputInner>
           </SignUpInputBox>
         </SignUpInputWrapper>
       </SignUpUpper>
       <SignUpUnder scrHeight={screenHeight}>
-        <SignUpButton>
+        <SignUpButton onPress={signUpWithEmail}>
           <SignUpButtonText>회원가입</SignUpButtonText>
           <IconArrowForward name="arrow-forward" size={20} />
         </SignUpButton>

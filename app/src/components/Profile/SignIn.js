@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Dimensions } from "react-native";
+import firebase from "firebase";
 
 const SignInContainer = styled.View`
   position: absolute;
@@ -158,8 +159,11 @@ const SignInBottomText = styled.Text`
   text-decoration: underline;
 `;
 
-const SignIn = ({ setPopSignIn, setPopSignUp }) => {
+const SignIn = ({ setIsLoggedIn, setPopSignIn, setPopSignUp }) => {
   const screenHeight = Dimensions.get("window").height;
+
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
 
   const onPressExit = () => {
     setPopSignIn(false);
@@ -168,6 +172,18 @@ const SignIn = ({ setPopSignIn, setPopSignUp }) => {
   const onPressSignUp = () => {
     setPopSignUp(true);
     setPopSignIn(false);
+  };
+
+  const signInWithEmail = () => {
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(() => {
+        setIsLoggedIn(true);
+      })
+      .catch((error) => {
+        alert(`로그인 실패 : ${error.code}`);
+      });
   };
 
   return (
@@ -184,19 +200,31 @@ const SignIn = ({ setPopSignIn, setPopSignUp }) => {
           <SignInInputBox>
             <SignInInputTag>이메일</SignInInputTag>
             <SignInInputInner>
-              <SignInInputText placeholder="이메일을 입력해주세요." />
+              <SignInInputText
+                placeholder="이메일을 입력해주세요."
+                onChangeText={setEmail}
+                value={email}
+                textContentType="emailAddress"
+                keyboardType="email-address"
+              />
             </SignInInputInner>
           </SignInInputBox>
           <SignInInputBox>
             <SignInInputTag>비밀번호</SignInInputTag>
             <SignInInputInner>
-              <SignInInputText placeholder="비밀번호를 입력해주세요." />
+              <SignInInputText
+                placeholder="비밀번호를 입력해주세요."
+                onChangeText={setPassword}
+                value={password}
+                textContentType="password"
+                secureTextEntry
+              />
             </SignInInputInner>
           </SignInInputBox>
         </SignInInputWrapper>
       </SignInUpper>
       <SignInUnder scrHeight={screenHeight}>
-        <SignInButton>
+        <SignInButton onPress={signInWithEmail}>
           <SignInButtonText>로그인</SignInButtonText>
           <IconArrowForward name="arrow-forward" size={20} />
         </SignInButton>
