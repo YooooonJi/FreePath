@@ -4,7 +4,7 @@ import { ThemeProvider } from "styled-components/native";
 import { useFonts } from "expo-font";
 import firebase from "firebase";
 import firebaseConfig from "./firebaseConfig";
-import MainNavigation from "./src/navigation/navigation";
+import MainNavigation from "./src/navigation/MainNavigation";
 import Theme from "./src/styles/Theme";
 import Menu from "./src/components/Common/Menu/Menu";
 import CardAdd from "./src/components/Home/Card/CardAdd";

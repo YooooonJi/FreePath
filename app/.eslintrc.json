@@ -17,9 +17,12 @@
   "plugins": ["react"],
   "rules": {
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-    "react/prop-types" : [0],
+    "react/prop-types": [0],
     "quotes": ["error", "double", { "allowTemplateLiterals": true }],
     "linebreak-style": ["error", "windows"],
-    "react/no-children-prop": [0]
+    "react/no-children-prop": [0],
+    "consistent-return": [0],
+    "comma-dangle": ["error", "only-multiline"],
+    "object-curly-newline": [0]
   }
 }
