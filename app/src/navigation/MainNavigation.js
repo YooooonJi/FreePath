@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Home from "../screens/Home";
 import Profile from "../screens/Profile";
+import Test from "../screens/Test";
 
 // const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -18,21 +19,35 @@ const MainNavigation = ({
 }) => (
   <NavigationContainer>
     <Tab.Navigator
+      initialRouteName="Group"
       screenOptions={({ route }) => ({
-        tabBarIcon: ({
-          // focused,
-          color,
-          size,
-        }) => {
+        tabBarIcon: ({ focused, color }) => {
           let iconName;
 
-          if (route.name === "대시보드") {
+          if (route.name === "Home") {
             iconName = "dashboard-customize";
-          } else if (route.name === "프로필") {
+          } else if (route.name === "Group") {
+            iconName = "groups";
+          } else if (route.name === "Profile") {
             iconName = "person-pin";
           }
 
-          return <Icon name={iconName} size={size} color={color} />;
+          return (
+            <Icon
+              style={
+                focused && {
+                  borderBottomWidth: 3,
+                  paddingLeft: 20,
+                  paddingRight: 20,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                }
+              }
+              name={iconName}
+              size={30}
+              color={color}
+            />
+          );
         },
       })}
       tabBarOptions={{
@@ -45,13 +60,14 @@ const MainNavigation = ({
       }}
     >
       <Tab.Screen
-        name="대시보드"
+        name="Home"
         children={() => (
           <Home setPopMenu={setPopMenu} setPopCardAdd={setPopCardAdd} />
         )}
       />
+      <Tab.Screen name="Group" children={() => <Test />} />
       <Tab.Screen
-        name="프로필"
+        name="Profile"
         children={() => (
           <Profile
             setPopLogin={setPopLogin}
