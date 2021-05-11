@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.StringTokenizer;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -24,12 +25,12 @@ public class RouteServiceImpl implements RouteService {
 	private ApiProperties apiProperties;
 
 	static final String apiKey = "D6BmCrs4iH/PLaOQ390EUYI9%2BAdf8B55184hmV7GpSA";
+	static int startBusStationIdx = 0;
 
 	@Override
 	public Object findRoute(RouteFindRequest routeFindRequest) {
 
-		final String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX="
-				+ routeFindRequest.getStartX() + "&SY=" + routeFindRequest.getStartY() + "&EX="
+		final String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=" + routeFindRequest.getStartX() + "&SY=" + routeFindRequest.getStartY() + "&EX="
 				+ routeFindRequest.getEndX() + "&EY=" + routeFindRequest.getEndY() + "&apiKey=" + apiKey;
 
 		StringBuffer sb = new StringBuffer();
@@ -49,12 +50,12 @@ public class RouteServiceImpl implements RouteService {
 
 			// 세부 경로들 계산
 			for (int i = 0; i < path.size() - 1; i++) {
-				//System.out.println("======================================");
+				// System.out.println("======================================");
 				JSONObject infos = (JSONObject) path.get(i);
 
 				// pathType : 1=지하철, 2=버스, 3=지하철+버스
 				long pathType = (Long) infos.get("pathType");
-				//System.out.println("pathType: " + pathType);
+				// System.out.println("pathType: " + pathType);
 
 				// step1.경로 전체 소요시간 구하기
 				JSONObject info = (JSONObject) infos.get("info");
@@ -62,7 +63,7 @@ public class RouteServiceImpl implements RouteService {
 
 				// step2.출발시간(도착시간-소요시간)구하기
 				String startTime = CalculateTime(routeFindRequest.getArriveTime(), totalTime, 2);
-				//System.out.println("실시간 반영 전 출발시간 : " + startTime);
+				// System.out.println("실시간 반영 전 출발시간 : " + startTime);
 				// step3.첫 대중교통의 실시간 정보 반영한 출발시간 구하기
 
 				JSONArray subPath = (JSONArray) infos.get("subPath");
@@ -80,17 +81,19 @@ public class RouteServiceImpl implements RouteService {
 						int wayCode = Integer.parseInt(String.valueOf(smallSubPath.get("wayCode")));
 						String tmpTime = CalculateTime(startTime, walkTime, 1);
 						String realStartTime = CalculateTime(TimeTableSubway(stationID, wayCode, tmpTime), walkTime, 2);
-						//System.out.println("실시간 시간:" + realStartTime);
+						// System.out.println("실시간 시간:" + realStartTime);
 						break;
 					}
 
 					// 버스 실시간 검색
 					else if (trafficType == 2) {
-						//System.out.println("버스 실시간 검색");
+						// System.out.println("버스 실시간 검색");
+						int startBusStationId = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
 						JSONArray lane = (JSONArray) smallSubPath.get("lane");
 						JSONObject smallLane = (JSONObject) lane.get(0);
 						int busID = Integer.parseInt(String.valueOf(smallLane.get("busID")));
-						RealTimeBus(busID);
+						String tmpTime = CalculateTime(startTime, walkTime, 1);
+						RealTimeBus(busID, startBusStationId, tmpTime);
 						break;
 					}
 
@@ -103,7 +106,7 @@ public class RouteServiceImpl implements RouteService {
 
 				}
 
-				//System.out.println("======================================");
+				// System.out.println("======================================");
 			}
 
 			urlConnection.disconnect();
@@ -132,8 +135,7 @@ public class RouteServiceImpl implements RouteService {
 	@Override
 	public String TimeTableSubway(int stationID, int wayCode, String startTime) {
 
-		final String openUrl = "https://api.odsay.com/v1/api/subwayTimeTable?lang=0&stationID=" + stationID
-				+ "&wayCode=" + wayCode + "&apiKey=" + apiKey;
+		final String openUrl = "https://api.odsay.com/v1/api/subwayTimeTable?lang=0&stationID=" + stationID + "&wayCode=" + wayCode + "&apiKey=" + apiKey;
 
 		String realStartTime = "";
 
@@ -196,21 +198,82 @@ public class RouteServiceImpl implements RouteService {
 		return realStartTime;
 	}
 
-	
 
-	
-	
 	// 버스 실시간 위치정보
 	@Override
-	public Object RealTimeBus(int busID) {
-		
-		//정류장 사이별 소요시간 list
-		ArrayList<Integer> busDirTime=new ArrayList<Integer>();
-		
-		//버스노선 상세정보 조회
-		final String openUrl = "https://api.odsay.com/v1/api/busLaneDetail?lang=0&busID="+ busID + "&apiKey=" + apiKey;
+	public Object RealTimeBus(int busID, int startBusStationId, String startTime) {
 
-		String realStartTime = "";
+		ArrayList<Integer> busDirTime = BusStationTime(busID, startBusStationId);
+
+		// 시간 시,분 계산
+		String[] tmpTime = startTime.split(":");
+		int hour = Integer.parseInt(tmpTime[0]);
+		int minute = Integer.parseInt(tmpTime[1]);
+
+
+		Calendar cal = Calendar.getInstance();
+		int nowHour = cal.get(Calendar.HOUR_OF_DAY);
+		int nowMin = cal.get(Calendar.MINUTE);
+		String nowTime = nowHour + ":" + nowMin;
+
+		// 실시간 버스 위치 정보 조회
+		final String openUrl = "https://api.odsay.com/v1/api/realtimeRoute?lang=0&busID=" + busID + "&apiKey=" + apiKey;
+
+		try {
+
+			URL url = new URL(openUrl);
+			HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+			urlConnection.setRequestMethod("GET");
+
+			BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+
+			JSONParser parser = new JSONParser();
+			JSONObject obj = (JSONObject) parser.parse(br);
+			JSONObject response = (JSONObject) obj.get("result");
+			JSONArray real = (JSONArray) response.get("real");
+
+			for (int i = 0; i < real.size() - 1; i++) {
+
+				JSONObject realBus = (JSONObject) real.get(i);
+
+				int fromStationIdx = Integer.parseInt(String.valueOf(realBus.get("fromStationSeq")));
+
+				// 현재 목적지 정류장 idx보다 뒤쪽에 있는 버스라면
+				if (startBusStationIdx + 1 < fromStationIdx) {
+					int busTimeSum = 0;
+					// 뒤쪽에 있는 버스가 현재 목적지 정류장에 도착할 시간 구하기
+					for (int j = startBusStationIdx; j < fromStationIdx; j++) {
+						busTimeSum += busDirTime.get(j);
+					}
+
+					String busTmpTime = CalculateTime(nowTime, busTimeSum, 1);
+					// 도착한 시간이 현재 출발해야 하는 시간보다 늦다면
+
+				}
+
+			}
+
+			urlConnection.disconnect();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return busDirTime;
+
+
+	}
+
+
+	// 버스 정류장 사이 별 소요시간
+	public ArrayList<Integer> BusStationTime(int busID, int startBusStationId) {
+
+		// 정류장 사이별 소요시간 list
+		ArrayList<Integer> busDirTime = new ArrayList<Integer>();
+		startBusStationIdx = 0;
+
+		// 버스노선 상세정보 조회
+		final String openUrl = "https://api.odsay.com/v1/api/busLaneDetail?lang=0&busID=" + busID + "&apiKey=" + apiKey;
+
 
 		try {
 
@@ -224,37 +287,42 @@ public class RouteServiceImpl implements RouteService {
 			JSONObject obj = (JSONObject) parser.parse(br);
 			JSONObject response = (JSONObject) obj.get("result");
 			JSONArray station = (JSONArray) response.get("station");
-	
-			for (int i = 0; i < station.size()-1; i++) {
+
+			for (int i = 0; i < station.size() - 1; i++) {
 				JSONObject smallStation1 = (JSONObject) station.get(i);
-				JSONObject smallStation2 = (JSONObject) station.get(i+1);
-				
-				int distance1=Integer.parseInt(String.valueOf(smallStation1.get("stationDistance")));
-				int distance2=Integer.parseInt(String.valueOf(smallStation2.get("stationDistance")));
-				//System.out.println(distance1+" "+distance2);
-				
-				//정류장 별 거리차이를 m-> km로 변환
-				double diffDistance=(distance2-distance1)*3/1000;
-				//System.out.println(diffDistance);
-				
-				//버스 속력 20km/h 로 가정, 반올림 하여 시간 계산
-				int diffTime=(int)Math.ceil(diffDistance);
+				JSONObject smallStation2 = (JSONObject) station.get(i + 1);
+
+				int distance1 = Integer.parseInt(String.valueOf(smallStation1.get("stationDistance")));
+				int distance2 = Integer.parseInt(String.valueOf(smallStation2.get("stationDistance")));
+				// System.out.println(distance1+" "+distance2);
+
+				int stationId = Integer.parseInt(String.valueOf(smallStation1.get("stationID")));
+
+				if (stationId == startBusStationId) {
+					startBusStationIdx = Integer.parseInt(String.valueOf(smallStation1.get("idx")));
+				}
+
+				// 정류장 별 거리차이를 m-> km로 변환
+				double diffDistance = (double) (distance2 - distance1) / 1000;
+				System.out.println("diff:" + diffDistance);
+
+				// 버스 속력 20km/h 로 가정, 반올림 하여 시간 계산
+				int diffTime = (int) Math.ceil(diffDistance * 3);
 				busDirTime.add(diffTime);
+				// System.out.println("difftime:"+diffTime);
 			}
-			
-//			System.out.println("버스 정류장별 소요시간");
-//			for (int i = 0; i < busDirTime.size(); i++) {
-//				System.out.println(busDirTime.get(i));
-//			}
+
+			// System.out.println("버스 정류장별 소요시간");
+			// for (int i = 0; i < busDirTime.size(); i++) {
+			// System.out.println(busDirTime.get(i));
+			// }
 
 			urlConnection.disconnect();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return realStartTime;
+		return busDirTime;
 	}
-
-
 
 }
