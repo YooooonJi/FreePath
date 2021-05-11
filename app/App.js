@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider } from "styled-components/native";
 import { useFonts } from "expo-font";
+import firebase from "firebase";
+import firebaseConfig from "./firebaseConfig";
 import MainNavigation from "./src/navigation/navigation";
 import Theme from "./src/styles/Theme";
 import Menu from "./src/components/Common/Menu/Menu";
@@ -15,6 +17,8 @@ import NotoSansKRRegular from "./src/assets/fonts/NotoSansKR-Regular.otf";
 import NotoSansKRLight from "./src/assets/fonts/NotoSansKR-Light.otf";
 import NotoSansKRThin from "./src/assets/fonts/NotoSansKR-Thin.otf";
 import SignUp from "./src/components/Profile/SignUp";
+
+firebase.initializeApp(firebaseConfig);
 
 const App = () => {
   const [loaded] = useFonts({
@@ -65,7 +69,11 @@ const App = () => {
         />
       )}
       {popSignIn && !isLoggedIn && (
-        <SignIn setPopSignIn={setPopSignIn} setPopSignUp={setPopSignUp} />
+        <SignIn
+          setIsLoggedIn={setIsLoggedIn}
+          setPopSignIn={setPopSignIn}
+          setPopSignUp={setPopSignUp}
+        />
       )}
       {popSignUp && !isLoggedIn && (
         <SignUp setPopSignIn={setPopSignIn} setPopSignUp={setPopSignUp} />
