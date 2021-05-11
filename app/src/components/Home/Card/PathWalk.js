@@ -9,7 +9,7 @@ const PathWalkContainer = styled.View`
   justify-content: center;
   margin-left: -10px;
   min-width: 60px;
-  width: ${(props) => props.width};
+  width: ${(props) => props.width}px;
   height: 20px;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
