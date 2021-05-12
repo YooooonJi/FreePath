@@ -70,6 +70,7 @@ const MainNavigation = ({
         name="Profile"
         children={() => (
           <Profile
+            setPopMenu={setPopMenu}
             setPopLogin={setPopLogin}
             setIsLoggedIn={setIsLoggedIn}
             isLoggedIn={isLoggedIn}
