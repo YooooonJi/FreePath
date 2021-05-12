@@ -183,6 +183,7 @@ const SignIn = ({ setIsLoggedIn, setPopSignIn, setPopSignUp }) => {
       })
       .catch((error) => {
         alert(`로그인 실패 : ${error.code}`);
+        setIsLoggedIn(false);
       });
   };
 

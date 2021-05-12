@@ -3,7 +3,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider } from "styled-components/native";
 import { useFonts } from "expo-font";
 import firebase from "firebase";
-import firebaseConfig from "./firebaseConfig";
 import MainNavigation from "./src/navigation/MainNavigation";
 import Theme from "./src/styles/Theme";
 import Menu from "./src/components/Common/Menu/Menu";
@@ -17,6 +16,16 @@ import NotoSansKRRegular from "./src/assets/fonts/NotoSansKR-Regular.otf";
 import NotoSansKRLight from "./src/assets/fonts/NotoSansKR-Light.otf";
 import NotoSansKRThin from "./src/assets/fonts/NotoSansKR-Thin.otf";
 import SignUp from "./src/components/Profile/SignUp";
+
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTHDOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECTID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGEBUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGINNGSENDERID,
+  appId: process.env.REACT_APP_FIREBASE_APPID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENTID,
+};
 
 firebase.initializeApp(firebaseConfig);
 
