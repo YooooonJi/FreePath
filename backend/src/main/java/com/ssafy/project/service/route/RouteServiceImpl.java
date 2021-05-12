@@ -49,7 +49,7 @@ public class RouteServiceImpl implements RouteService {
 			JSONArray path = (JSONArray) response.get("path");
 
 			// 세부 경로들 계산
-			for (int i = 0; i < path.size() - 1; i++) {
+			loop:for (int i = 0; i < path.size() - 1; i++) {
 				// System.out.println("======================================");
 				JSONObject infos = (JSONObject) path.get(i);
 
@@ -62,7 +62,9 @@ public class RouteServiceImpl implements RouteService {
 				int totalTime = Integer.parseInt(String.valueOf(info.get("totalTime")));
 
 				// step2.출발시간(도착시간-소요시간)구하기
+				
 				String startTime = CalculateTime(routeFindRequest.getArriveTime(), totalTime, 2);
+				
 				// System.out.println("실시간 반영 전 출발시간 : " + startTime);
 				// step3.첫 대중교통의 실시간 정보 반영한 출발시간 구하기
 
@@ -77,24 +79,26 @@ public class RouteServiceImpl implements RouteService {
 
 					// 지하철 운행시간 검색
 					if (trafficType == 1) {
+						System.out.println("지하철 실시간 검색");
 						int stationID = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
 						int wayCode = Integer.parseInt(String.valueOf(smallSubPath.get("wayCode")));
 						String tmpTime = CalculateTime(startTime, walkTime, 1);
 						String realStartTime = CalculateTime(TimeTableSubway(stationID, wayCode, tmpTime), walkTime, 2);
-						// System.out.println("실시간 시간:" + realStartTime);
-						break;
+						System.out.println("지하철 실시간 시간:" + realStartTime);
+						break loop;
 					}
 
 					// 버스 실시간 검색
 					else if (trafficType == 2) {
-						// System.out.println("버스 실시간 검색");
+						System.out.println("버스 실시간 검색");
 						int startBusStationId = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
 						JSONArray lane = (JSONArray) smallSubPath.get("lane");
 						JSONObject smallLane = (JSONObject) lane.get(0);
 						int busID = Integer.parseInt(String.valueOf(smallLane.get("busID")));
 						String tmpTime = CalculateTime(startTime, walkTime, 1);
-						RealTimeBus(busID, startBusStationId, tmpTime);
-						break;
+						String realStartTime =CalculateTime(RealTimeBus(busID, startBusStationId, tmpTime), walkTime, 2);
+						System.out.println("버스 실시간 시간:" + realStartTime);
+						break loop;
 					}
 
 					// 도보일경우 다음 대중교통 체크
@@ -130,6 +134,7 @@ public class RouteServiceImpl implements RouteService {
 		}
 		return resultTime;
 	}
+	
 
 	// 지하철 타임테이블
 	@Override
@@ -201,10 +206,13 @@ public class RouteServiceImpl implements RouteService {
 
 	// 버스 실시간 위치정보
 	@Override
-	public Object RealTimeBus(int busID, int startBusStationId, String startTime) {
+	public String RealTimeBus(int busID, int startBusStationId, String startTime) {
 
 		ArrayList<Integer> busDirTime = BusStationTime(busID, startBusStationId);
 
+		String realStartTime = "";
+		
+		System.out.println("실시간 반영 전 출발시간:"+startTime);
 		// 시간 시,분 계산
 		String[] tmpTime = startTime.split(":");
 		int hour = Integer.parseInt(tmpTime[0]);
@@ -237,7 +245,6 @@ public class RouteServiceImpl implements RouteService {
 				JSONObject realBus = (JSONObject) real.get(i);
 
 				int fromStationIdx = Integer.parseInt(String.valueOf(realBus.get("fromStationSeq")));
-
 				// 현재 목적지 정류장 idx보다 뒤쪽에 있는 버스라면
 				if (startBusStationIdx + 1 < fromStationIdx) {
 					int busTimeSum = 0;
@@ -247,6 +254,17 @@ public class RouteServiceImpl implements RouteService {
 					}
 
 					String busTmpTime = CalculateTime(nowTime, busTimeSum, 1);
+					System.out.println("실시간 버스 타임:"+busTmpTime+" "+busTimeSum);
+					
+					String[] busRealTime = busTmpTime.split(":");
+					int realHour = Integer.parseInt(busRealTime[0]);
+					int realMinute = Integer.parseInt(busRealTime[1]);
+					//System.out.println("값비교:"+hour*60+minute+" "+realHour * 60 + realMinute);
+					if((hour*60+minute)>=(realHour * 60 + realMinute)) {
+						realStartTime=busTmpTime;
+						//System.out.println("최종실시간반영버스타임:"+realStartTime);
+						break;
+					}
 					// 도착한 시간이 현재 출발해야 하는 시간보다 늦다면
 
 				}
@@ -258,7 +276,7 @@ public class RouteServiceImpl implements RouteService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return busDirTime;
+		return realStartTime;
 
 
 	}
@@ -304,7 +322,7 @@ public class RouteServiceImpl implements RouteService {
 
 				// 정류장 별 거리차이를 m-> km로 변환
 				double diffDistance = (double) (distance2 - distance1) / 1000;
-				System.out.println("diff:" + diffDistance);
+				//System.out.println("diff:" + diffDistance);
 
 				// 버스 속력 20km/h 로 가정, 반올림 하여 시간 계산
 				int diffTime = (int) Math.ceil(diffDistance * 3);
@@ -312,10 +330,10 @@ public class RouteServiceImpl implements RouteService {
 				// System.out.println("difftime:"+diffTime);
 			}
 
-			// System.out.println("버스 정류장별 소요시간");
-			// for (int i = 0; i < busDirTime.size(); i++) {
-			// System.out.println(busDirTime.get(i));
-			// }
+//			 System.out.println("버스 정류장별 소요시간");
+//			 for (int i = 0; i < busDirTime.size(); i++) {
+//			 System.out.println("idx:"+i+"time: "+busDirTime.get(i));
+//			 }
 
 			urlConnection.disconnect();
 
