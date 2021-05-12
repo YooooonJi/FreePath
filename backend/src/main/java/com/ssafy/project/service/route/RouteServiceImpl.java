@@ -79,25 +79,25 @@ public class RouteServiceImpl implements RouteService {
 
 					// 지하철 운행시간 검색
 					if (trafficType == 1) {
-						System.out.println("지하철 실시간 검색");
+						//System.out.println("지하철 실시간 검색");
 						int stationID = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
 						int wayCode = Integer.parseInt(String.valueOf(smallSubPath.get("wayCode")));
 						String tmpTime = CalculateTime(startTime, walkTime, 1);
 						String realStartTime = CalculateTime(TimeTableSubway(stationID, wayCode, tmpTime), walkTime, 2);
-						System.out.println("지하철 실시간 시간:" + realStartTime);
+						//System.out.println("지하철 실시간 시간:" + realStartTime);
 						break loop;
 					}
 
 					// 버스 실시간 검색
 					else if (trafficType == 2) {
-						System.out.println("버스 실시간 검색");
+						//System.out.println("버스 실시간 검색");
 						int startBusStationId = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
 						JSONArray lane = (JSONArray) smallSubPath.get("lane");
 						JSONObject smallLane = (JSONObject) lane.get(0);
 						int busID = Integer.parseInt(String.valueOf(smallLane.get("busID")));
 						String tmpTime = CalculateTime(startTime, walkTime, 1);
 						String realStartTime =CalculateTime(RealTimeBus(busID, startBusStationId, tmpTime), walkTime, 2);
-						System.out.println("버스 실시간 시간:" + realStartTime);
+						//System.out.println("버스 실시간 시간:" + realStartTime);
 						break loop;
 					}
 
@@ -212,7 +212,7 @@ public class RouteServiceImpl implements RouteService {
 
 		String realStartTime = "";
 		
-		System.out.println("실시간 반영 전 출발시간:"+startTime);
+		//System.out.println("실시간 반영 전 출발시간:"+startTime);
 		// 시간 시,분 계산
 		String[] tmpTime = startTime.split(":");
 		int hour = Integer.parseInt(tmpTime[0]);
@@ -254,7 +254,7 @@ public class RouteServiceImpl implements RouteService {
 					}
 
 					String busTmpTime = CalculateTime(nowTime, busTimeSum, 1);
-					System.out.println("실시간 버스 타임:"+busTmpTime+" "+busTimeSum);
+					//System.out.println("실시간 버스 타임:"+busTmpTime+" "+busTimeSum);
 					
 					String[] busRealTime = busTmpTime.split(":");
 					int realHour = Integer.parseInt(busRealTime[0]);
