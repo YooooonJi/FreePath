@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider } from "styled-components/native";
 import { useFonts } from "expo-font";
+import Constants from "expo-constants";
 import firebase from "firebase";
 import MainNavigation from "./src/navigation/MainNavigation";
 import Theme from "./src/styles/Theme";
@@ -18,16 +19,20 @@ import NotoSansKRThin from "./src/assets/fonts/NotoSansKR-Thin.otf";
 import SignUp from "./src/components/Profile/SignUp";
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTHDOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECTID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGEBUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGINNGSENDERID,
-  appId: process.env.REACT_APP_FIREBASE_APPID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENTID,
+  apiKey: Constants.manifest.extra.firebaseApiKey,
+  authDomain: Constants.manifest.extra.firebaseAuthDomain,
+  projectId: Constants.manifest.extra.firebaseProjectId,
+  storageBucket: Constants.manifest.extra.firebaseStorageBucket,
+  messagingSenderId: Constants.manifest.extra.firebaseMessagingSenderId,
+  appId: Constants.manifest.extra.firebaseAppId,
+  measurementId: Constants.manifest.extra.firebaseMeasurementId,
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  firebase.app();
+}
 
 const App = () => {
   const [loaded] = useFonts({
