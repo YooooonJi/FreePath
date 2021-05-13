@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import TypeBus from "./TypeBus";
+import TypeSubway from "./TypeSubway";
+import TypePath from "./TypePath";
 
 const CardAddContainer = styled.View`
   position: absolute;
@@ -35,7 +38,7 @@ const TitleText = styled.Text`
 `;
 
 const SubTitleContainer = styled.View`
-  margin-top:15px;
+  margin-top: 15px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -115,66 +118,72 @@ const ButtonText = styled.Text`
   font-weight: bold;
 `;
 
-const CardAdd = ({ setPopCardAdd }) => (
-  <CardAddContainer>
-    <CardAddBgOpacity onPress={() => setPopCardAdd(false)} />
-    <CardAddInner>
-      <TitleText>알림 추가</TitleText>
-      <SubTitleContainer>
-        <SubTitleText>알림 이름</SubTitleText>
-      </SubTitleContainer>
-      <InputContainer>
-        <InputBox placeholder="알림 이름을 입력해주세요. (최대 10글자)" />
-      </InputContainer>
-      <SubTitleContainer>
-        <SubTitleText>종류 선택</SubTitleText>
-      </SubTitleContainer>
-      <SelectContainer>
-        <SelectBox>
-          <Icon name="directions-bus" size={15} color="#FFFFFF" />
-          <SelectText>버스</SelectText>
-        </SelectBox>
-        <SelectBox>
-          <Icon name="tram" size={15} color="#FFFFFF" />
-          <SelectText>지하철</SelectText>
-        </SelectBox>
-        <SelectBox>
-          <Icon name="map" size={15} color="#FFFFFF" />
-          <SelectText>경로</SelectText>
-        </SelectBox>
-      </SelectContainer>
-      <InputContainer>
-        <InputBox placeholder="정류장을 입력해주세요." />
-        <Icon name="search" size={15} color="rgba(0, 0, 0, 0.5)" />
-      </InputContainer>
-      <InputContainer>
-        <InputBox placeholder="버스를 입력해주세요." />
-        <Icon name="search" size={15} color="rgba(0, 0, 0, 0.5)" />
-      </InputContainer>
-      <SubTitleContainer>
-        <SubTitleText>출발 시간 설정</SubTitleText>
-        <Icon name="info" size={15} color="#000000" />
-      </SubTitleContainer>
-      <SelectContainer>
-        <SelectBox>
-          <Icon name="bedtime" size={15} color="#FFFFFF" />
-          <SelectText>막차</SelectText>
-        </SelectBox>
-        <SelectBox>
-          <Icon name="access-time" size={15} color="#FFFFFF" />
-          <SelectText>시간 선택</SelectText>
-        </SelectBox>
-      </SelectContainer>
-      <ButtonContainer>
-        <ButtonBox onPress={() => alert("저장")}>
-          <ButtonText>저장</ButtonText>
-        </ButtonBox>
-        <ButtonBox onPress={() => setPopCardAdd(false)}>
-          <ButtonText>취소</ButtonText>
-        </ButtonBox>
-      </ButtonContainer>
-    </CardAddInner>
-  </CardAddContainer>
-);
+const CardAdd = ({ setPopCardAdd }) => {
+  const [cardType, setCardType] = useState(1);
+  let inputType;
+
+  if (cardType === 1) {
+    inputType = <TypeBus />;
+  } else if (cardType === 2) {
+    inputType = <TypeSubway />;
+  } else {
+    inputType = <TypePath />;
+  }
+
+  return (
+    <CardAddContainer>
+      <CardAddBgOpacity onPress={() => setPopCardAdd(false)} />
+      <CardAddInner>
+        <TitleText>알림 추가</TitleText>
+        <SubTitleContainer>
+          <SubTitleText>알림 이름</SubTitleText>
+        </SubTitleContainer>
+        <InputContainer>
+          <InputBox placeholder="알림 이름을 입력해주세요. (최대 10글자)" />
+        </InputContainer>
+        <SubTitleContainer>
+          <SubTitleText>종류 선택</SubTitleText>
+        </SubTitleContainer>
+        <SelectContainer>
+          <SelectBox onPress={() => setCardType(1)}>
+            <Icon name="directions-bus" size={15} color="#FFFFFF" />
+            <SelectText>버스</SelectText>
+          </SelectBox>
+          <SelectBox onPress={() => setCardType(2)}>
+            <Icon name="tram" size={15} color="#FFFFFF" />
+            <SelectText>지하철</SelectText>
+          </SelectBox>
+          <SelectBox onPress={() => setCardType(3)}>
+            <Icon name="map" size={15} color="#FFFFFF" />
+            <SelectText>경로</SelectText>
+          </SelectBox>
+        </SelectContainer>
+        {inputType}
+        <SubTitleContainer>
+          <SubTitleText>출발 시간 설정</SubTitleText>
+          <Icon name="info" size={15} color="#000000" />
+        </SubTitleContainer>
+        <SelectContainer>
+          <SelectBox>
+            <Icon name="bedtime" size={15} color="#FFFFFF" />
+            <SelectText>막차</SelectText>
+          </SelectBox>
+          <SelectBox>
+            <Icon name="access-time" size={15} color="#FFFFFF" />
+            <SelectText>시간 선택</SelectText>
+          </SelectBox>
+        </SelectContainer>
+        <ButtonContainer>
+          <ButtonBox onPress={() => alert("저장")}>
+            <ButtonText>저장</ButtonText>
+          </ButtonBox>
+          <ButtonBox onPress={() => setPopCardAdd(false)}>
+            <ButtonText>취소</ButtonText>
+          </ButtonBox>
+        </ButtonContainer>
+      </CardAddInner>
+    </CardAddContainer>
+  );
+};
 
 export default CardAdd;
