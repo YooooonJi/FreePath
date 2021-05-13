@@ -22,10 +22,18 @@ const LocationIconBox = styled.View`
 
 const LocationFavorite = () => (
   <LocationContainer>
-    <LocationIconBox><Icon name="home-heart" size={40} color="#BBB27E" /></LocationIconBox>
-    <LocationIconBox><Icon name="wallet-travel" size={40} color="#8C837C" /></LocationIconBox>
-    <LocationIconBox><Icon name="flag" size={40} color="#ABC2E0" /></LocationIconBox>
-    <LocationIconBox><Icon name="flag" size={40} color="#ABC2E0" /></LocationIconBox>
+    <LocationIconBox>
+      <Icon name="home-heart" size={40} color="#BBB27E" />
+    </LocationIconBox>
+    <LocationIconBox>
+      <Icon name="wallet-travel" size={40} color="#8C837C" />
+    </LocationIconBox>
+    <LocationIconBox>
+      <Icon name="flag" size={40} color="#ABC2E0" />
+    </LocationIconBox>
+    <LocationIconBox>
+      <Icon name="flag" size={40} color="#ABC2E0" />
+    </LocationIconBox>
   </LocationContainer>
 );
 
