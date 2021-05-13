@@ -10,6 +10,7 @@ const colors = {
   fallgreen: "#E7E8B7",
   domino: "#958164",
   havelockblue: "#5B79E1",
+  burningsand: "#D68C6D"
 };
 
 const DefaultTheme = {
@@ -54,7 +55,7 @@ const DefaultTheme = {
     kakao: colors.kakaoyellow,
   },
   profile: {
-    bg: colors.white,
+    bg: colors.burningsand,
   },
 };
 
