@@ -6,6 +6,7 @@ import { ScrollView } from "react-native";
 import firebase from "firebase";
 import MenuButton from "../components/Common/MenuButton";
 import LocationFavorite from "../components/Profile/LocationFavorite";
+import UserData from "../components/Profile/UserData";
 
 const ProfileContainer = styled.View`
   display: flex;
@@ -62,7 +63,7 @@ const ProfileImage = styled.View`
   width: 100px;
   height: 100px;
   border-radius: 50px;
-  border: 3px solid #F4E7E7;
+  border: 3px solid #f4e7e7;
   background-color: ${(props) => props.theme.board.bg};
   elevation: 3;
   margin-top: 25px;
@@ -79,7 +80,6 @@ const ProfileText = styled.Text`
 const LowerContainer = styled.View`
   display: flex;
   width: 100%;
-  height: 1000px;
   background-color: ${(props) => props.theme.board.bg};
   padding: 20px;
 `;
@@ -114,6 +114,12 @@ const GuideText = styled.Text`
   color: ${(props) => props.color};
 `;
 
+const UserDataContainer = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+`;
+
 const Profile = ({ setPopMenu, setPopLogin, setIsLoggedIn, isLoggedIn }) => {
   useEffect(() => {
     if (!isLoggedIn) {
@@ -124,11 +130,15 @@ const Profile = ({ setPopMenu, setPopLogin, setIsLoggedIn, isLoggedIn }) => {
   const logout = () => {
     setIsLoggedIn(false);
 
-    firebase.auth().signOut().then(() => {
-      // Sign-out successful.
-    }).catch(() => {
-      // An error happened.
-    });
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        // Sign-out successful.
+      })
+      .catch(() => {
+        // An error happened.
+      });
   };
 
   if (!isLoggedIn) {
@@ -171,15 +181,25 @@ const Profile = ({ setPopMenu, setPopLogin, setIsLoggedIn, isLoggedIn }) => {
             <GuideContainer>
               <GuideLineBox>
                 <GuideText color="#5B79E1">프리패스</GuideText>
-                <GuideText color="rgba(0, 0, 0, 0.5)">에서는 사용자 추가 정보 설정을 통해</GuideText>
+                <GuideText color="rgba(0, 0, 0, 0.5)">
+                  에서는 사용자 추가 정보 설정을 통해
+                </GuideText>
               </GuideLineBox>
               <GuideLineBox>
                 <GuideText color="#CE5A5A">맞춤 출발시간</GuideText>
                 <GuideText color="rgba(0, 0, 0, 0.5)">과 </GuideText>
                 <GuideText color="#CE5A5A">추천 경로</GuideText>
-                <GuideText color="rgba(0, 0, 0, 0.5)">를 안내해드립니다.</GuideText>
+                <GuideText color="rgba(0, 0, 0, 0.5)">
+                  를 안내해드립니다.
+                </GuideText>
               </GuideLineBox>
             </GuideContainer>
+            <UserDataContainer>
+              <UserData icon="directions-walk" title="보행속도" data="4 km/h" />
+              <UserData icon="time-to-leave" title="선호교통수단" data="버스" />
+              <UserData icon="map" title="경로우선순위" data="최단시간" />
+              <UserData icon="more-time" title="출발여유시간" data="5 min" />
+            </UserDataContainer>
           </LowerContainer>
         </ProfileContainer>
       </ScrollView>
