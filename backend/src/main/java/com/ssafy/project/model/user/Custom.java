@@ -1,8 +1,10 @@
 package com.ssafy.project.model.user;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import org.hibernate.annotations.ColumnDefault;
 import lombok.Data;
 
 @Data
@@ -11,10 +13,19 @@ import lombok.Data;
 public class Custom {
 	
 	@Id
+	@Column(name = "uid")
 	private String uid;
 	
+	@Column(name = "speed", columnDefinition="default 4")
 	private int speed;
+	
+	@Column(name = "favorites")
 	private int favorites;
+	
+	@Column(name = "priority")
 	private int priority;
+	
+	@Column(name = "sparetime")
+	@ColumnDefault("5")
 	private int sparetime;
 }

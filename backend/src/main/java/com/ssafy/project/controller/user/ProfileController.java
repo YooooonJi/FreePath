@@ -1,8 +1,11 @@
 package com.ssafy.project.controller.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,4 +28,11 @@ public class ProfileController {
 	public Object test() {
 		return profileService.findAll();
 	}
+	
+	@ApiOperation(value="사용자 회원가입시, 기본 및 추가 정보 등록")
+	@PostMapping("/join/{uid}")
+	public ResponseEntity<String> join(@PathVariable("uid") String uid) {
+		return profileService.join(uid);
+	}
+	
 }
