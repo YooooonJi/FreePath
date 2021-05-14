@@ -7,4 +7,6 @@ import com.ssafy.project.model.user.Custom;
 @Repository
 public interface CustomDao extends JpaRepository<Custom, String>{
 
+	Custom findCustomByUid(String uid);
+	
 }
