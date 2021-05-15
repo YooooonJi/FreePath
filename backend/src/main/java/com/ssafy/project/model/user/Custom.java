@@ -16,7 +16,7 @@ public class Custom {
 	@Column(name = "uid")
 	private String uid;
 	
-	@Column(name = "speed", columnDefinition="default 4")
+	@Column(name = "speed")
 	private int speed;
 	
 	@Column(name = "favorites")
@@ -26,6 +26,5 @@ public class Custom {
 	private int priority;
 	
 	@Column(name = "sparetime")
-	@ColumnDefault("5")
 	private int sparetime;
 }
