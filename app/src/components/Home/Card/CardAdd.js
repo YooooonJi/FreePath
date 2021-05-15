@@ -119,16 +119,41 @@ const ButtonText = styled.Text`
 `;
 
 const CardAdd = ({ setPopCardAdd }) => {
-  const [cardType, setCardType] = useState(1);
+  const [alarmName, setAlarmName] = useState(null);
+  const [alarmType, setAlarmType] = useState("경로");
+  const [inputValue1, setInputValue1] = useState(null);
+  const [inputValue2, setInputValue2] = useState(null);
+
+  const getInputValue1 = (input1) => {
+    setInputValue1(input1);
+  };
+
+  const getInputValue2 = (input2) => {
+    setInputValue2(input2);
+  };
+
   let inputType;
 
-  if (cardType === 1) {
+  if (alarmType === "경로") {
+    inputType = (
+      <TypePath
+        getInputValue1={getInputValue1}
+        getInputValue2={getInputValue2}
+      />
+    );
+  } else if (alarmType === "버스") {
     inputType = <TypeBus />;
-  } else if (cardType === 2) {
-    inputType = <TypeSubway />;
   } else {
-    inputType = <TypePath />;
+    inputType = <TypeSubway />;
   }
+
+  const saveCard = () => {
+    if (alarmName === null || inputValue1 === null || inputValue2 === null) {
+      alert("알람 정보를 입력해주세요.");
+    } else {
+      alert(`저장 - ${alarmType} : ${inputValue1} / ${inputValue2}`);
+    }
+  };
 
   return (
     <CardAddContainer>
@@ -139,23 +164,27 @@ const CardAdd = ({ setPopCardAdd }) => {
           <SubTitleText>알림 이름</SubTitleText>
         </SubTitleContainer>
         <InputContainer>
-          <InputBox placeholder="알림 이름을 입력해주세요. (최대 10글자)" />
+          <InputBox
+            placeholder="알림 이름을 입력해주세요. (최대 10글자)"
+            onChangeText={setAlarmName}
+            value={alarmName}
+          />
         </InputContainer>
         <SubTitleContainer>
           <SubTitleText>종류 선택</SubTitleText>
         </SubTitleContainer>
         <SelectContainer>
-          <SelectBox onPress={() => setCardType(1)}>
+          <SelectBox onPress={() => setAlarmType("경로")}>
+            <Icon name="map" size={15} color="#FFFFFF" />
+            <SelectText>경로</SelectText>
+          </SelectBox>
+          <SelectBox onPress={() => setAlarmType("버스")}>
             <Icon name="directions-bus" size={15} color="#FFFFFF" />
             <SelectText>버스</SelectText>
           </SelectBox>
-          <SelectBox onPress={() => setCardType(2)}>
+          <SelectBox onPress={() => setAlarmType("지하철")}>
             <Icon name="tram" size={15} color="#FFFFFF" />
             <SelectText>지하철</SelectText>
-          </SelectBox>
-          <SelectBox onPress={() => setCardType(3)}>
-            <Icon name="map" size={15} color="#FFFFFF" />
-            <SelectText>경로</SelectText>
           </SelectBox>
         </SelectContainer>
         {inputType}
@@ -174,7 +203,7 @@ const CardAdd = ({ setPopCardAdd }) => {
           </SelectBox>
         </SelectContainer>
         <ButtonContainer>
-          <ButtonBox onPress={() => alert("저장")}>
+          <ButtonBox onPress={() => saveCard()}>
             <ButtonText>저장</ButtonText>
           </ButtonBox>
           <ButtonBox onPress={() => setPopCardAdd(false)}>
