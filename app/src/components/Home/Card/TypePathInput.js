@@ -28,7 +28,7 @@ const InputIconBox = styled.TouchableOpacity`
   z-index: 1;
 `;
 
-const TypePath = (props) => {
+const TypePathInput = (props) => {
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState("");
   const departureInput = useRef();
@@ -100,4 +100,4 @@ const TypePath = (props) => {
   );
 };
 
-export default TypePath;
+export default TypePathInput;

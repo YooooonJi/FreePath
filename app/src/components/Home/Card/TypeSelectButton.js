@@ -33,11 +33,11 @@ const TypeSelectButton = (props) => {
   const [enableSubway, setEnableSubway] = useState(false);
 
   const selectButton = (type) => {
-    if (type === "경로") {
+    if (type === 0) {
       setEnablePath(true);
       setEnableBus(false);
       setEnableSubway(false);
-    } else if (type === "버스") {
+    } else if (type === 1) {
       setEnablePath(false);
       setEnableBus(true);
       setEnableSubway(false);
@@ -52,15 +52,15 @@ const TypeSelectButton = (props) => {
 
   return (
     <SelectContainer>
-      <SelectBox onPress={() => selectButton("경로")} disabled={enablePath}>
+      <SelectBox onPress={() => selectButton(0)} disabled={enablePath}>
         <Icon name="map" size={15} color="#FFFFFF" />
         <SelectText>경로</SelectText>
       </SelectBox>
-      <SelectBox onPress={() => selectButton("버스")} disabled={enableBus}>
+      <SelectBox onPress={() => selectButton(1)} disabled={enableBus}>
         <Icon name="directions-bus" size={15} color="#FFFFFF" />
         <SelectText>버스</SelectText>
       </SelectBox>
-      <SelectBox onPress={() => selectButton("지하철")} disabled={enableSubway}>
+      <SelectBox onPress={() => selectButton(2)} disabled={enableSubway}>
         <Icon name="tram" size={15} color="#FFFFFF" />
         <SelectText>지하철</SelectText>
       </SelectBox>

@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import TypeBus from "./TypeBus";
-import TypeSubway from "./TypeSubway";
-import TypePath from "./TypePath";
+import TypeSelectButton from "./TypeSelectButton";
+import TypeBusInput from "./TypeBusInput";
+import TypeSubwayInput from "./TypeSubwayInput";
+import TypePathInput from "./TypePathInput";
 
 const CardAddContainer = styled.View`
   position: absolute;
@@ -62,7 +63,7 @@ const SelectBox = styled.TouchableOpacity`
   padding: 5px 10px 5px 10px;
   height: 25px;
   border-radius: 8px;
-  background-color: ${(props) => (props.focus ? "#ce5a5a" : "#d0d0d0")};
+  background-color: ${(props) => (props.focus ? "#ce5a5a" : "#ce5a5a40")};
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -133,6 +134,10 @@ const CardAdd = ({ setPopCardAdd }) => {
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
 
+  const getAlarmType = (type) => {
+    setAlarmType(type);
+  };
+
   const getInputValue1 = (input1) => {
     setInputValue1(input1);
   };
@@ -145,15 +150,15 @@ const CardAdd = ({ setPopCardAdd }) => {
 
   if (alarmType === 0) {
     inputType = (
-      <TypePath
+      <TypePathInput
         getInputValue1={getInputValue1}
         getInputValue2={getInputValue2}
       />
     );
   } else if (alarmType === 1) {
-    inputType = <TypeBus />;
+    inputType = <TypeBusInput />;
   } else {
-    inputType = <TypeSubway />;
+    inputType = <TypeSubwayInput />;
   }
 
   const onPressAlarmTime = () => {
@@ -231,23 +236,13 @@ const CardAdd = ({ setPopCardAdd }) => {
         <SubTitleContainer>
           <SubTitleText>종류 선택</SubTitleText>
         </SubTitleContainer>
-        <SelectContainer>
-          <SelectBox focus={alarmType === 0} onPress={() => setAlarmType(0)}>
-            <Icon name="map" size={15} color="#FFFFFF" />
-            <SelectText>경로</SelectText>
-          </SelectBox>
-          <SelectBox focus={alarmType === 1} onPress={() => setAlarmType(1)}>
-            <Icon name="directions-bus" size={15} color="#FFFFFF" />
-            <SelectText>버스</SelectText>
-          </SelectBox>
-          <SelectBox focus={alarmType === 2} onPress={() => setAlarmType(2)}>
-            <Icon name="tram" size={15} color="#FFFFFF" />
-            <SelectText>지하철</SelectText>
-          </SelectBox>
-        </SelectContainer>
+        <TypeSelectButton getAlarmType={getAlarmType} />
         {inputType}
         <SubTitleContainer>
-          <SubTitleText>도착 시간 설정</SubTitleText>
+          <SubTitleText>
+            {alarmType === 0 ? "도착" : "출발"}
+            시간 설정
+          </SubTitleText>
           <Icon name="info" size={15} color="#000000" />
         </SubTitleContainer>
         <SelectContainer>

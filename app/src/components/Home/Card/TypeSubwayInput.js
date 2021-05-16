@@ -27,7 +27,7 @@ const InputIconBox = styled.TouchableOpacity`
   z-index: 1;
 `;
 
-const TypeSubway = () => {
+const TypeSubwayInput = () => {
   const searchStation = () => {
     alert("역 검색");
   };
@@ -50,4 +50,4 @@ const TypeSubway = () => {
   );
 };
 
-export default TypeSubway;
+export default TypeSubwayInput;

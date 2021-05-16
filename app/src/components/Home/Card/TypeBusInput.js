@@ -27,7 +27,7 @@ const InputIconBox = styled.TouchableOpacity`
   z-index: 1;
 `;
 
-const TypeBus = () => {
+const TypeBusInput = () => {
   const searchBusStop = () => {
     alert("정류장검색");
   };
@@ -50,4 +50,4 @@ const TypeBus = () => {
   );
 };
 
-export default TypeBus;
+export default TypeBusInput;
