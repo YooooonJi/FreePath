@@ -3,6 +3,7 @@ import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Dimensions } from "react-native";
 import firebase from "firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignInContainer = styled.View`
   position: absolute;
@@ -178,8 +179,15 @@ const SignIn = ({ setIsLoggedIn, setPopSignIn, setPopSignUp }) => {
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => {
+      .then(async () => {
+        await AsyncStorage.setItem(
+          "credential",
+          JSON.stringify(
+            firebase.auth.EmailAuthProvider.credential(email, password).toJSON()
+          )
+        );
         setIsLoggedIn(true);
+        setPopSignIn(false);
       })
       .catch((error) => {
         alert(`로그인 실패 : ${error.code}`);
