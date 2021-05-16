@@ -17,6 +17,7 @@ import NotoSansKRRegular from "./src/assets/fonts/NotoSansKR-Regular.otf";
 import NotoSansKRLight from "./src/assets/fonts/NotoSansKR-Light.otf";
 import NotoSansKRThin from "./src/assets/fonts/NotoSansKR-Thin.otf";
 import SignUp from "./src/components/Profile/SignUp";
+import Loading from "./src/screens/Loading";
 
 const firebaseConfig = {
   apiKey: Constants.manifest.extra.firebaseApiKey,
@@ -45,6 +46,7 @@ const App = () => {
   });
 
   const [darkMode, setDarkMode] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [popMenu, setPopMenu] = useState(false);
   const [popCardAdd, setPopCardAdd] = useState(false);
   const [popLogin, setPopLogin] = useState(false);
@@ -59,14 +61,19 @@ const App = () => {
   return (
     <ThemeProvider theme={darkMode ? Theme.DefaultTheme : Theme.DefaultTheme}>
       <SafeAreaProvider>
-        <MainNavigation
-          setPopMenu={setPopMenu}
-          setPopCardAdd={setPopCardAdd}
-          setPopLogin={setPopLogin}
-          setIsLoggedIn={setIsLoggedIn}
-          isLoggedIn={isLoggedIn}
-        />
+        {isLoaded && (
+          <MainNavigation
+            setPopMenu={setPopMenu}
+            setPopCardAdd={setPopCardAdd}
+            setPopLogin={setPopLogin}
+            setIsLoggedIn={setIsLoggedIn}
+            isLoggedIn={isLoggedIn}
+          />
+        )}
       </SafeAreaProvider>
+      {!isLoaded && (
+        <Loading setIsLoggedIn={setIsLoggedIn} setIsLoaded={setIsLoaded} />
+      )}
       {popMenu && (
         <Menu
           setPopMenu={setPopMenu}
