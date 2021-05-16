@@ -4,6 +4,7 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native";
 import firebase from "firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import MenuButton from "../components/Common/MenuButton";
 import LocationFavorite from "../components/Profile/LocationFavorite";
 import UserData from "../components/Profile/UserData";
@@ -122,22 +123,49 @@ const UserDataContainer = styled.View`
 
 const Profile = ({ setPopMenu, setPopLogin, setIsLoggedIn, isLoggedIn }) => {
   useEffect(() => {
+    const AsyncStorageGetItem = async () => {
+      const value = await AsyncStorage.getItem("credential");
+      if (value === null) {
+        setPopLogin(true);
+      } else {
+        const credential = JSON.parse(value);
+        await firebase
+          .auth()
+          .signInWithCredential(
+            firebase.auth.AuthCredential.fromJSON(credential)
+          )
+          .then(() => {
+            console.log(firebase.auth().currentUser);
+            setIsLoggedIn(true);
+          })
+          .catch((error) => {
+            // Handle Errors here.
+            const errorCode = error.code;
+            if (errorCode === "auth/account-exists-with-different-credential") {
+              alert("Email already associated with another account.");
+              // Handle account linking here, if using.
+            } else {
+              console.error(errorCode);
+            }
+          });
+      }
+    };
+
     if (!isLoggedIn) {
-      setPopLogin(true);
+      AsyncStorageGetItem();
     }
   }, []);
 
-  const logout = () => {
-    setIsLoggedIn(false);
-
+  const logout = async () => {
     firebase
       .auth()
       .signOut()
-      .then(() => {
-        // Sign-out successful.
+      .then(async () => {
+        await AsyncStorage.removeItem("credential");
+        setIsLoggedIn(false);
       })
-      .catch(() => {
-        // An error happened.
+      .catch((error) => {
+        console.log(error);
       });
   };
 
