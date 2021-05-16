@@ -31,8 +31,8 @@ const TimeSelectButton = (props) => {
   const [enableLast, setEnableLast] = useState(true);
   const [enableTime, setEnableTime] = useState(false);
 
-  const selectButton = (time) => {
-    if (time === "막차") {
+  const selectButton = (type) => {
+    if (type === 0) {
       setEnableLast(true);
       setEnableTime(false);
     } else {
@@ -40,16 +40,16 @@ const TimeSelectButton = (props) => {
       setEnableTime(true);
     }
 
-    props.getTime(time);
+    props.getTimeType(type);
   };
 
   return (
     <SelectContainer>
-      <SelectBox onPress={() => selectButton("막차")} disabled={enableLast}>
+      <SelectBox onPress={() => selectButton(0)} disabled={enableLast}>
         <Icon name="bedtime" size={15} color="#FFFFFF" />
         <SelectText>막차</SelectText>
       </SelectBox>
-      <SelectBox onPress={() => selectButton("시간")} disabled={enableTime}>
+      <SelectBox onPress={() => selectButton(1)} disabled={enableTime}>
         <Icon name="access-time" size={15} color="#FFFFFF" />
         <SelectText>시간 선택</SelectText>
       </SelectBox>
