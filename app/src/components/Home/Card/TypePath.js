@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Constants from "expo-constants";
@@ -28,11 +28,16 @@ const InputIconBox = styled.TouchableOpacity`
   z-index: 1;
 `;
 
-const TypePath = () => {
-  const searchAddress = () => {
+const TypePath = (props) => {
+  const [departure, setDeparture] = useState("");
+  const [arrival, setArrival] = useState("");
+  const departureInput = useRef();
+  const arrivalInput = useRef();
+
+  const searchAddress = (location) => {
     const restApiKey = Constants.manifest.extra.kakaoRestApiKey;
     const url = "https://dapi.kakao.com/v2/local/search/address.json";
-    const getQuery = "?query=세종대로 110";
+    const getQuery = `?query=${location === "departure" ? departure : arrival}`;
 
     fetch(url + getQuery, {
       method: "GET",
@@ -42,11 +47,21 @@ const TypePath = () => {
     })
       .then((response) => response.json())
       .then((response) => {
-        const addressResponse = response.documents;
+        if (response.meta.total_count === 0) {
+          alert("검색 결과가 없습니다.");
+        } else if (location === "departure") {
+          const departureInfo = response.documents[0];
 
-        alert(
-          `${addressResponse[0].address_name} (${addressResponse[0].y}, ${addressResponse[0].x})`
-        );
+          setDeparture(departureInfo.address_name);
+          props.getInputValue1(departureInfo);
+          departureInput.current.blur();
+        } else {
+          const arrivalInfo = response.documents[0];
+
+          setArrival(arrivalInfo.address_name);
+          props.getInputValue2(arrivalInfo);
+          arrivalInput.current.blur();
+        }
       })
       .catch();
   };
@@ -54,16 +69,32 @@ const TypePath = () => {
   return (
     <TypePathContainer>
       <InputContainer>
-        <InputBox placeholder="출발지를 입력해주세요." />
-        <InputIconBox onPress={searchAddress}>
-          <Icon name="search" size={15} color="rgba(0, 0, 0, 0.5)" />
-        </InputIconBox>
+        <InputBox
+          placeholder="출발지를 입력해주세요."
+          onChangeText={setDeparture}
+          onFocus={() => setDeparture("")}
+          value={departure}
+          ref={departureInput}
+        />
+        {departure !== "" && (
+          <InputIconBox onPress={() => searchAddress("departure")}>
+            <Icon name="search" size={15} color="rgba(0, 0, 0, 0.5)" />
+          </InputIconBox>
+        )}
       </InputContainer>
       <InputContainer>
-        <InputBox placeholder="도착지를 입력해주세요." />
-        <InputIconBox>
-          <Icon name="search" size={15} color="rgba(0, 0, 0, 0.5)" />
-        </InputIconBox>
+        <InputBox
+          placeholder="도착지를 입력해주세요."
+          onChangeText={setArrival}
+          onFocus={() => setArrival("")}
+          value={arrival}
+          ref={arrivalInput}
+        />
+        {arrival !== "" && (
+          <InputIconBox onPress={() => searchAddress("arrival")}>
+            <Icon name="search" size={15} color="rgba(0, 0, 0, 0.5)" />
+          </InputIconBox>
+        )}
       </InputContainer>
     </TypePathContainer>
   );
