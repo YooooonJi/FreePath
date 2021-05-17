@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.project.model.user.Custom;
-import com.ssafy.project.model.user.CustomRequest;
 import com.ssafy.project.model.user.Location;
 import com.ssafy.project.model.user.LocationRequest;
 import com.ssafy.project.service.user.ProfileService;
@@ -51,7 +50,7 @@ public class ProfileController {
 
 	@ApiOperation(value = "사용자의 추가 정보 수정")
 	@PutMapping("/update/custom/")
-	public ResponseEntity<Custom> updateCustom(@Valid @RequestBody CustomRequest customRequest) {
+	public ResponseEntity<Custom> updateCustom(@Valid @RequestBody Custom customRequest) {
 		return profileService.updateCustom(customRequest);
 	}
 
