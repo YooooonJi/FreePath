@@ -47,8 +47,9 @@ const UserDataTitleText = styled.Text`
 
 const UserDataText = styled.Text`
   color: #ce5a5a;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: bold;
+  margin-top: 5px;
 `;
 
 const UserDataRightContainer = styled.View`
@@ -68,7 +69,7 @@ const IconSetting = styled(Icon)`
   color: #ce5a5a;
 `;
 
-const UserData = ({ icon, title, data }) => (
+const UserData = ({ icon, title, data, setPopModal }) => (
   <UserDataContainer>
     <UserDataLeftContainer>
       <UserDataIconBox>
@@ -80,7 +81,11 @@ const UserData = ({ icon, title, data }) => (
       <UserDataText>{data}</UserDataText>
     </UserDataMiddleContainer>
     <UserDataRightContainer>
-      <SettingButtonContainer>
+      <SettingButtonContainer
+        onPress={() => {
+          setPopModal(true);
+        }}
+      >
         <IconSetting name="settings" size={20} />
       </SettingButtonContainer>
     </UserDataRightContainer>

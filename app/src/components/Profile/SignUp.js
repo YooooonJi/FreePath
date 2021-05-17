@@ -3,6 +3,7 @@ import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Dimensions } from "react-native";
 import firebase from "firebase";
+import { createUser } from "../../api/UserApi";
 
 const SignUpContainer = styled.View`
   position: absolute;
@@ -19,7 +20,7 @@ const SignUpUpper = styled.View`
   position: absolute;
   width: 90%;
   height: ${(props) => props.scrHeight * 0.5}px;
-  margin-top: 25%;
+  margin-top: ${(props) => (props.isFocus ? "10%" : "25%")};
   border-radius: 10px;
   background-color: white;
   elevation: 5;
@@ -45,8 +46,7 @@ const SloganBox = styled.View`
 const SloganText = styled.Text`
   color: black;
   font-size: 28px;
-  line-height: 31px;
-  font-family: "5";
+  font-weight: bold;
   margin-top: 10px;
 `;
 
@@ -58,13 +58,12 @@ const SignUpInputWrapper = styled.View`
 `;
 
 const SignUpInputBox = styled.View`
-  margin: 10px 0px;
+  margin: 5px 0px;
 `;
 
 const SignUpInputTag = styled.Text`
   font-size: 12px;
-  line-height: 14px;
-  font-family: "5";
+  font-weight: bold;
   color: #c84848;
   margin-bottom: 5px;
   margin-left: 5px;
@@ -76,14 +75,12 @@ const SignUpInputInner = styled.View`
   border-radius: 10px;
   background-color: #f9f1f7;
   elevation: 5;
-  height: 40px;
   padding-left: 10px;
 `;
 
 const SignUpInputText = styled.TextInput`
+  height: 32px;
   font-size: 12px;
-  line-height: 14px;
-  font-family: "5";
 `;
 
 const SignUpUnder = styled.View`
@@ -113,8 +110,8 @@ const SignUpButtonText = styled.Text`
   text-align: center;
   color: white;
   font-size: 18px;
-  font-family: "5";
   margin-left: 40px;
+  font-weight: bold;
 `;
 
 const IconArrowForward = styled(Icon)`
@@ -134,24 +131,19 @@ const SignInButton = styled.TouchableOpacity`
 const SignInTagText = styled.Text`
   color: #c29797;
   font-size: 12px;
-  line-height: 14px;
-  font-family: "4";
   margin-bottom: 5px;
 `;
 
 const SignInButtonText = styled.Text`
   color: #5b79e1;
   font-size: 18px;
-  line-height: 20px;
-  font-family: "5";
+  font-weight: bold;
 `;
 
 const SignUpBottomText = styled.Text`
   width: 100%;
   text-align: center;
   font-size: 12px;
-  line-height: 14px;
-  font-family: "4";
   margin-bottom: 25px;
   color: white;
   text-decoration: underline;
@@ -160,9 +152,11 @@ const SignUpBottomText = styled.Text`
 const SignUp = ({ setPopSignUp, setPopSignIn }) => {
   const screenHeight = Dimensions.get("window").height;
 
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
-  const [passwordConfirm, setPasswordConfirm] = useState(null);
+  const [nickname, setNickname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [isFocus, setIsFocus] = useState(false);
 
   const onPressExit = () => {
     setPopSignUp(false);
@@ -178,8 +172,18 @@ const SignUp = ({ setPopSignUp, setPopSignIn }) => {
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          onPressSignIn();
+        .then(async (userCredential) => {
+          const { status, data } = await createUser({
+            uid: userCredential.user.uid,
+            nickname,
+            email,
+          });
+
+          if (status === 200) {
+            onPressSignIn();
+          } else {
+            alert(`회원가입 실패 : ${status} ${data}`);
+          }
         })
         .catch((error) => {
           alert(`회원가입 실패 : ${error.code}`);
@@ -192,12 +196,27 @@ const SignUp = ({ setPopSignUp, setPopSignIn }) => {
       <IconExitButton onPress={onPressExit}>
         <IconExit name="close" size={40} />
       </IconExitButton>
-      <SignUpUpper scrHeight={screenHeight}>
+      <SignUpUpper isFocus={isFocus} scrHeight={screenHeight}>
         <SloganBox>
           <SloganText>어쩌구 저쩌구</SloganText>
           <SloganText>프리패스</SloganText>
         </SloganBox>
         <SignUpInputWrapper>
+          <SignUpInputBox>
+            <SignUpInputTag>닉네임</SignUpInputTag>
+            <SignUpInputInner>
+              <SignUpInputText
+                placeholder="닉네임을 입력해주세요."
+                onChangeText={setNickname}
+                value={nickname}
+                autoCapitalize="none"
+                textContentType="username"
+                keyboardType="default"
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
+              />
+            </SignUpInputInner>
+          </SignUpInputBox>
           <SignUpInputBox>
             <SignUpInputTag>이메일</SignUpInputTag>
             <SignUpInputInner>
@@ -205,8 +224,11 @@ const SignUp = ({ setPopSignUp, setPopSignIn }) => {
                 placeholder="이메일을 입력해주세요."
                 onChangeText={setEmail}
                 value={email}
+                autoCapitalize="none"
                 textContentType="emailAddress"
                 keyboardType="email-address"
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
               />
             </SignUpInputInner>
           </SignUpInputBox>
@@ -219,6 +241,8 @@ const SignUp = ({ setPopSignUp, setPopSignIn }) => {
                 value={password}
                 textContentType="password"
                 secureTextEntry
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
               />
             </SignUpInputInner>
           </SignUpInputBox>
@@ -231,6 +255,8 @@ const SignUp = ({ setPopSignUp, setPopSignIn }) => {
                 value={passwordConfirm}
                 textContentType="password"
                 secureTextEntry
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
               />
             </SignUpInputInner>
           </SignUpInputBox>

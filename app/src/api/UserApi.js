@@ -1,11 +1,12 @@
 import axios from "axios";
 
-export const getTestProfile = async () => {
+// 회원가입 시
+export const createUser = async (req) => {
   let status;
   let data;
 
   await axios
-    .get("http://k4a104.p.ssafy.io:8080/profile/testing")
+    .post(`http://k4a104.p.ssafy.io:8080/profile/join`, req)
     .then((res) => {
       status = res.status;
       data = res.data;
@@ -18,22 +19,51 @@ export const getTestProfile = async () => {
   return { status, data };
 };
 
-export const postSampleCode = async (req, config) => {
+// 로그인 후 프로필 페이지 접근 시
+export const getAllProfile = async (req) => {
   let status;
   let data;
 
   await axios
-    .post(
-      "http://k4a104.p.ssafy.io:8080/route/findLast",
-      req,
-      config
-      // config는 header 설정 같은거 넣어서 같이 보낼 때 쓰임 (예시)
-      // {
-      //   headers: {
-      //     "content-type": "application/x-www-form-urlencoded",
-      //   },
-      // }
-    )
+    .get(`http://k4a104.p.ssafy.io:8080/profile/total/${req.uid}`)
+    .then((res) => {
+      status = res.status;
+      data = res.data;
+    })
+    .catch((e) => {
+      status = e.response.status;
+      data = e.config;
+    });
+
+  return { status, data };
+};
+
+// 즐겨찾기 업데이트
+export const updateLocation = async (req) => {
+  let status;
+  let data;
+
+  await axios
+    .put(`http://k4a104.p.ssafy.io:8080/profile/update/location`, req)
+    .then((res) => {
+      status = res.status;
+      data = res.data;
+    })
+    .catch((e) => {
+      status = e.response.status;
+      data = e.config;
+    });
+
+  return { status, data };
+};
+
+// 추가정보 업데이트
+export const updateCustom = async (req) => {
+  let status;
+  let data;
+
+  await axios
+    .put(`http://k4a104.p.ssafy.io:8080/profile/update/custom`, req)
     .then((res) => {
       status = res.status;
       data = res.data;
