@@ -19,7 +19,7 @@ const MainNavigation = ({
 }) => (
   <NavigationContainer>
     <Tab.Navigator
-      initialRouteName="Group"
+      initialRouteName="Home"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
           let iconName;
