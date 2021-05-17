@@ -28,6 +28,7 @@
       "error",
       "after",
       { "overrides": { "?": "before", ":": "before" } }
-    ]
+    ],
+    "no-underscore-dangle": "off"
   }
 }
