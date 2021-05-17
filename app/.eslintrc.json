@@ -23,6 +23,11 @@
     "react/no-children-prop": [0],
     "consistent-return": [0],
     "comma-dangle": ["error", "only-multiline"],
-    "object-curly-newline": [0]
+    "object-curly-newline": [0],
+    "operator-linebreak": [
+      "error",
+      "after",
+      { "overrides": { "?": "before", ":": "before" } }
+    ]
   }
 }
