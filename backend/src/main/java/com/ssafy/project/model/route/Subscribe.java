@@ -26,25 +26,28 @@ public class Subscribe {
 
 	@Column(name = "longitude")
 	private double longitude;
-	
+
 	@Column(name = "busno")
 	private int busno;
-	
+
 	@Column(name = "busid")
 	private int busid;
-	
+
 	@Column(name = "stationname")
 	private String stationname;
-	
+
 	@Column(name = "stationid")
 	private int stationid;
-	
+
 	@Column(name = "updown")
 	private int updown;
-	
+
 	@Column(name = "registerdate", insertable = false, updatable = false)
 	private Timestamp registerdate;
-	
+
 	@Column(name = "alarmname")
 	private String alarmname;
+
+	@Column(name = "groupinfo")
+	private int groupinfo;
 }

@@ -9,5 +9,5 @@ import com.ssafy.project.model.route.RouteFindRequest;
 public interface FinalRouteService {
 
 	public ResponseEntity<Map<String, Object>> findLast(RouteFindRequest routeFindRequest);
-	
+
 }

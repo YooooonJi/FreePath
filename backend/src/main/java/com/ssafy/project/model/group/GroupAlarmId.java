@@ -1,4 +1,4 @@
-package com.ssafy.project.model.user;
+package com.ssafy.project.model.group;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 @Data
 @Embeddable
 @NoArgsConstructor
-public class LocationId implements Serializable {
+public class GroupAlarmId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "locationtype")
-	private int lacationtype;
+	@Column(name = "groupid")
+	private int groupid;
 
 	@Column(name = "uid")
 	private String uid;

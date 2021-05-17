@@ -8,11 +8,11 @@ import com.ssafy.project.model.user.Location;
 import com.ssafy.project.model.user.LocationId;
 
 @Repository
-public interface LocationDao extends JpaRepository<Location, LocationId>{
+public interface LocationDao extends JpaRepository<Location, LocationId> {
 
 	List<Location> findAllLocationsByLocationidUid(String uid);
-	
+
 	Location findLocationByLocationid(LocationId locationId);
-	
+
 	Optional<Location> findOptionalByLocationid(LocationId locationId);
 }

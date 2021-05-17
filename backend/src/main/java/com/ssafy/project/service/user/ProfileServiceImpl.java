@@ -1,6 +1,8 @@
 package com.ssafy.project.service.user;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.ssafy.project.dao.user.CustomDao;
 import com.ssafy.project.dao.user.LocationDao;
+import com.ssafy.project.dao.user.GgomjilakDao;
 import com.ssafy.project.model.user.Custom;
 import com.ssafy.project.model.user.Location;
 import com.ssafy.project.model.user.LocationId;
 import com.ssafy.project.model.user.LocationRequest;
+import com.ssafy.project.model.user.Ggomjilak;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -24,22 +28,27 @@ public class ProfileServiceImpl implements ProfileService {
 	@Autowired
 	private LocationDao locationDao;
 
+	@Autowired
+	private GgomjilakDao ggomjilakDao;
+
 	public static final Logger logger = LoggerFactory.getLogger(ProfileServiceImpl.class);
 
 	@Override
-	public ResponseEntity<String> join(String uid) {
+	public ResponseEntity<String> join(Ggomjilak user) {
 
 		String isOk = "등록이 안된 것 같네요!";
 		HttpStatus status = null;
 
-		Custom aleardyExistCustom = customDao.findCustomByUid(uid);
-		List<Location> locationList = locationDao.findAllLocationsByLocationidUid(uid);
+		Custom aleardyExistCustom = customDao.findCustomByUid(user.getUid());
+		List<Location> locationList = locationDao.findAllLocationsByLocationidUid(user.getUid());
+		System.out.println(user.getUid());
+		Ggomjilak aleardyExistUser = ggomjilakDao.findGgomjilakByUid(user.getUid());
 
 		try {
 			/* 가입시, 사용자의 추가 정보 입력 */
 			if (aleardyExistCustom == null) {
 				Custom custom = new Custom();
-				custom.setUid(uid);
+				custom.setUid(user.getUid());
 				custom.setSpeed(4);
 				custom.setSparetime(5);
 				customDao.save(custom);
@@ -47,11 +56,11 @@ public class ProfileServiceImpl implements ProfileService {
 				isOk = "등록 완료!";
 			}
 
-			/* 가입시, 사용자의 기본 정보(장소 즐겨찾기) 등록 */
+			/* 가입시, 사용자의 장소 정보(장소 즐겨찾기) 등록 */
 			if (locationList.isEmpty()) {
 				for (int i = 1; i <= 4; i++) {
 					LocationId locationId = new LocationId();
-					locationId.setUid(uid);
+					locationId.setUid(user.getUid());
 					locationId.setLacationtype(i);
 
 					Location location = new Location();
@@ -59,6 +68,17 @@ public class ProfileServiceImpl implements ProfileService {
 
 					locationDao.save(location);
 				}
+				isOk = "등록 완료!";
+			}
+
+			/* 가입시, 기본 정보 입력 */
+			if (aleardyExistUser == null) {
+				Ggomjilak newUser = new Ggomjilak();
+				newUser.setUid(user.getUid());
+				newUser.setEmail(user.getEmail());
+				newUser.setNickname(user.getNickname());
+				ggomjilakDao.save(newUser);
+
 				isOk = "등록 완료!";
 			}
 
@@ -72,37 +92,31 @@ public class ProfileServiceImpl implements ProfileService {
 	}
 
 	@Override
-	public ResponseEntity<Custom> getCustom(String uid) {
+	public ResponseEntity<Map<String, Object>> getTotal(String uid) {
 
 		HttpStatus status = null;
-		Custom custom = null;
+		Map<String, Object> resultMap = new HashMap<String, Object>();
 
 		try {
-			custom = customDao.findCustomByUid(uid);
+			/* 사용자 기본 정보 */
+			Ggomjilak ggomjilak = ggomjilakDao.findGgomjilakByUid(uid);
+			resultMap.put("ggomjilak", ggomjilak);
+
+			/* 사용자 추가 정보 */
+			Custom custom = customDao.findCustomByUid(uid);
+			resultMap.put("custom", custom);
+
+			/* 사용자 장소 정보 */
+			List<Location> locationList = locationDao.findAllLocationsByLocationidUid(uid);
+			resultMap.put("location", locationList);
+
 			status = HttpStatus.OK;
 		} catch (Exception e) {
-			logger.error("사용자 추가 정보 읽어오기 실패 : {}", e);
+			logger.error("사용자 전체 정보 읽어오기 실패 : {}", e);
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
 
-		return new ResponseEntity<Custom>(custom, status);
-	}
-
-	@Override
-	public ResponseEntity<List<Location>> getLocation(String uid) {
-
-		HttpStatus status = null;
-		List<Location> locationList = null;
-
-		try {
-			locationList = locationDao.findAllLocationsByLocationidUid(uid);
-			status = HttpStatus.OK;
-		} catch (Exception e) {
-			logger.error("사용자 장소 즐겨찾기 정보 읽어오기 실패 : {}", e);
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
-		}
-
-		return new ResponseEntity<List<Location>>(locationList, status);
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 
 	@Override
@@ -163,22 +177,22 @@ public class ProfileServiceImpl implements ProfileService {
 	public ResponseEntity<String> delete(String uid) {
 		HttpStatus status = null;
 		String isDelete = "삭제가 되지 않았습니다.";
-		
+
 		Custom custom = customDao.findCustomByUid(uid);
 		List<Location> locationList = locationDao.findAllLocationsByLocationidUid(uid);
 
 		try {
-			if(custom != null) {
+			if (custom != null) {
 				customDao.delete(custom);
 				isDelete = "삭제 완료!";
 			}
-			
-			if(!locationList.isEmpty()) {
+
+			if (!locationList.isEmpty()) {
 				for (Location location : locationList) {
 					locationDao.delete(location);
 				}
 			}
-			
+
 			status = HttpStatus.OK;
 		} catch (Exception e) {
 			logger.error("사용자 정보 삭제 실패 : {}", e);
@@ -188,6 +202,5 @@ public class ProfileServiceImpl implements ProfileService {
 		return new ResponseEntity<String>(isDelete, status);
 
 	}
-
 
 }

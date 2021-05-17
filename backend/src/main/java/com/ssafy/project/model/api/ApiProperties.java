@@ -9,5 +9,5 @@ import lombok.Data;
 public class ApiProperties {
 
 	private String key;
-	
+
 }

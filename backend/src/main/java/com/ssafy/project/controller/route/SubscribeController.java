@@ -12,7 +12,7 @@ import io.swagger.annotations.Api;
 @RestController
 @RequestMapping("/subscribe")
 public class SubscribeController {
-	
+
 	@Autowired
 	private SubscribeService subscribeService;
 

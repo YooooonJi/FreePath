@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 import com.ssafy.project.dao.route.SubscribeDao;
 
 @Service
-public class SubscribeServiceImpl implements SubscribeService{
-	
+public class SubscribeServiceImpl implements SubscribeService {
+
 	@Autowired
 	private SubscribeDao subscribeDao;
 
 	public static final Logger logger = LoggerFactory.getLogger(SubscribeServiceImpl.class);
-	
+
 }

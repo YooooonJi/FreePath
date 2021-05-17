@@ -92,10 +92,10 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 				JSONObject paths = (JSONObject) path.get(i);
 
 				/* pathType => 1: 지하철, 2: 버스, 3: 지하철&버스 --> 이후 개인화 과정에서 필요 */
-//				int pathType = Integer.parseInt(String.valueOf(paths.get("pathType")));
+				// int pathType = Integer.parseInt(String.valueOf(paths.get("pathType")));
 
 				/* 경로의 전반적인 정보 */
-//				JSONObject info = (JSONObject) paths.get("info");
+				// JSONObject info = (JSONObject) paths.get("info");
 
 				/* 각 전체 경로 확인 */
 				JSONArray subPath = (JSONArray) paths.get("subPath");
@@ -151,9 +151,7 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 			sb.append((lastOneTime / 100) + ":" + (lastOneTime % 100));
 
 			/* 현재 시간으로부터 막차 도착시간까지 남은 시간 초로 전달 */
-			String[] lastTime = sb.toString().split(" ");
-
-			Date date = new SimpleDateFormat("yyyy-MM-dd").parse(lastTime[0]);
+			Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(sb.toString());
 			Calendar lastDate = Calendar.getInstance();
 			lastDate.setTime(date);
 
