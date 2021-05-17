@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import { Button, Text, Vibration, View } from "react-native";
+import { getTestProfile, postSampleCode } from "../api/UserApi";
 
 const TestView = styled.View`
   display: flex;
@@ -40,9 +41,8 @@ const registerForPushNotificationsAsync = async () => {
   let token;
 
   if (Constants.isDevice) {
-    const {
-      status: existingStatus,
-    } = await Notifications.getPermissionsAsync();
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== "granted") {
       const { status } = await Notifications.requestPermissionsAsync();
@@ -62,6 +62,11 @@ const registerForPushNotificationsAsync = async () => {
 };
 
 const Test = () => {
+  // axios 테스트 관련
+  const [apiStatus, setApiStatus] = useState("");
+  const [apiData, setApiData] = useState("");
+
+  // 알림 관련
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
@@ -72,21 +77,23 @@ const Test = () => {
       setExpoPushToken(token);
     });
 
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      async (notificationListen) => {
-        Vibration.vibrate([1000, 1000], true);
-        setNotification(notificationListen);
-      }
-    );
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener(
+        async (notificationListen) => {
+          Vibration.vibrate([1000, 1000], true);
+          setNotification(notificationListen);
+        }
+      );
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      async (response) => {
-        Vibration.cancel();
-        await Notifications.cancelScheduledNotificationAsync(
-          response.notification.request.identifier
-        );
-      }
-    );
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener(
+        async (response) => {
+          Vibration.cancel();
+          await Notifications.cancelScheduledNotificationAsync(
+            response.notification.request.identifier
+          );
+        }
+      );
 
     return () => {
       Notifications.removeNotificationSubscription(
@@ -112,20 +119,55 @@ const Test = () => {
             {"본문 : "}
             {notification && notification.request.content.body}
           </Text>
+          <Button
+            title="알람 등록 테스트"
+            onPress={async () => {
+              await schedulePushNotification();
+            }}
+          />
+          <Button
+            title="모든 알람 취소 테스트"
+            onPress={async () => {
+              Vibration.cancel();
+              await Notifications.cancelAllScheduledNotificationsAsync();
+            }}
+          />
         </View>
-        <Button
-          title="알람 등록 테스트"
-          onPress={async () => {
-            await schedulePushNotification();
-          }}
-        />
-        <Button
-          title="모든 알람 취소 테스트"
-          onPress={async () => {
-            Vibration.cancel();
-            await Notifications.cancelAllScheduledNotificationsAsync();
-          }}
-        />
+        <View>
+          <View>
+            <Text>
+              {"status : "}
+              {apiStatus}
+            </Text>
+            <Text>
+              {"data : "}
+              {apiData}
+            </Text>
+          </View>
+          <Button
+            title="axios get 테스트"
+            onPress={async () => {
+              const { status, data } = await getTestProfile();
+              setApiStatus(status);
+              setApiData(JSON.stringify(data));
+            }}
+          />
+          <Button
+            title="axios post 테스트"
+            onPress={async () => {
+              const req = {
+                arriveTime: "2021-05-17 23:50",
+                endX: 126.94985844835392,
+                endY: 37.45684204004226,
+                startX: 126.97781016786638,
+                startY: 37.56647093913328,
+              };
+              const { status, data } = await postSampleCode(req);
+              setApiStatus(status);
+              setApiData(JSON.stringify(data));
+            }}
+          />
+        </View>
       </TestView>
     </SafeAreaView>
   );
