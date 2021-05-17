@@ -13,15 +13,15 @@ import lombok.NoArgsConstructor;
 @Data
 @Embeddable
 @NoArgsConstructor
-public class RouteId implements Serializable{
+public class RouteId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Column(name = "routeid")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int routeid;
-	
+
 	@Column(name = "uid")
 	private String uid;
-	
+
 }

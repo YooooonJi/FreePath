@@ -13,14 +13,14 @@ public class Location {
 
 	@EmbeddedId
 	private LocationId locationid;
-	
+
 	@Column(name = "address")
 	private String address;
-	
+
 	@Column(name = "latitude")
 	private double latitude;
-	
+
 	@Column(name = "longitude")
 	private double longitude;
-	
+
 }

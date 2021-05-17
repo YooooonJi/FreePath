@@ -7,7 +7,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,20 +27,20 @@ public class RouteController {
 
 	@Autowired
 	private RouteService routeService;
-	
+
 	@Autowired
 	private FinalRouteService finalRouteService;
-	
-	@ApiOperation(value="경로 찾기 api")
+
+	@ApiOperation(value = "경로 찾기 api")
 	@PostMapping("/find")
 	public Object findRoute(@Valid @RequestBody RouteFindRequest routeFindRequest) {
 		return routeService.findRoute(routeFindRequest);
 	}
-	
-	@ApiOperation(value="막차 경로 찾기 api")
+
+	@ApiOperation(value = "막차 경로 찾기 api")
 	@PostMapping("/findLast")
 	public ResponseEntity<Map<String, Object>> findLast(@Valid @RequestBody RouteFindRequest routeFindRequest) {
 		return finalRouteService.findLast(routeFindRequest);
 	}
-	
+
 }

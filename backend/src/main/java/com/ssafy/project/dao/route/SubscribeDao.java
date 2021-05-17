@@ -6,6 +6,6 @@ import com.ssafy.project.model.route.Subscribe;
 import com.ssafy.project.model.route.SubscribeId;
 
 @Repository
-public interface SubscribeDao extends JpaRepository<Subscribe, SubscribeId>{
+public interface SubscribeDao extends JpaRepository<Subscribe, SubscribeId> {
 
 }

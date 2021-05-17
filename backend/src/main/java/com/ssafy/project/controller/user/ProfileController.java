@@ -1,6 +1,6 @@
 package com.ssafy.project.controller.user;
 
-import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.project.model.user.Custom;
 import com.ssafy.project.model.user.Location;
 import com.ssafy.project.model.user.LocationRequest;
+import com.ssafy.project.model.user.Ggomjilak;
 import com.ssafy.project.service.user.ProfileService;
 
 import io.swagger.annotations.Api;
@@ -31,25 +32,19 @@ public class ProfileController {
 	private ProfileService profileService;
 
 	@ApiOperation(value = "사용자 회원가입시, 장소 즐겨찾기 및 추가 정보 등록")
-	@PostMapping("/join/{uid}")
-	public ResponseEntity<String> join(@PathVariable("uid") String uid) {
-		return profileService.join(uid);
+	@PostMapping("/join")
+	public ResponseEntity<String> join(@Valid @RequestBody Ggomjilak user) {
+		return profileService.join(user);
 	}
 
-	@ApiOperation(value = "사용자의 장소 즐겨찾기 정보 전달")
-	@GetMapping("/location/{uid}")
-	public ResponseEntity<List<Location>> getLocation(@PathVariable("uid") String uid) {
-		return profileService.getLocation(uid);
-	}
-
-	@ApiOperation(value = "사용자의 추가 정보 전달")
-	@GetMapping("/custom/{uid}")
-	public ResponseEntity<Custom> getCustom(@PathVariable("uid") String uid) {
-		return profileService.getCustom(uid);
+	@ApiOperation(value = "사용자의 전체 정보 전달")
+	@GetMapping("/total/{uid}")
+	public ResponseEntity<Map<String, Object>> getTotal(@PathVariable("uid") String uid) {
+		return profileService.getTotal(uid);
 	}
 
 	@ApiOperation(value = "사용자의 추가 정보 수정")
-	@PutMapping("/update/custom/")
+	@PutMapping("/update/custom")
 	public ResponseEntity<Custom> updateCustom(@Valid @RequestBody Custom customRequest) {
 		return profileService.updateCustom(customRequest);
 	}
@@ -59,7 +54,7 @@ public class ProfileController {
 	public ResponseEntity<Location> updateLocation(@Valid @RequestBody LocationRequest locationRequest) {
 		return profileService.updateLocation(locationRequest);
 	}
-	
+
 	@ApiOperation(value = "사용자의 정보 삭제")
 	@DeleteMapping("/delete/{uid}")
 	public ResponseEntity<String> delete(@PathVariable("uid") String uid) {

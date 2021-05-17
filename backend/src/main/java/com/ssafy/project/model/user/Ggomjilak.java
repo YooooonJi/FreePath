@@ -8,22 +8,17 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "custom")
-public class Custom {
+@Table(name = "ggomjilak")
+public class Ggomjilak {
 
 	@Id
 	@Column(name = "uid")
 	private String uid;
 
-	@Column(name = "speed")
-	private int speed;
+	@Column(name = "email")
+	private String email;
 
-	@Column(name = "favorites")
-	private int favorites;
+	@Column(name = "nickname")
+	private String nickname;
 
-	@Column(name = "priority")
-	private int priority;
-
-	@Column(name = "sparetime")
-	private int sparetime;
 }

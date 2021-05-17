@@ -13,15 +13,15 @@ import lombok.NoArgsConstructor;
 @Data
 @Embeddable
 @NoArgsConstructor
-public class SubscribeId implements Serializable{
-	
+public class SubscribeId implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Column(name = "subscribeid")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int subscribeid;
-	
+
 	@Column(name = "uid")
 	private String uid;
-	
+
 }
