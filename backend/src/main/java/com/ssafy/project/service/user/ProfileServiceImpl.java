@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.ssafy.project.dao.user.CustomDao;
 import com.ssafy.project.dao.user.LocationDao;
 import com.ssafy.project.model.user.Custom;
-import com.ssafy.project.model.user.CustomRequest;
 import com.ssafy.project.model.user.Location;
 import com.ssafy.project.model.user.LocationId;
 import com.ssafy.project.model.user.LocationRequest;
@@ -107,7 +106,7 @@ public class ProfileServiceImpl implements ProfileService {
 	}
 
 	@Override
-	public ResponseEntity<Custom> updateCustom(CustomRequest customRequest) {
+	public ResponseEntity<Custom> updateCustom(Custom customRequest) {
 
 		HttpStatus status = null;
 		Optional<Custom> customOpt = customDao.findOptionalByUid(customRequest.getUid());
