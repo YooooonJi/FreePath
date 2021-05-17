@@ -3,7 +3,7 @@ package com.ssafy.project.model.route;
 import lombok.Data;
 
 @Data
-public class RouteFindRequest {
+public class RouteFindWithoutRequest {
 
 	// 출발지 x,y
 	private float startX;
@@ -18,7 +18,6 @@ public class RouteFindRequest {
 
 	private String endAddress;
 
-	private String uid;
-
 	private String alarmName;
+
 }
