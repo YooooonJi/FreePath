@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.ssafy.project.dao.group.GroupAlarmDao;
 import com.ssafy.project.model.group.GroupAlarm;
 import com.ssafy.project.model.group.GroupAlarmId;
-import com.ssafy.project.model.group.GroupAlarmRequest;
+import com.ssafy.project.model.group.GroupRequest;
 
 @Service
 public class GroupAlarmServiceImpl implements GroupAlarmService {
@@ -21,7 +21,7 @@ public class GroupAlarmServiceImpl implements GroupAlarmService {
 	public static final Logger logger = LoggerFactory.getLogger(GroupAlarmServiceImpl.class);
 
 	@Override
-	public ResponseEntity<Integer> makeGroup(GroupAlarmRequest groupRequest) {
+	public ResponseEntity<Integer> makeGroup(GroupRequest groupRequest) {
 
 		HttpStatus status = null;
 		int tempGroupId = (int) groupAlarmDao.countAllGroupByGroupId() + 1;
