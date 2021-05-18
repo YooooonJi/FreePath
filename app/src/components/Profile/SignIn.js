@@ -20,7 +20,7 @@ const SignInUpper = styled.View`
   position: absolute;
   width: 90%;
   height: ${(props) => props.scrHeight * 0.5}px;
-  margin-top: 25%;
+  margin-top: ${(props) => (props.isFocus ? "10%" : "25%")};
   border-radius: 10px;
   background-color: white;
   elevation: 5;
@@ -46,9 +46,8 @@ const SloganBox = styled.View`
 const SloganText = styled.Text`
   color: black;
   font-size: 28px;
-  line-height: 31px;
-  font-family: "5";
   margin-top: 10px;
+  font-weight: bold;
 `;
 
 const SignInInputWrapper = styled.View`
@@ -64,15 +63,11 @@ const SignInInputBox = styled.View`
 
 const SignInInputTag = styled.Text`
   font-size: 12px;
-  line-height: 14px;
-  font-family: "5";
   color: #5b79e1;
   margin-bottom: 5px;
   margin-left: 5px;
+  font-weight: bold;
 `;
-
-// 기본 폰트로 바꾸는거 생각해보기
-// line-height로 더 이상 디자인 커버 힘듬
 
 const SignInInputInner = styled.View`
   display: flex;
@@ -80,14 +75,12 @@ const SignInInputInner = styled.View`
   border-radius: 10px;
   background-color: #f9f1f7;
   elevation: 5;
-  height: 40px;
   padding-left: 10px;
 `;
 
 const SignInInputText = styled.TextInput`
   font-size: 12px;
-  line-height: 14px;
-  font-family: "5";
+  height: 40px;
 `;
 
 const SignInUnder = styled.View`
@@ -116,8 +109,8 @@ const SignInButtonText = styled.Text`
   text-align: center;
   color: white;
   font-size: 18px;
-  font-family: "5";
   margin-left: 40px;
+  font-weight: bold;
 `;
 
 const IconArrowForward = styled(Icon)`
@@ -137,24 +130,19 @@ const SignUpButton = styled.TouchableOpacity`
 const SignUpTagText = styled.Text`
   color: #c29797;
   font-size: 12px;
-  line-height: 14px;
-  font-family: "4";
   margin-bottom: 5px;
 `;
 
 const SignUpButtonText = styled.Text`
   color: #c84848;
   font-size: 18px;
-  line-height: 20px;
-  font-family: "5";
+  font-weight: bold;
 `;
 
 const SignInBottomText = styled.Text`
   width: 100%;
   text-align: center;
   font-size: 12px;
-  line-height: 14px;
-  font-family: "4";
   margin-bottom: 25px;
   color: white;
   text-decoration: underline;
@@ -163,8 +151,9 @@ const SignInBottomText = styled.Text`
 const SignIn = ({ setIsLoggedIn, setPopSignIn, setPopSignUp }) => {
   const screenHeight = Dimensions.get("window").height;
 
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isFocus, setIsFocus] = useState(false);
 
   const onPressExit = () => {
     setPopSignIn(false);
@@ -200,7 +189,7 @@ const SignIn = ({ setIsLoggedIn, setPopSignIn, setPopSignUp }) => {
       <IconExitButton onPress={onPressExit}>
         <IconExit name="close" size={40} />
       </IconExitButton>
-      <SignInUpper scrHeight={screenHeight}>
+      <SignInUpper isFocus={isFocus} scrHeight={screenHeight}>
         <SloganBox>
           <SloganText>어쩌구 저쩌구</SloganText>
           <SloganText>프리패스</SloganText>
@@ -215,6 +204,8 @@ const SignIn = ({ setIsLoggedIn, setPopSignIn, setPopSignUp }) => {
                 value={email}
                 textContentType="emailAddress"
                 keyboardType="email-address"
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
               />
             </SignInInputInner>
           </SignInInputBox>
@@ -227,6 +218,8 @@ const SignIn = ({ setIsLoggedIn, setPopSignIn, setPopSignUp }) => {
                 value={password}
                 textContentType="password"
                 secureTextEntry
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
               />
             </SignInInputInner>
           </SignInInputBox>

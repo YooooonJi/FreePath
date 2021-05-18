@@ -4,7 +4,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import { Button, Text, Vibration, View } from "react-native";
-import { getTestProfile, postSampleCode } from "../api/UserApi";
 
 const TestView = styled.View`
   display: flex;
@@ -144,29 +143,8 @@ const Test = () => {
               {apiData}
             </Text>
           </View>
-          <Button
-            title="axios get 테스트"
-            onPress={async () => {
-              const { status, data } = await getTestProfile();
-              setApiStatus(status);
-              setApiData(JSON.stringify(data));
-            }}
-          />
-          <Button
-            title="axios post 테스트"
-            onPress={async () => {
-              const req = {
-                arriveTime: "2021-05-17 23:50",
-                endX: 126.94985844835392,
-                endY: 37.45684204004226,
-                startX: 126.97781016786638,
-                startY: 37.56647093913328,
-              };
-              const { status, data } = await postSampleCode(req);
-              setApiStatus(status);
-              setApiData(JSON.stringify(data));
-            }}
-          />
+          <Button title="빈 테스트 1" onPress={() => {}} />
+          <Button title="빈 테스트 2" onPress={() => {}} />
         </View>
       </TestView>
     </SafeAreaView>

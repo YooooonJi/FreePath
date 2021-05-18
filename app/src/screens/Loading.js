@@ -18,6 +18,7 @@ const LoadingText = styled.Text`
 
 const Loading = ({ setIsLoggedIn, setIsLoaded }) => {
   useEffect(() => {
+    console.log("시작");
     const AutoLogin = async () => {
       const value = await AsyncStorage.getItem("credential");
       if (value === null) {
@@ -43,7 +44,7 @@ const Loading = ({ setIsLoggedIn, setIsLoaded }) => {
             setIsLoggedIn(true);
             // 현재 setTimeout으로 3초 로딩 대기 걸어둠
             // DB 데이터 state에 넣고 로드 완료 시 페이지 넘어가게 변경 예정
-            console.log(firebase.auth().currentUser);
+            // console.log(firebase.auth().currentUser);
             setTimeout(() => {
               setIsLoaded(true);
             }, 3000);
