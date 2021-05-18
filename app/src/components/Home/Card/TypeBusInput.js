@@ -35,29 +35,16 @@ const TypeBusInput = () => {
   const [busStop, setBusStop] = useState("");
   const [busNo, setBusNo] = useState("");
 
-  const objectToArray = (object) => {
-    let array;
-
-    if (Object.prototype.toString.call(object) === "[object Object]") {
-      array = [];
-      array.push(object);
-    } else {
-      array = object;
-    }
-
-    return array;
-  };
-
   const selectBusNo = async (arsId) => {
     const { status, data } = await getRouteByStationList(arsId);
 
     if (status === 200) {
-      const busNoList = objectToArray(data);
+      const busNoList = data.ServiceResult.msgBody[0].itemList;
 
       console.log(`*** selectBusNo (${status}) : 버스 ${busNoList.length} ***`);
       console.log(busNoList);
 
-      setBusNo(busNoList[0].busRouteNm._text);
+      setBusNo(busNoList[0].busRouteNm[0]);
     }
   };
 
@@ -67,15 +54,15 @@ const TypeBusInput = () => {
     const { status, data } = await getStationByNameList(busStop);
 
     if (status === 200) {
-      const busStopList = objectToArray(data);
+      const busStopList = data.ServiceResult.msgBody[0].itemList;
 
       console.log(
         `*** searchBusStop (${status}) : 버스 정류장 ${busStopList.length} ***`
       );
       console.log(busStopList);
 
-      setBusStop(busStopList[0].stNm._text);
-      selectBusNo(busStopList[0].arsId._text);
+      setBusStop(busStopList[0].stNm[0]);
+      selectBusNo(busStopList[0].arsId[0]);
     }
   };
 

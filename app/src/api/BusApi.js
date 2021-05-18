@@ -1,5 +1,6 @@
 import axios from "axios";
 import Constants from "expo-constants";
+import { parseString } from "react-native-xml2js";
 
 const restApiKey = `?ServiceKey=${Constants.manifest.extra.dataGoKrApiKey}`;
 
@@ -14,7 +15,9 @@ export const getStationByNameList = async (busStop) => {
     .get(url + restApiKey + getQuery)
     .then((res) => {
       status = res.status;
-      data = res.data;
+      parseString(res.data, (e, result) => {
+        data = result;
+      });
     })
     .catch((e) => {
       status = e.response.status;
@@ -35,7 +38,9 @@ export const getRouteByStationList = async (arsId) => {
     .get(url + restApiKey + getQuery)
     .then((res) => {
       status = res.status;
-      data = res.data;
+      parseString(res.data, (e, result) => {
+        data = result;
+      });
     })
     .catch((e) => {
       status = e.response.status;
