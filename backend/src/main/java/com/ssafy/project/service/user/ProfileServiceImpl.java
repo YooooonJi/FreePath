@@ -180,6 +180,7 @@ public class ProfileServiceImpl implements ProfileService {
 
 		Custom custom = customDao.findCustomByUid(uid);
 		List<Location> locationList = locationDao.findAllLocationsByLocationidUid(uid);
+		Ggomjilak ggomjilak = ggomjilakDao.findGgomjilakByUid(uid);
 
 		try {
 			if (custom != null) {
@@ -191,6 +192,10 @@ public class ProfileServiceImpl implements ProfileService {
 				for (Location location : locationList) {
 					locationDao.delete(location);
 				}
+			}
+
+			if (ggomjilak != null) {
+				ggomjilakDao.delete(ggomjilak);
 			}
 
 			status = HttpStatus.OK;

@@ -2,8 +2,10 @@ package com.ssafy.project.model.route;
 
 import java.sql.Timestamp;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -12,8 +14,13 @@ import lombok.Data;
 @Table(name = "subscribe")
 public class Subscribe {
 
-	@EmbeddedId
-	private SubscribeId subscribeId;
+	@Column(name = "subscribeid")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	private int subscribeid;
+
+	@Column(name = "uid")
+	private String uid;
 
 	@Column(name = "totaltime")
 	private int totaltime;

@@ -2,8 +2,10 @@ package com.ssafy.project.model.route;
 
 import java.sql.Timestamp;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -12,8 +14,13 @@ import lombok.Data;
 @Table(name = "route")
 public class Route {
 
-	@EmbeddedId
-	private RouteId routeId;
+	@Column(name = "routeid")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	private int routeid;
+
+	@Column(name = "uid")
+	private String uid;
 
 	@Column(name = "totaltime")
 	private int totaltime;
@@ -24,7 +31,7 @@ public class Route {
 	@Column(name = "startlatitude")
 	private double startlatitude;
 
-	@Column(name = "longitude")
+	@Column(name = "startlongitude")
 	private double startlongitude;
 
 	@Column(name = "endaddress")
@@ -42,12 +49,12 @@ public class Route {
 	@Column(name = "alarmname")
 	private String alarmname;
 
-	@Column(name = "startname")
-	private String startname;
-
-	@Column(name = "endname")
-	private String endname;
-
 	@Column(name = "routeinfo")
 	private String routeinfo;
+
+	@Column(name = "groupinfo")
+	private int groupinfo;
+
+	@Column(name = "arrivetime")
+	private String arrivetime;
 }
