@@ -2,7 +2,10 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import ModalSelector from "react-native-modal-selector";
-import { searchInfoBySubwayNameService } from "../../../api/SubwayApi";
+import {
+  searchInfoBySubwayNameService,
+  SearchSTNBySubwayLineInfo,
+} from "../../../api/SubwayApi";
 
 const TypeSubwayContainer = styled.View``;
 
@@ -23,19 +26,55 @@ const InputContainer = styled.View`
 const InputBox = styled.TextInput`
   width: 90%;
   height: 30px;
+  color: ${(props) => (props.editable ? "black" : "black")};
 `;
 
 const InputIconBox = styled.TouchableOpacity`
   z-index: 1;
 `;
 
+let subwayStationList;
+let nextSubwayStation;
+
 const TypeSubwayInput = () => {
   const [subwayStation, setSubwayStation] = useState("");
   const [subwayLine, setSubwayLine] = useState("");
+  const [subwayUpdown, setSubwayUpdown] = useState(0);
   const [popModal, setPopModal] = useState(false);
   const [modalData, setModalData] = useState([]);
   const subwayStationInput = useRef();
-  let subwayStationList;
+
+  const findNextSubwayStation = async (index, key) => {
+    const { status, data } = await SearchSTNBySubwayLineInfo(
+      subwayStationList[index].LINE_NUM
+    );
+
+    if (status === 200) {
+      const subwayLineList = data.SearchSTNBySubwayLineInfo.row;
+
+      subwayLineList.sort((a, b) => {
+        if (a.FR_CODE > b.FR_CODE) {
+          return 1;
+        }
+        if (a.FR_CODE < b.FR_CODE) {
+          return -1;
+        }
+        return 0;
+      });
+
+      const order = subwayLineList.findIndex(
+        (station) => station.FR_CODE === subwayStationList[index].FR_CODE
+      );
+
+      if (key % 2 === 0 && order > 0) {
+        nextSubwayStation = `(${subwayLineList[order - 1].STATION_NM} 방향)`;
+      } else if (key % 2 === 1 && order + 1 < subwayLineList.length) {
+        nextSubwayStation = `(${subwayLineList[order + 1].STATION_NM} 방향)`;
+      } else {
+        nextSubwayStation = "";
+      }
+    }
+  };
 
   const searchSubwayStation = async () => {
     const { status, data } = await searchInfoBySubwayNameService(subwayStation);
@@ -43,17 +82,17 @@ const TypeSubwayInput = () => {
     if (status === 200 && typeof data.RESULT === "undefined") {
       subwayStationList = data.SearchInfoBySubwayNameService.row;
 
-      const temp = [{ key: 0, section: true, label: "지하철 구독" }];
+      const temp = [{ key: -1, section: true, label: "지하철 구독" }];
 
-      for (let index = 0; index < subwayStationList.length; index += 1) {
-        for (let way = 1; way <= 2; way += 1) {
-          temp.push({
-            key: way === 1 ? 2 * index + 1 : 2 * (index + 1),
-            label: `${subwayStationList[index].STATION_NM} ${
-              subwayStationList[index].LINE_NUM
-            } ${way === 1 ? "상행" : "하행"}`,
-          });
-        }
+      for (let key = 0; key < 2 * subwayStationList.length; key += 1) {
+        const index = parseInt(key / 2, Number);
+
+        temp.push({
+          key,
+          label: `${subwayStationList[index].STATION_NM} ${
+            subwayStationList[index].LINE_NUM
+          } ${key % 2 === 0 ? "상행" : "하행"}`,
+        });
       }
 
       subwayStationInput.current.blur();
@@ -64,12 +103,18 @@ const TypeSubwayInput = () => {
     }
   };
 
-  const selectSubwayInfo = (key) => {
-    console.log(`select : ${key}`);
+  const selectSubwayInfo = async (key) => {
+    const index = parseInt(key / 2, Number);
 
-    // console.log(subwayStationList);
-    // setSubwayStation(subwayStationList[key - 1].STATION_NM);
-    // setSubwayLine(subwayStationList[key - 1].LINE_NUM);
+    await findNextSubwayStation(index, key);
+
+    setSubwayStation(subwayStationList[index].STATION_NM);
+    setSubwayLine(
+      `${subwayStationList[index].LINE_NUM} ${
+        key % 2 === 0 ? "상행" : "하행"
+      } ${nextSubwayStation}`
+    );
+    setSubwayUpdown((key % 2) + 1);
   };
 
   return (
@@ -98,9 +143,12 @@ const TypeSubwayInput = () => {
       )}
       <InputContainer>
         <InputBox
-          placeholder="역 이름을 입력해주세요."
+          placeholder="지하철역을 입력해주세요."
           onChangeText={setSubwayStation}
-          onFocus={() => setSubwayStation("")}
+          onFocus={() => {
+            setSubwayStation("");
+            setSubwayLine("");
+          }}
           value={subwayStation}
           ref={subwayStationInput}
         />
@@ -112,7 +160,7 @@ const TypeSubwayInput = () => {
       </InputContainer>
       <InputContainer>
         <InputBox
-          placeholder="역 이름을 입력하고 라인을 선택해주세요."
+          placeholder="호선을 선택해주세요."
           value={subwayLine}
           editable={false}
         />
