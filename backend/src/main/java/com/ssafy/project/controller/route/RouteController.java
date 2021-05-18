@@ -66,7 +66,7 @@ public class RouteController {
 		return finalRouteService.infoGroup(uid);
 	}
 
-	@ApiOperation(value = "그룹 정보를 포함하지 않는 경로 정보 가져오기")
+	@ApiOperation(value = "경로 정보 삭제하기")
 	@DeleteMapping("/delete/{routeId}")
 	public ResponseEntity<String> delete(@PathVariable("routeId") int routeId) {
 		return finalRouteService.delete(routeId);
