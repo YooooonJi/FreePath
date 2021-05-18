@@ -19,7 +19,5 @@ public class RouteFindRequest {
 
 	private String endAddress;
 
-	private String uid;
-
 	private String alarmName;
 }
