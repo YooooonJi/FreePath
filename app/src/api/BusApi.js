@@ -1,8 +1,6 @@
 import axios from "axios";
 import Constants from "expo-constants";
 
-const convert = require("xml-js");
-
 const restApiKey = `?ServiceKey=${Constants.manifest.extra.dataGoKrApiKey}`;
 
 export const getStationByNameList = async (busStop) => {
@@ -16,12 +14,7 @@ export const getStationByNameList = async (busStop) => {
     .get(url + restApiKey + getQuery)
     .then((res) => {
       status = res.status;
-      data = JSON.parse(
-        convert.xml2json(res.data, {
-          compact: true,
-          spaces: 4,
-        })
-      ).ServiceResult.msgBody.itemList;
+      data = res.data;
     })
     .catch((e) => {
       status = e.response.status;
@@ -42,12 +35,7 @@ export const getRouteByStationList = async (arsId) => {
     .get(url + restApiKey + getQuery)
     .then((res) => {
       status = res.status;
-      data = JSON.parse(
-        convert.xml2json(res.data, {
-          compact: true,
-          spaces: 4,
-        })
-      ).ServiceResult.msgBody.itemList;
+      data = res.data;
     })
     .catch((e) => {
       status = e.response.status;
