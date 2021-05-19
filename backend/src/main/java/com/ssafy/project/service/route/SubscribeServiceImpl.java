@@ -3,8 +3,12 @@ package com.ssafy.project.service.route;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,9 +16,12 @@ import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.ssafy.project.dao.route.SubscribeDao;
 import com.ssafy.project.model.api.ApiProperties;
+import com.ssafy.project.model.route.SubscribeRequest;
 
 @Service
 public class SubscribeServiceImpl implements SubscribeService {
@@ -28,6 +35,130 @@ public class SubscribeServiceImpl implements SubscribeService {
 	public static final Logger logger = LoggerFactory.getLogger(SubscribeServiceImpl.class);
 	static int startBusStationIdx = 0;
 
+	@Override
+	public ResponseEntity<Map<String, Object>> findRoute(SubscribeRequest subscribeRequest) {
+
+		HttpStatus status = null;
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		final String busUrl = "https://api.odsay.com/v1/api/searchStation?lang=0&stationName=" +subscribeRequest.getStationname() +"&apiKey=" + apiProperties.getKey();
+	
+		try {
+			
+			String startTime = new String();
+			
+			// 현재시간
+			Calendar today = Calendar.getInstance();
+			String start[]=subscribeRequest.getStartTime().split(" ");
+			
+			//현재위치에서 정류장까지 도보시간(일단 임의로 넣음)
+			int walkTime=10;
+			
+			//버스 정류장 구독
+			if(subscribeRequest.getType()==1) {
+				
+				URL url = new URL(busUrl);
+
+				HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+				urlConnection.setRequestMethod("GET");
+
+				//System.out.println(urlConnection.getInputStream());
+				
+				BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+
+				JSONParser parser = new JSONParser();
+				JSONObject obj = (JSONObject) parser.parse(br);
+				JSONObject response = (JSONObject) obj.get("result");
+				JSONArray station = (JSONArray) response.get("station");
+
+				// 세부 경로들 계산
+				for (int i = 0; i < station.size() - 1; i++) {
+					JSONObject infos = (JSONObject) station.get(i);
+
+					int arsID = Integer.parseInt(String.valueOf(infos.get("arsID")));
+					
+					System.out.println(arsID);
+					//정류장 중 사용자가 선택한 정류장이라면
+					if(subscribeRequest.getStationid()==arsID) {
+						int stationID = Integer.parseInt(String.valueOf(infos.get("stationID")));
+						int busID=searchBusId(subscribeRequest.getBusno());
+						
+						startTime = CalculateTime(RealTimeBus(busID, stationID,start[1]), walkTime, 2);
+						
+						break;
+					}
+				}
+				
+				urlConnection.disconnect();
+			}
+			//지하철 역 구독
+			else if(subscribeRequest.getType()==2) {
+				String realStartTime = CalculateTime(TimeTableSubway(subscribeRequest.getStationid(),subscribeRequest.getUpdown() , start[1]), walkTime, 2);
+			}
+			
+			/* 결과 출발 시간 만들기 */
+			StringBuilder sb = new StringBuilder();
+			//String[] arriveTime = routeFindRequest.getArriveTime().split(" ");
+
+			sb.append(start[0] + " "); // 년-월-날
+			sb.append(startTime);// 시간
+
+			Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(sb.toString());
+			Calendar lastDate = Calendar.getInstance();
+			lastDate.setTime(date);
+
+			long remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
+
+			resultMap.put("arrivetime", sb.toString());
+			resultMap.put("totaltime", remainSecond);
+
+			
+			status = HttpStatus.OK;
+		} catch (Exception e) {
+			logger.error("버스/지하철 구독 실시간 계산 실패 : {}", e);
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
+	
+	@Override
+	public int searchBusId(int busNo) {
+		
+		final String openUrl = "https://api.odsay.com/v1/api/searchBusLane?lang=0&busNo=" + busNo +"&apiKey=" + apiProperties.getKey();
+		int busID=0;
+		
+		try {
+
+			URL url = new URL(openUrl);
+			HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+			urlConnection.setRequestMethod("GET");
+
+			BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+
+			JSONParser parser = new JSONParser();
+			JSONObject obj = (JSONObject) parser.parse(br);
+			JSONObject response = (JSONObject) obj.get("result");
+			JSONObject totalCityList = (JSONObject) response.get("totalCityList");
+			JSONArray lane = (JSONArray) totalCityList.get("lane");
+
+			for (int i = 0; i <lane.size(); i++) {
+				JSONObject smallLane = (JSONObject) lane.get(i);
+				
+				String busCityName =String.valueOf(smallLane.get("busCityName"));
+				
+				if(busCityName.equals("서울")) {
+					busID=Integer.parseInt(String.valueOf(smallLane.get("busID")));
+					break;
+				}
+			}
+			urlConnection.disconnect();
+
+		} catch (Exception e) {
+			logger.error("지하철 실시간 계산 실패 : {}", e);
+		}
+		return busID;	
+	}
+	
 	@Override
 	public String TimeTableSubway(int stationID, int wayCode, String startTime) {
 
