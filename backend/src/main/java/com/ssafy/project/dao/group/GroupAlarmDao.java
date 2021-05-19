@@ -1,5 +1,6 @@
 package com.ssafy.project.dao.group;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +17,6 @@ public interface GroupAlarmDao extends JpaRepository<GroupAlarm, GroupAlarmId> {
 	GroupAlarm findGroupAlarmByGroupalarmidUid(String uid);
 	
 	Optional<GroupAlarm> findOptionalByGroupalarmid(GroupAlarmId groupAlarmId);
+	
+	List<GroupAlarm> findAllByGroupalarmidGroupid(int groupId);
 }

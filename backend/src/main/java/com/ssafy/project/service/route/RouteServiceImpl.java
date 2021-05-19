@@ -47,13 +47,13 @@ public class RouteServiceImpl implements RouteService {
 
 	@Autowired
 	private CustomDao customDao;
-	
+
 	@Autowired
 	private RouteDao routeDao;
-	
+
 	@Autowired
 	private GroupAlarmDao groupAlarmDao;
-	
+
 	@Autowired
 	private LocationDao locationDao;
 
@@ -127,11 +127,11 @@ public class RouteServiceImpl implements RouteService {
 						if (trafficType == 1) {
 							int stationID = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
 							int wayCode = Integer.parseInt(String.valueOf(smallSubPath.get("wayCode")));
-							
+
 							String tmpTime = CalculateTime(startTime, walkTime, 1);
 							String realStartTime = CalculateTime(TimeTableSubway(stationID, wayCode, tmpTime), walkTime, 2);
 							startTime = realStartTime;
-							
+
 							break loop;
 						}
 
@@ -140,13 +140,13 @@ public class RouteServiceImpl implements RouteService {
 							int startBusStationId = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
 							JSONArray lane = (JSONArray) smallSubPath.get("lane");
 							JSONObject smallLane = (JSONObject) lane.get(0);
-							
+
 							int busID = Integer.parseInt(String.valueOf(smallLane.get("busID")));
-							
+
 							String tmpTime = CalculateTime(startTime, walkTime, 1);
 							String realStartTime = CalculateTime(RealTimeBus(busID, startBusStationId, tmpTime), walkTime, 2);
 							startTime = realStartTime;
-							
+
 							break loop;
 						}
 
@@ -186,7 +186,7 @@ public class RouteServiceImpl implements RouteService {
 		}
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
-	
+
 	@Override
 	public ResponseEntity<Route> findRouteWithUser(RouteFindRequest routeFindRequest) {
 		HttpStatus status = null;
@@ -195,8 +195,10 @@ public class RouteServiceImpl implements RouteService {
 		final String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=" + routeFindRequest.getStartX() + "&SY=" + routeFindRequest.getStartY() + "&EX="
 				+ routeFindRequest.getEndX() + "&EY=" + routeFindRequest.getEndY() + "&apiKey=" + apiProperties.getKey();
 
+		Custom custom = customDao.findCustomByUid(routeFindRequest.getUid());
+
 		try {
-			
+
 			Route route = new Route();
 
 			route.setUid(routeFindRequest.getUid());
@@ -267,19 +269,16 @@ public class RouteServiceImpl implements RouteService {
 
 						// 지하철 운행시간 검색
 						if (trafficType == 1) {
-							// System.out.println("지하철 실시간 검색");
 							int stationID = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
 							int wayCode = Integer.parseInt(String.valueOf(smallSubPath.get("wayCode")));
 							String tmpTime = CalculateTime(startTime, walkTime, 1);
 							String realStartTime = CalculateTime(TimeTableSubway(stationID, wayCode, tmpTime), walkTime, 2);
 							startTime = realStartTime;
-							// System.out.println("지하철 실시간 시간:" + realStartTime);
 							break loop;
 						}
 
 						// 버스 실시간 검색
 						else if (trafficType == 2) {
-							// System.out.println("버스 실시간 검색");
 							int startBusStationId = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
 							JSONArray lane = (JSONArray) smallSubPath.get("lane");
 							JSONObject smallLane = (JSONObject) lane.get(0);
@@ -293,6 +292,18 @@ public class RouteServiceImpl implements RouteService {
 						// 도보일경우 다음 대중교통 체크
 						else if (trafficType == 3) {
 							int sectionTime = Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime")));
+
+							if (sectionTime >= 2) {
+								switch (custom.getSpeed()) {
+									case 2: // 느림
+										sectionTime += sectionTime / 2;
+										break;
+									case 6: // 빠름
+										sectionTime -= sectionTime / 2;
+										break;
+								}
+							}
+
 							walkTime += sectionTime;
 							continue;
 						}
@@ -300,6 +311,8 @@ public class RouteServiceImpl implements RouteService {
 					}
 				}
 			}
+
+			startTime = CalculateTime(startTime, custom.getSparetime(), 2);
 
 			/* 결과 출발 시간 만들기 */
 			StringBuilder sb = new StringBuilder();
@@ -317,7 +330,7 @@ public class RouteServiceImpl implements RouteService {
 			route.setArrivetime(sb.toString());
 			route.setRouteinfo(resultObject.toString());
 			route.setTotaltime((int) remainSecond);
-			
+
 			resultRoute = routeDao.save(route);
 
 			urlConnection.disconnect();
@@ -417,8 +430,8 @@ public class RouteServiceImpl implements RouteService {
 		for (int i = 0; i < jsonValues.size(); i++) {
 			sortedJsonArray.add(jsonValues.get(i));
 		}
-		
-		if(favorite == 0 && priority == 0) {
+
+		if (favorite == 0 && priority == 0) {
 			sortedJsonArray = path;
 		}
 
@@ -641,7 +654,7 @@ public class RouteServiceImpl implements RouteService {
 
 		try {
 			GroupAlarm groupAlarm = groupAlarmDao.findGroupAlarmByGroupalarmidUid(userList.get(0));
-			
+
 			for (String user : userList) {
 				LocationId locationId = new LocationId(1, user); // 무조건 집에서 출발한다고 가정
 				Location userLocation = locationDao.findLocationByLocationid(locationId);
@@ -770,12 +783,12 @@ public class RouteServiceImpl implements RouteService {
 				route.setArrivetime(sb.toString());
 				route.setRouteinfo(resultObject.toString());
 				route.setTotaltime((int) remainSecond);
-				
+
 				routeDao.save(route);
-				
+
 				GroupAlarmId groupAlarmId = new GroupAlarmId(groupAlarm.getGroupalarmid().getGroupid(), user);
 				Optional<GroupAlarm> groupAlarmOpt = groupAlarmDao.findOptionalByGroupalarmid(groupAlarmId);
-				
+
 				groupAlarmOpt.ifPresent(selectGroupAlarm -> {
 					selectGroupAlarm.setGalarmcnt(selectGroupAlarm.getGalarmcnt() + 1);
 					groupAlarmDao.save(selectGroupAlarm);
@@ -790,5 +803,5 @@ public class RouteServiceImpl implements RouteService {
 
 		return new ResponseEntity<String>(result, status);
 	}
-	
+
 }

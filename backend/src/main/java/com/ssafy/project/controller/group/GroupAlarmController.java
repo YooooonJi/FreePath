@@ -1,5 +1,6 @@
 package com.ssafy.project.controller.group;
 
+import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.project.model.group.GroupAlarm;
 import com.ssafy.project.model.group.GroupAlarmRegisterRequest;
 import com.ssafy.project.model.group.GroupRequest;
+import com.ssafy.project.model.user.Ggomjilak;
 import com.ssafy.project.service.group.GroupAlarmService;
 import com.ssafy.project.service.route.FinalRouteService;
 import com.ssafy.project.service.route.RouteService;
@@ -44,6 +46,12 @@ public class GroupAlarmController {
 	@GetMapping("/take/{uid}")
 	public ResponseEntity<GroupAlarm> takeGroup(@PathVariable("uid") String uid) {
 		return groupAlarmService.takeGroup(uid);
+	}
+	
+	@ApiOperation(value = "그룹원 정보 전달")
+	@GetMapping("/member/{uid}")
+	public ResponseEntity<List<Ggomjilak>> getMember(@PathVariable("uid") String uid) {
+		return groupAlarmService.getMember(uid);
 	}
 	
 	@ApiOperation(value = "경로를 위한 그룹 알람 등록")
