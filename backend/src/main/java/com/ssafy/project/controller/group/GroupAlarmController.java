@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.project.model.group.GroupAlarm;
-import com.ssafy.project.model.group.GroupAlarmRequest;
+import com.ssafy.project.model.group.GroupAlarmRegisterRequest;
+import com.ssafy.project.model.group.GroupRequest;
 import com.ssafy.project.service.group.GroupAlarmService;
+import com.ssafy.project.service.route.FinalRouteService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -24,10 +26,13 @@ public class GroupAlarmController {
 
 	@Autowired
 	private GroupAlarmService groupAlarmService;
+	
+	@Autowired
+	private FinalRouteService finalRouteService;
 
 	@ApiOperation(value = "그룹 생성시 그룹 정보 등록")
 	@PostMapping("/make")
-	public ResponseEntity<Integer> makeGroup(@Valid @RequestBody GroupAlarmRequest groupRequest) {
+	public ResponseEntity<Integer> makeGroup(@Valid @RequestBody GroupRequest groupRequest) {
 		return groupAlarmService.makeGroup(groupRequest);
 	}
 
@@ -37,5 +42,10 @@ public class GroupAlarmController {
 		return groupAlarmService.takeGroup(uid);
 	}
 	
+	@ApiOperation(value = "막차를 위한 그룹 알람 등록")
+	@PostMapping("/register/last")
+	public ResponseEntity<String> registerLast(@Valid @RequestBody GroupAlarmRegisterRequest groupAlarmRegisterRequest) {
+		return finalRouteService.registerLast(groupAlarmRegisterRequest);
+	}
 	
 }

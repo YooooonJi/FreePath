@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class GroupAlarmRequest {
+public class GroupRequest {
 
 	private List<String> uids;
 
