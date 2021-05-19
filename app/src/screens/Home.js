@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView } from "react-native";
+import { ScrollView, Dimensions } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import firebase from "firebase";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Carousel from "../assets/images/carousel_0.jpg";
 import Card from "../components/Home/Card";
 import MenuButton from "../components/Common/MenuButton";
+import { getAllRoute } from "../api/RouteApi";
 
 const HomeContainer = styled.View`
   display: flex;
@@ -56,8 +60,9 @@ const CarouselText = styled.Text`
 const BoardContainer = styled.View`
   display: flex;
   width: 100%;
-  height: 1000px;
-  background-color: ${(props) => (!props.setup ? props.theme.board.bg : "rgba(0, 0, 0, 0.5)")};
+  min-height: ${(props) => props.boardHeight}px;
+  background-color: ${(props) =>
+    !props.setup ? props.theme.board.bg : "rgba(0, 0, 0, 0.5)"};
   padding-left: 10px;
   padding-right: 10px;
 `;
@@ -91,6 +96,7 @@ const BoardLabelSetupText = styled.Text`
 
 const CardContainer = styled.View`
   margin-top: 15px;
+  margin-bottom: 15px;
   width: 100%;
   height: 80px;
   border-radius: 10px;
@@ -105,8 +111,77 @@ const IconAddCircle = styled(Icon)`
   color: ${(props) => props.theme.card.add};
 `;
 
-const Home = ({ setPopMenu, setPopCardAdd }) => {
+const GuideContainer = styled.View`
+  align-self: center;
+  margin-top: 20px;
+  width: 75%;
+  height: 50px;
+  border-radius: 10px;
+  background-color: ${(props) => props.theme.board.bg};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  elevation: 3;
+`;
+
+const GuideLineBox = styled.View`
+  flex-direction: row;
+`;
+
+const GuideText = styled.Text`
+  font-size: 12px;
+  color: ${(props) => props.color};
+  font-weight: bold;
+`;
+
+const Home = ({
+  setPopMenu,
+  setPopCardAdd,
+  isLoggedIn,
+  alarmList,
+  setAlarmList,
+}) => {
+  const screenHeight = Dimensions.get("window").height;
+
   const [setup, setSetup] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      const asyncGetAllRoute = async () => {
+        const req = { uid: firebase.auth().currentUser.uid };
+
+        const { status, data } = await getAllRoute(req);
+
+        if (status === 200) {
+          // console.log(data);
+          setAlarmList(data);
+        } else {
+          console.log(status);
+          console.log(data);
+        }
+      };
+
+      const asyncGetAllRouteWithout = async () => {
+        const alarmArray = [];
+        const alarmCount = await AsyncStorage.getItem("alarmCount");
+        // console.log(alarmCount);
+
+        for (let i = 0; i < alarmCount; i++) {
+          const curData = await AsyncStorage.getItem(`alarmData${i}`);
+          alarmArray.push(JSON.parse(curData));
+        }
+
+        // console.log(alarmArray);
+        setAlarmList(alarmArray);
+      };
+
+      if (isLoggedIn) {
+        asyncGetAllRoute();
+      } else {
+        asyncGetAllRouteWithout();
+      }
+    }, [isLoggedIn])
+  );
 
   return (
     <SafeAreaView>
@@ -122,7 +197,7 @@ const Home = ({ setPopMenu, setPopCardAdd }) => {
               <CarouselText>책임지겠습니다.</CarouselText>
             </CarouselTextBox>
           </CarouselContainer>
-          <BoardContainer setup={setup}>
+          <BoardContainer setup={setup} boardHeight={screenHeight - 273}>
             <BoardLabelBox>
               <BoardLabelTagText>내 알림</BoardLabelTagText>
               <BoardLabelSetupText
@@ -132,12 +207,33 @@ const Home = ({ setPopMenu, setPopCardAdd }) => {
                 {setup ? "완료" : "편집"}
               </BoardLabelSetupText>
             </BoardLabelBox>
-            <Card
-              title="멀티캠퍼스 역삼"
-              address="서울특별시 강남구 역삼동 테헤란로 212"
-              time="10:30 AM"
-              setup={setup}
-            />
+            {alarmList &&
+              alarmList.map((al, index) => (
+                <Card
+                  key={index}
+                  title={al.alarmname}
+                  address="서울특별시 강남구 역삼동 테헤란로 212"
+                  time="10:30 AM"
+                  setup={setup}
+                />
+              ))}
+            {!setup && alarmList && alarmList.length === 0 && (
+              <GuideContainer>
+                <GuideLineBox>
+                  <GuideText color="rgba(0, 0, 0, 0.5)">안녕하세요! </GuideText>
+                  <GuideText color="#5B79E1">+ 버튼</GuideText>
+                  <GuideText color="rgba(0, 0, 0, 0.5)">을 눌러서</GuideText>
+                </GuideLineBox>
+                <GuideLineBox>
+                  <GuideText color="rgba(0, 0, 0, 0.5)">당신의 </GuideText>
+                  <GuideText color="#CE5A5A">첫 알림을</GuideText>
+                  <GuideText color="#rgba(0, 0, 0, 0.5)">
+                    {" "}
+                    등록해보세요!
+                  </GuideText>
+                </GuideLineBox>
+              </GuideContainer>
+            )}
             {!setup && (
               <CardContainer>
                 <IconAddCircle

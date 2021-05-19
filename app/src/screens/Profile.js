@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,6 +6,7 @@ import { ScrollView } from "react-native";
 import firebase from "firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ModalSelector from "react-native-modal-selector";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import MenuButton from "../components/Common/MenuButton";
 import LocationFavorite from "../components/Profile/LocationFavorite";
 import UserData from "../components/Profile/UserData";
@@ -126,7 +127,13 @@ const UserDataContainer = styled.View`
   justify-content: space-around;
 `;
 
-const Profile = ({ setPopMenu, setPopLogin, setIsLoggedIn, isLoggedIn }) => {
+const Profile = ({
+  setPopMenu,
+  setPopLogin,
+  setIsLoggedIn,
+  isLoggedIn,
+  popLogin,
+}) => {
   const [profileData, setProfileData] = useState(null);
   const [popModal1, setPopModal1] = useState(false);
   const [popModal2, setPopModal2] = useState(false);
@@ -136,6 +143,10 @@ const Profile = ({ setPopMenu, setPopLogin, setIsLoggedIn, isLoggedIn }) => {
   const [favorites, setFavorites] = useState(0);
   const [priority, setPriority] = useState(0);
   const [sparetime, setSparetime] = useState(5);
+
+  const [isVisited, setIsVisited] = useState(false);
+
+  const navigation = useNavigation();
 
   const customSpeed = [
     "멈춰!",
@@ -150,25 +161,32 @@ const Profile = ({ setPopMenu, setPopLogin, setIsLoggedIn, isLoggedIn }) => {
   const customFavorites = ["상관없음", "지하철", "버스"];
   const customPriority = ["상관없음", "최단시간", "최소환승"];
 
-  useEffect(() => {
-    const asyncGetAllProfile = async () => {
-      const req = { uid: firebase.auth().currentUser.uid };
-      const { status, data } = await getAllProfile(req);
+  useFocusEffect(
+    useCallback(() => {
+      const asyncGetAllProfile = async () => {
+        const req = { uid: firebase.auth().currentUser.uid };
+        const { status, data } = await getAllProfile(req);
 
-      if (status === 200) {
-        console.log(data);
-        setProfileData(data);
-        setSpeed(data.custom.speed);
-        setFavorites(data.custom.favorites);
-        setPriority(data.custom.priority);
-        setSparetime(data.custom.sparetime);
+        if (status === 200) {
+          setProfileData(data);
+          setSpeed(data.custom.speed);
+          setFavorites(data.custom.favorites);
+          setPriority(data.custom.priority);
+          setSparetime(data.custom.sparetime);
+        }
+      };
+
+      if (isLoggedIn) {
+        asyncGetAllProfile();
+      } else if (!isVisited) {
+        setPopLogin(true);
+        setIsVisited(true);
+      } else {
+        setIsVisited(false);
+        navigation.navigate("Home");
       }
-    };
-
-    if (isLoggedIn) {
-      asyncGetAllProfile();
-    }
-  }, [isLoggedIn]);
+    }, [isLoggedIn, popLogin])
+  );
 
   const logout = async () => {
     firebase
@@ -186,9 +204,9 @@ const Profile = ({ setPopMenu, setPopLogin, setIsLoggedIn, isLoggedIn }) => {
   if (!isLoggedIn) {
     return (
       <ProfileContainer>
-        <ProfileLoginButton onPress={() => setPopLogin(true)}>
+        {/* <ProfileLoginButton onPress={() => setPopLogin(true)}>
           <ProfileLoginButtonText>로그인</ProfileLoginButtonText>
-        </ProfileLoginButton>
+        </ProfileLoginButton> */}
       </ProfileContainer>
     );
   }

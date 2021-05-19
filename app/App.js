@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider } from "styled-components/native";
 import { useFonts } from "expo-font";
 import Constants from "expo-constants";
 import firebase from "firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import MainNavigation from "./src/navigation/MainNavigation";
 import Theme from "./src/styles/Theme";
 import Menu from "./src/components/Common/Menu/Menu";
@@ -54,6 +55,25 @@ const App = () => {
   const [popSignIn, setPopSignIn] = useState(false);
   const [popSignUp, setPopSignUp] = useState(false);
 
+  // 대시보드 알람 들어있는 전체 리스트
+  // 홈 진입 시 로그인/비로그인에 따라 API or Storage 데이터 불러온 뒤 저장
+  // 알람카드 추가 시 뒤에 추가됨
+  // 상태 변경 시 대시보드 rerendering 됨
+  const [alarmList, setAlarmList] = useState([]);
+
+  useEffect(() => {
+    const AsyncStorageInit = async () => {
+      const alarmCount = await AsyncStorage.getItem("alarmCount");
+      // console.log(alarmCount);
+
+      if (alarmCount === null) {
+        await AsyncStorage.setItem("alarmCount", "0");
+      }
+    };
+
+    AsyncStorageInit();
+  }, []);
+
   if (!loaded) {
     return null;
   }
@@ -67,7 +87,10 @@ const App = () => {
             setPopCardAdd={setPopCardAdd}
             setPopLogin={setPopLogin}
             setIsLoggedIn={setIsLoggedIn}
+            popLogin={popLogin}
             isLoggedIn={isLoggedIn}
+            alarmList={alarmList}
+            setAlarmList={setAlarmList}
           />
         )}
       </SafeAreaProvider>
@@ -81,7 +104,14 @@ const App = () => {
           setDarkMode={setDarkMode}
         />
       )}
-      {popCardAdd && <CardAdd setPopCardAdd={setPopCardAdd} />}
+      {popCardAdd && (
+        <CardAdd
+          setPopCardAdd={setPopCardAdd}
+          isLoggedIn={isLoggedIn}
+          alarmList={alarmList}
+          setAlarmList={setAlarmList}
+        />
+      )}
       {popLogin && !isLoggedIn && (
         <Login
           setPopLogin={setPopLogin}

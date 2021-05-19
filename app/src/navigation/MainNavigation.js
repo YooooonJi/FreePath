@@ -1,6 +1,5 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-// import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Home from "../screens/Home";
@@ -16,6 +15,9 @@ const MainNavigation = ({
   setIsLoggedIn,
   isLoggedIn,
   setPopCardAdd,
+  popLogin,
+  alarmList,
+  setAlarmList,
 }) => (
   <NavigationContainer>
     <Tab.Navigator
@@ -62,7 +64,13 @@ const MainNavigation = ({
       <Tab.Screen
         name="Home"
         children={() => (
-          <Home setPopMenu={setPopMenu} setPopCardAdd={setPopCardAdd} />
+          <Home
+            setPopMenu={setPopMenu}
+            setPopCardAdd={setPopCardAdd}
+            isLoggedIn={isLoggedIn}
+            alarmList={alarmList}
+            setAlarmList={setAlarmList}
+          />
         )}
       />
       <Tab.Screen name="Group" children={() => <Test />} />
@@ -72,6 +80,7 @@ const MainNavigation = ({
           <Profile
             setPopMenu={setPopMenu}
             setPopLogin={setPopLogin}
+            popLogin={popLogin}
             setIsLoggedIn={setIsLoggedIn}
             isLoggedIn={isLoggedIn}
           />
