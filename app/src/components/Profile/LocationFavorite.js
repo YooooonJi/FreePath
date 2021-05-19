@@ -136,13 +136,7 @@ const LocationFavorite = ({ location }) => {
           />
           <DataTouchable
             onPress={() =>
-              searchAddress(
-                address1,
-                setAddress1,
-                setLatitude1,
-                setLongitude1,
-                setPopModal1
-              )
+              searchAddress(address1, setAddress1, setLatitude1, setLongitude1)
             }
           >
             <MaterialIcons name="search" size={20} color="rgba(0, 0, 0, 1)" />
@@ -166,13 +160,7 @@ const LocationFavorite = ({ location }) => {
           />
           <DataTouchable
             onPress={() =>
-              searchAddress(
-                address2,
-                setAddress2,
-                setLatitude2,
-                setLongitude2,
-                setPopModal2
-              )
+              searchAddress(address2, setAddress2, setLatitude2, setLongitude2)
             }
           >
             <MaterialIcons name="search" size={20} color="rgba(0, 0, 0, 1)" />
@@ -196,13 +184,7 @@ const LocationFavorite = ({ location }) => {
           />
           <DataTouchable
             onPress={() =>
-              searchAddress(
-                address3,
-                setAddress3,
-                setLatitude3,
-                setLongitude3,
-                setPopModal3
-              )
+              searchAddress(address3, setAddress3, setLatitude3, setLongitude3)
             }
           >
             <MaterialIcons name="search" size={20} color="rgba(0, 0, 0, 1)" />
@@ -226,13 +208,7 @@ const LocationFavorite = ({ location }) => {
           />
           <DataTouchable
             onPress={() =>
-              searchAddress(
-                address4,
-                setAddress4,
-                setLatitude4,
-                setLongitude4,
-                setPopModal4
-              )
+              searchAddress(address4, setAddress4, setLatitude4, setLongitude4)
             }
           >
             <MaterialIcons name="search" size={20} color="rgba(0, 0, 0, 1)" />

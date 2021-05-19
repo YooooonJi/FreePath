@@ -7,7 +7,8 @@ const PathTransportContainer = styled.View`
   align-items: center;
   justify-content: center;
   margin-left: -10px;
-  min-width: 60px;
+  min-width: 30px;
+  max-width: 60px;
   width: ${(props) => props.width}px;
   height: 20px;
   border-top-right-radius: 10px;
@@ -18,15 +19,12 @@ const PathTransportContainer = styled.View`
 const PathTransportText = styled.Text`
   color: white;
   font-size: 12px;
-  font-family: "5";
+  font-weight: bold;
 `;
 
 const PathTransport = ({ minute, width, color }) => (
   <PathTransportContainer width={width} color={color}>
-    <PathTransportText>
-      {minute}
-      분
-    </PathTransportText>
+    <PathTransportText>{minute}분</PathTransportText>
   </PathTransportContainer>
 );
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import CardExpand from "./Card/CardExpand";
@@ -42,8 +42,7 @@ const CardOnOffBox = styled.View`
 const CardOnOffText = styled.Text`
   color: ${(props) => props.theme.card.circle.text};
   font-size: 14px;
-  line-height: 16px;
-  font-family: "5";
+  font-weight: bold;
 `;
 
 const CardInfoBox = styled.View`
@@ -52,20 +51,16 @@ const CardInfoBox = styled.View`
 `;
 
 const CardTitleText = styled.Text`
-  font-size: 20px;
-  line-height: 23px;
-  font-family: "5";
+  font-size: 18px;
   color: ${(props) => props.theme.card.title};
+  font-weight: bold;
+  margin-bottom: 4px;
 `;
 
 const CardAddressText = styled.Text`
-  margin-top: 4px;
-  margin-bottom: 6px;
   margin-left: 1px;
   color: ${(props) => props.theme.card.addr};
   font-size: 12px;
-  line-height: 14px;
-  font-family: "4";
 `;
 
 const CardTimeTagText = styled.Text`
@@ -74,9 +69,9 @@ const CardTimeTagText = styled.Text`
   background-color: ${(props) => props.theme.card.time.bg};
   border-radius: 10px;
   font-size: 12px;
-  line-height: 14px;
-  font-family: "4";
-  padding: 4px 8px 2px 8px;
+  padding: 2px 8px;
+  font-weight: bold;
+  margin-top: 4px;
 `;
 
 const CardRightBox = styled.View`
@@ -93,8 +88,6 @@ const CardRightBox = styled.View`
 const TimeLeftText = styled.Text`
   color: ${(props) => props.theme.card.timer};
   font-size: 12px;
-  line-height: 14px;
-  font-family: "5";
   margin-top: 12px;
 `;
 
@@ -123,15 +116,69 @@ const CardEditBox = styled.View`
   background-color: rgba(0, 0, 0, 0.25);
 `;
 
-const Card = ({
-  title, address, time, setup,
-}) => {
+const Card = ({ data, setup }) => {
   const [expandShow, setExpandShow] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSeconds(seconds + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [seconds]);
+
+  const splitTime = data.arrivetime.split(" ")[1].split(":");
+
+  const calcLeftTime = (term, sec) => {
+    const dateSplit = term.split(" ");
+    const split1 = dateSplit[0].split("-");
+    const split2 = dateSplit[1].split(":");
+
+    const arrivetime = new Date(
+      Date.UTC(split1[0], split1[1] * 1 - 1, split1[2], split2[0], split2[1])
+    );
+    const now = new Date();
+    const nowtime = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes()
+      )
+    );
+
+    const timeInterval = (arrivetime - nowtime) / 1000;
+
+    if (timeInterval < 0) {
+      return "막차 종료";
+    }
+
+    const secToMinutes = parseInt(timeInterval / 60);
+    const minToHours = parseInt(secToMinutes / 60);
+    const leftMinutes = parseInt(secToMinutes - minToHours * 60);
+
+    let returnTime = "";
+
+    if (minToHours <= 0) {
+      if (leftMinutes > 0) {
+        returnTime += `${leftMinutes}분 후`;
+      } else {
+        returnTime += `${leftMinutes}분 이내`;
+      }
+    } else {
+      returnTime += `${minToHours}시간 `;
+      if (leftMinutes > 0) {
+        returnTime += `${leftMinutes}분 후`;
+      }
+    }
+
+    return returnTime;
+  };
 
   return (
     <CardContainer>
-      {expandShow && (
-        <CardExpand />)}
+      {expandShow && <CardExpand data={data.routeinfo} />}
       <CardView>
         <CardLeftBox>
           <CardOnOffBox>
@@ -139,15 +186,28 @@ const Card = ({
             <CardOnOffText>ON</CardOnOffText>
           </CardOnOffBox>
           <CardInfoBox>
-            <CardTitleText>{title}</CardTitleText>
-            <CardAddressText>{address}</CardAddressText>
-            <CardTimeTagText>{time}</CardTimeTagText>
+            <CardTitleText>{data.alarmname}</CardTitleText>
+            <CardAddressText>{data.startaddress}</CardAddressText>
+            <CardAddressText>{data.endaddress}</CardAddressText>
+            <CardTimeTagText>
+              {`${splitTime[0]}시 `}
+              {`${splitTime[1]}분 출발`}
+            </CardTimeTagText>
           </CardInfoBox>
         </CardLeftBox>
         {!setup && (
           <CardRightBox>
-            <TimeLeftText>1시간 15분 후</TimeLeftText>
-            <Icon name={expandShow ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={30} color="rgba(0, 0, 0, 0.5)" onPress={() => { setExpandShow(!expandShow); }} />
+            <TimeLeftText>
+              {calcLeftTime(data.arrivetime, seconds)}
+            </TimeLeftText>
+            <Icon
+              name={expandShow ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+              size={30}
+              color="rgba(0, 0, 0, 0.5)"
+              onPress={() => {
+                setExpandShow(!expandShow);
+              }}
+            />
           </CardRightBox>
         )}
         {setup && (

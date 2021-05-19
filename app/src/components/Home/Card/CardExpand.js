@@ -1,5 +1,5 @@
 import React from "react";
-import { Dimensions } from "react-native";
+import { Dimensions, View } from "react-native";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import PathTransport from "./PathTransport";
@@ -48,45 +48,89 @@ const DetailContainer = styled.View`
   padding: 0px 10px;
 `;
 
-const CardExpand = () => (
-  <CardExpandView>
-    <PathContainer>
-      <ArrivalBox>
-        <Icon name="flag" size={15} color="#ffffff" />
-      </ArrivalBox>
-      <PathWalk minute={6} width={(6 * screenWidth) / 44} />
-      <PathTransport
-        minute={8}
-        width={(8 * screenWidth) / 44}
-        color="#19bf66"
-      />
-      <PathWalk minute={2} width={(2 * screenWidth) / 44} />
-      <PathTransport
-        minute={22}
-        width={(22 * screenWidth) / 44}
-        color="#d1d2a2"
-      />
-      <PathWalk minute={6} width={(6 * screenWidth) / 44} />
-      <DepartureBox>
-        <Icon name="place" size={15} color="#ffffff" />
-      </DepartureBox>
-    </PathContainer>
-    <DetailContainer>
-      <PathDetail
-        type="bus"
-        number={5714}
-        stop="당산푸르지오아파트 승차"
-        color="#d1d2a2"
-      />
-      <BusDetail count={12} stop="강남역" />
-      <PathDetail
-        type="tram"
-        number={2}
-        stop="강남역 환승 > 역삼역 하차"
-        color="#19bf66"
-      />
-    </DetailContainer>
-  </CardExpandView>
-);
+const CardExpand = ({ data }) => {
+  const jsonData = JSON.parse(data);
+
+  const {
+    info: { totalTime },
+    subPath,
+  } = jsonData;
+
+  return (
+    <CardExpandView>
+      <PathContainer>
+        <ArrivalBox>
+          <Icon name="flag" size={15} color="#ffffff" />
+        </ArrivalBox>
+        {subPath &&
+          subPath.reverse().map((sp, index) => {
+            if (sp.trafficType === 3) {
+              return (
+                <PathWalk
+                  key={index}
+                  minute={sp.sectionTime}
+                  width={(sp.sectionTime * screenWidth) / totalTime}
+                />
+              );
+            }
+            if (sp.trafficType === 2) {
+              return (
+                <PathTransport
+                  key={index}
+                  minute={sp.sectionTime}
+                  width={(sp.sectionTime * screenWidth) / totalTime}
+                  color="#d1d2a2"
+                />
+              );
+            }
+            if (sp.trafficType === 1) {
+              return (
+                <PathTransport
+                  key={index}
+                  minute={sp.sectionTime}
+                  width={(sp.sectionTime * screenWidth) / totalTime}
+                  color="#19bf66"
+                />
+              );
+            }
+            return null;
+          })}
+        <DepartureBox>
+          <Icon name="place" size={15} color="#ffffff" />
+        </DepartureBox>
+      </PathContainer>
+      <DetailContainer>
+        {subPath &&
+          subPath.reverse().map((sp, index) => {
+            if (sp.trafficType === 2) {
+              return (
+                <View key={index}>
+                  <PathDetail
+                    type="bus"
+                    number={sp.lane[0].busNo}
+                    stop={sp.startName}
+                    color="#d1d2a2"
+                  />
+                  <BusDetail count={sp.stationCount} stop={sp.endName} />
+                </View>
+              );
+            }
+            if (sp.trafficType === 1) {
+              return (
+                <PathDetail
+                  key={index}
+                  type="tram"
+                  number={`${sp.lane[0].subwayCode}호선`}
+                  stop={`${sp.startName} 승차  ››  ${sp.endName} 하차`}
+                  color="#19bf66"
+                />
+              );
+            }
+            return null;
+          })}
+      </DetailContainer>
+    </CardExpandView>
+  );
+};
 
 export default CardExpand;
