@@ -10,8 +10,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
+import java.util.Optional;
 import javax.net.ssl.HttpsURLConnection;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
@@ -23,10 +24,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import com.ssafy.project.dao.group.GroupAlarmDao;
+import com.ssafy.project.dao.route.RouteDao;
 import com.ssafy.project.dao.user.CustomDao;
+import com.ssafy.project.dao.user.LocationDao;
 import com.ssafy.project.model.api.ApiProperties;
+import com.ssafy.project.model.group.GroupAlarm;
+import com.ssafy.project.model.group.GroupAlarmId;
+import com.ssafy.project.model.group.GroupAlarmRegisterRequest;
+import com.ssafy.project.model.route.Route;
 import com.ssafy.project.model.route.RouteFindRequest;
+import com.ssafy.project.model.route.RouteFindWithoutRequest;
 import com.ssafy.project.model.user.Custom;
+import com.ssafy.project.model.user.Location;
+import com.ssafy.project.model.user.LocationId;
 
 @Service
 public class RouteServiceImpl implements RouteService {
@@ -36,19 +47,28 @@ public class RouteServiceImpl implements RouteService {
 
 	@Autowired
 	private CustomDao customDao;
+	
+	@Autowired
+	private RouteDao routeDao;
+	
+	@Autowired
+	private GroupAlarmDao groupAlarmDao;
+	
+	@Autowired
+	private LocationDao locationDao;
 
-	public static final Logger logger = LoggerFactory.getLogger(FinalRouteServiceImpl.class);
+	public static final Logger logger = LoggerFactory.getLogger(RouteServiceImpl.class);
 
 	static int startBusStationIdx = 0;
 
 	@Override
-	public ResponseEntity<Map<String, Object>> findRoute(RouteFindRequest routeFindRequest) {
+	public ResponseEntity<Map<String, Object>> findRouteWithoutUser(RouteFindWithoutRequest routeFindWithoutRequest) {
 
 		HttpStatus status = null;
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 
-		final String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=" + routeFindRequest.getStartX() + "&SY=" + routeFindRequest.getStartY() + "&EX="
-				+ routeFindRequest.getEndX() + "&EY=" + routeFindRequest.getEndY() + "&apiKey=" + apiProperties.getKey();
+		final String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=" + routeFindWithoutRequest.getStartX() + "&SY=" + routeFindWithoutRequest.getStartY() + "&EX="
+				+ routeFindWithoutRequest.getEndX() + "&EY=" + routeFindWithoutRequest.getEndY() + "&apiKey=" + apiProperties.getKey();
 
 		try {
 
@@ -72,18 +92,151 @@ public class RouteServiceImpl implements RouteService {
 			JSONObject response = (JSONObject) obj.get("result");
 			JSONArray path = (JSONArray) response.get("path");
 
-			// 회원가입되있는 사용자라면 커스텀 반영
-			if (!routeFindRequest.getUid().equals("")) {
-				path = CheckCustom(path, routeFindRequest.getUid());
-			}
-
 			// 세부 경로들 계산
 			loop: for (int i = 0; i < path.size() - 1; i++) {
 				JSONObject infos = (JSONObject) path.get(i);
 
-				// pathType : 1=지하철, 2=버스, 3=지하철+버스
-				long pathType = (Long) infos.get("pathType");
-				// System.out.println("pathType: " + pathType);
+				// step1.경로 전체 소요시간 구하기
+				JSONObject info = (JSONObject) infos.get("info");
+				int totalTime = Integer.parseInt(String.valueOf(info.get("totalTime")));
+
+				String[] arriveTime = routeFindWithoutRequest.getArriveTime().split(" ");
+
+				// step2.실시간 반영 전 출발시간(도착시간-소요시간)구하기
+				startTime = CalculateTime(arriveTime[1], totalTime, 2);
+				resultObject = infos;
+
+				String[] start = startTime.split(":");
+				int startHour = Integer.parseInt(start[0]);
+				int startMinute = Integer.parseInt(start[1]);
+
+				// step3.(실시간 반영전 출발시간 - 현재시간)이 30분 이하일 경우에만 실시간 출발시간 체크
+				if ((startHour * 60 + startMinute) - (nowHour * 60 + nowMin) <= 30) {
+
+					// 첫 대중교통의 실시간 정보 반영한 출발시간 구하기
+					JSONArray subPath = (JSONArray) infos.get("subPath");
+					int walkTime = 0;
+
+					for (int j = 0; j < subPath.size(); j++) {
+						JSONObject smallSubPath = (JSONObject) subPath.get(j);
+
+						// trafficType 1:지하철, 2:버스, 3:도보
+						long trafficType = (Long) smallSubPath.get("trafficType");
+
+						// 지하철 운행시간 검색
+						if (trafficType == 1) {
+							int stationID = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
+							int wayCode = Integer.parseInt(String.valueOf(smallSubPath.get("wayCode")));
+							
+							String tmpTime = CalculateTime(startTime, walkTime, 1);
+							String realStartTime = CalculateTime(TimeTableSubway(stationID, wayCode, tmpTime), walkTime, 2);
+							startTime = realStartTime;
+							
+							break loop;
+						}
+
+						// 버스 실시간 검색
+						else if (trafficType == 2) {
+							int startBusStationId = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
+							JSONArray lane = (JSONArray) smallSubPath.get("lane");
+							JSONObject smallLane = (JSONObject) lane.get(0);
+							
+							int busID = Integer.parseInt(String.valueOf(smallLane.get("busID")));
+							
+							String tmpTime = CalculateTime(startTime, walkTime, 1);
+							String realStartTime = CalculateTime(RealTimeBus(busID, startBusStationId, tmpTime), walkTime, 2);
+							startTime = realStartTime;
+							
+							break loop;
+						}
+
+						// 도보일경우 다음 대중교통 체크
+						else if (trafficType == 3) {
+							int sectionTime = Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime")));
+							walkTime += sectionTime;
+							continue;
+						}
+
+					}
+				}
+			}
+
+			/* 결과 출발 시간 만들기 */
+			StringBuilder sb = new StringBuilder();
+			String[] arriveTime = routeFindWithoutRequest.getArriveTime().split(" ");
+
+			sb.append(arriveTime[0] + " "); // 년-월-날
+			sb.append(startTime);// 시간
+
+			Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(sb.toString());
+			Calendar lastDate = Calendar.getInstance();
+			lastDate.setTime(date);
+
+			long remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
+
+			resultMap.put("arrivetime", sb.toString());
+			resultMap.put("routeinfo", resultObject);
+			resultMap.put("totaltime", remainSecond);
+
+			urlConnection.disconnect();
+			status = HttpStatus.OK;
+		} catch (Exception e) {
+			logger.error("경로 실시간 출발 시간 계산 실패 : {}", e);
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
+	
+	@Override
+	public ResponseEntity<Route> findRouteWithUser(RouteFindRequest routeFindRequest) {
+		HttpStatus status = null;
+		Route resultRoute = null;
+
+		final String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=" + routeFindRequest.getStartX() + "&SY=" + routeFindRequest.getStartY() + "&EX="
+				+ routeFindRequest.getEndX() + "&EY=" + routeFindRequest.getEndY() + "&apiKey=" + apiProperties.getKey();
+
+		try {
+			
+			Route route = new Route();
+
+			route.setUid(routeFindRequest.getUid());
+			route.setStartaddress(routeFindRequest.getStartAddress());
+			route.setStartlongitude(routeFindRequest.getStartX());
+			route.setStartlatitude(routeFindRequest.getStartY());
+			route.setEndaddress(routeFindRequest.getEndAddress());
+			route.setEndlongitude(routeFindRequest.getEndX());
+			route.setEndlatitude(routeFindRequest.getEndY());
+
+			if (!routeFindRequest.getAlarmName().isEmpty()) {
+				route.setAlarmname(routeFindRequest.getAlarmName());
+			}
+
+			String startTime = new String();
+			JSONObject resultObject = new JSONObject();
+
+			// 현재시간
+			Calendar today = Calendar.getInstance();
+			int nowHour = today.get(Calendar.HOUR_OF_DAY);
+			int nowMin = today.get(Calendar.MINUTE);
+
+			URL url = new URL(openUrl);
+
+			HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+			urlConnection.setRequestMethod("GET");
+
+			BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+
+			JSONParser parser = new JSONParser();
+			JSONObject obj = (JSONObject) parser.parse(br);
+			JSONObject response = (JSONObject) obj.get("result");
+			JSONArray path = (JSONArray) response.get("path");
+
+			// 회원가입되있는 사용자라면 커스텀 반영
+			path = CheckCustom(path, routeFindRequest.getUid());
+
+			// 세부 경로들 계산
+			loop: for (int i = 0; i < path.size() - 1; i++) {
+				JSONObject infos = (JSONObject) path.get(i);
 
 				// step1.경로 전체 소요시간 구하기
 				JSONObject info = (JSONObject) infos.get("info");
@@ -134,7 +287,6 @@ public class RouteServiceImpl implements RouteService {
 							String tmpTime = CalculateTime(startTime, walkTime, 1);
 							String realStartTime = CalculateTime(RealTimeBus(busID, startBusStationId, tmpTime), walkTime, 2);
 							startTime = realStartTime;
-							// System.out.println("버스 실시간 시간:" + realStartTime);
 							break loop;
 						}
 
@@ -162,9 +314,11 @@ public class RouteServiceImpl implements RouteService {
 
 			long remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
 
-			resultMap.put("arrivetime", sb.toString());
-			resultMap.put("routeinfo", resultObject);
-			resultMap.put("totaltime", remainSecond);
+			route.setArrivetime(sb.toString());
+			route.setRouteinfo(resultObject.toString());
+			route.setTotaltime((int) remainSecond);
+			
+			resultRoute = routeDao.save(route);
 
 			urlConnection.disconnect();
 			status = HttpStatus.OK;
@@ -172,11 +326,10 @@ public class RouteServiceImpl implements RouteService {
 			logger.error("경로 실시간 출발 시간 계산 실패 : {}", e);
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
-		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+		return new ResponseEntity<Route>(resultRoute, status);
 	}
 
 	public JSONArray CheckCustom(JSONArray path, String uid) {
-		System.out.println("취향반영");
 		JSONArray sortedJsonArray = new JSONArray();
 
 		ArrayList<JSONObject> jsonValues = new ArrayList<JSONObject>();
@@ -185,7 +338,6 @@ public class RouteServiceImpl implements RouteService {
 
 		int favorite = custom.getFavorites();// 지하철(1), 버스(2), 상관없음(0)
 		int priority = custom.getPriority();// 최단시간(1), 최소 환승(2), 상관없음(0)
-
 
 		// 교통수단 선호 반영
 		if (favorite != 0) {
@@ -201,9 +353,6 @@ public class RouteServiceImpl implements RouteService {
 			}
 		}
 
-		for (int i = 0; i < jsonValues.size(); i++) {
-			System.out.println(jsonValues.get(i));
-		}
 		// 경로 우선순위 반영
 		if (priority != 0) {
 
@@ -265,10 +414,12 @@ public class RouteServiceImpl implements RouteService {
 
 		}
 
-		System.out.println("경로반영");
 		for (int i = 0; i < jsonValues.size(); i++) {
-			System.out.println(jsonValues.get(i));
 			sortedJsonArray.add(jsonValues.get(i));
+		}
+		
+		if(favorite == 0 && priority == 0) {
+			sortedJsonArray = path;
 		}
 
 		return sortedJsonArray;
@@ -287,7 +438,6 @@ public class RouteServiceImpl implements RouteService {
 		}
 		return resultTime;
 	}
-
 
 	// 지하철 타임테이블
 	@Override
@@ -365,7 +515,6 @@ public class RouteServiceImpl implements RouteService {
 
 		String realStartTime = "";
 
-		// System.out.println("실시간 반영 전 출발시간:"+startTime);
 		// 시간 시,분 계산
 		String[] tmpTime = startTime.split(":");
 		int hour = Integer.parseInt(tmpTime[0]);
@@ -407,21 +556,16 @@ public class RouteServiceImpl implements RouteService {
 					}
 
 					String busTmpTime = CalculateTime(nowTime, busTimeSum, 1);
-					// System.out.println("실시간 버스 타임:"+busTmpTime+" "+busTimeSum);
 
 					String[] busRealTime = busTmpTime.split(":");
 					int realHour = Integer.parseInt(busRealTime[0]);
 					int realMinute = Integer.parseInt(busRealTime[1]);
-					// System.out.println("값비교:"+hour*60+minute+" "+realHour * 60 + realMinute);
 					if ((hour * 60 + minute) >= (realHour * 60 + realMinute)) {
 						realStartTime = busTmpTime;
-						// System.out.println("최종실시간반영버스타임:"+realStartTime);
 						break;
 					}
 					// 도착한 시간이 현재 출발해야 하는 시간보다 늦다면
-
 				}
-
 			}
 
 			urlConnection.disconnect();
@@ -465,7 +609,6 @@ public class RouteServiceImpl implements RouteService {
 
 				int distance1 = Integer.parseInt(String.valueOf(smallStation1.get("stationDistance")));
 				int distance2 = Integer.parseInt(String.valueOf(smallStation2.get("stationDistance")));
-				// System.out.println(distance1+" "+distance2);
 
 				int stationId = Integer.parseInt(String.valueOf(smallStation1.get("stationID")));
 
@@ -475,18 +618,11 @@ public class RouteServiceImpl implements RouteService {
 
 				// 정류장 별 거리차이를 m-> km로 변환
 				double diffDistance = (double) (distance2 - distance1) / 1000;
-				// System.out.println("diff:" + diffDistance);
 
 				// 버스 속력 20km/h 로 가정, 반올림 하여 시간 계산
 				int diffTime = (int) Math.ceil(diffDistance * 3);
 				busDirTime.add(diffTime);
-				// System.out.println("difftime:"+diffTime);
 			}
-
-			// System.out.println("버스 정류장별 소요시간");
-			// for (int i = 0; i < busDirTime.size(); i++) {
-			// System.out.println("idx:"+i+"time: "+busDirTime.get(i));
-			// }
 
 			urlConnection.disconnect();
 
@@ -496,6 +632,163 @@ public class RouteServiceImpl implements RouteService {
 		return busDirTime;
 	}
 
+	@Override
+	public ResponseEntity<String> registerRoute(GroupAlarmRegisterRequest groupAlarmRegisterRequest) {
+		HttpStatus status = null;
+		String result = "등록 미완료";
 
+		List<String> userList = groupAlarmRegisterRequest.getUids();
 
+		try {
+			GroupAlarm groupAlarm = groupAlarmDao.findGroupAlarmByGroupalarmidUid(userList.get(0));
+			
+			for (String user : userList) {
+				LocationId locationId = new LocationId(1, user); // 무조건 집에서 출발한다고 가정
+				Location userLocation = locationDao.findLocationByLocationid(locationId);
+
+				String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=" + userLocation.getLongitude() + "&SY=" + userLocation.getLatitude() + "&EX="
+						+ groupAlarmRegisterRequest.getEndX() + "&EY=" + groupAlarmRegisterRequest.getEndY() + "&apiKey=" + apiProperties.getKey();
+
+				Route route = new Route();
+
+				route.setUid(user);
+				route.setStartaddress(userLocation.getAddress());
+				route.setStartlongitude(userLocation.getLongitude());
+				route.setStartlatitude(userLocation.getLatitude());
+				route.setEndaddress(groupAlarmRegisterRequest.getEndAddress());
+				route.setEndlongitude(groupAlarmRegisterRequest.getEndX());
+				route.setEndlatitude(groupAlarmRegisterRequest.getEndY());
+				route.setGroupinfo(groupAlarm.getGroupalarmid().getGroupid());
+
+				if (!groupAlarmRegisterRequest.getAlarmName().isEmpty()) {
+					route.setAlarmname(groupAlarmRegisterRequest.getAlarmName());
+				}
+
+				String startTime = new String();
+				JSONObject resultObject = new JSONObject();
+
+				// 현재시간
+				Calendar today = Calendar.getInstance();
+				int nowHour = today.get(Calendar.HOUR_OF_DAY);
+				int nowMin = today.get(Calendar.MINUTE);
+
+				URL url = new URL(openUrl);
+
+				HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+				urlConnection.setRequestMethod("GET");
+
+				BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+
+				JSONParser parser = new JSONParser();
+				JSONObject obj = (JSONObject) parser.parse(br);
+				JSONObject response = (JSONObject) obj.get("result");
+				JSONArray path = (JSONArray) response.get("path");
+
+				// 회원가입되있는 사용자라면 커스텀 반영
+				path = CheckCustom(path, user);
+
+				// 세부 경로들 계산
+				loop: for (int i = 0; i < path.size() - 1; i++) {
+					JSONObject infos = (JSONObject) path.get(i);
+
+					// step1.경로 전체 소요시간 구하기
+					JSONObject info = (JSONObject) infos.get("info");
+					int totalTime = Integer.parseInt(String.valueOf(info.get("totalTime")));
+
+					String[] arriveTime = groupAlarmRegisterRequest.getArriveTime().split(" ");
+
+					// step2.실시간 반영 전 출발시간(도착시간-소요시간)구하기
+					startTime = CalculateTime(arriveTime[1], totalTime, 2);
+					resultObject = infos;
+
+					String[] start = startTime.split(":");
+					int startHour = Integer.parseInt(start[0]);
+					int startMinute = Integer.parseInt(start[1]);
+
+					// step3.(실시간 반영전 출발시간 - 현재시간)이 30분 이하일 경우에만 실시간 출발시간 체크
+					if ((startHour * 60 + startMinute) - (nowHour * 60 + nowMin) <= 30) {
+
+						// 첫 대중교통의 실시간 정보 반영한 출발시간 구하기
+						JSONArray subPath = (JSONArray) infos.get("subPath");
+						int walkTime = 0;
+
+						for (int j = 0; j < subPath.size(); j++) {
+							JSONObject smallSubPath = (JSONObject) subPath.get(j);
+
+							// trafficType 1:지하철, 2:버스, 3:도보
+							long trafficType = (Long) smallSubPath.get("trafficType");
+
+							// 지하철 운행시간 검색
+							if (trafficType == 1) {
+								// System.out.println("지하철 실시간 검색");
+								int stationID = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
+								int wayCode = Integer.parseInt(String.valueOf(smallSubPath.get("wayCode")));
+								String tmpTime = CalculateTime(startTime, walkTime, 1);
+								String realStartTime = CalculateTime(TimeTableSubway(stationID, wayCode, tmpTime), walkTime, 2);
+								startTime = realStartTime;
+								// System.out.println("지하철 실시간 시간:" + realStartTime);
+								break loop;
+							}
+
+							// 버스 실시간 검색
+							else if (trafficType == 2) {
+								// System.out.println("버스 실시간 검색");
+								int startBusStationId = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
+								JSONArray lane = (JSONArray) smallSubPath.get("lane");
+								JSONObject smallLane = (JSONObject) lane.get(0);
+								int busID = Integer.parseInt(String.valueOf(smallLane.get("busID")));
+								String tmpTime = CalculateTime(startTime, walkTime, 1);
+								String realStartTime = CalculateTime(RealTimeBus(busID, startBusStationId, tmpTime), walkTime, 2);
+								startTime = realStartTime;
+								break loop;
+							}
+
+							// 도보일경우 다음 대중교통 체크
+							else if (trafficType == 3) {
+								int sectionTime = Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime")));
+								walkTime += sectionTime;
+								continue;
+							}
+
+						}
+					}
+				}
+
+				/* 결과 출발 시간 만들기 */
+				StringBuilder sb = new StringBuilder();
+				String[] arriveTime = groupAlarmRegisterRequest.getArriveTime().split(" ");
+
+				sb.append(arriveTime[0] + " "); // 년-월-날
+				sb.append(startTime);// 시간
+
+				Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(sb.toString());
+				Calendar lastDate = Calendar.getInstance();
+				lastDate.setTime(date);
+
+				long remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
+
+				route.setArrivetime(sb.toString());
+				route.setRouteinfo(resultObject.toString());
+				route.setTotaltime((int) remainSecond);
+				
+				routeDao.save(route);
+				
+				GroupAlarmId groupAlarmId = new GroupAlarmId(groupAlarm.getGroupalarmid().getGroupid(), user);
+				Optional<GroupAlarm> groupAlarmOpt = groupAlarmDao.findOptionalByGroupalarmid(groupAlarmId);
+				
+				groupAlarmOpt.ifPresent(selectGroupAlarm -> {
+					selectGroupAlarm.setGalarmcnt(selectGroupAlarm.getGalarmcnt() + 1);
+					groupAlarmDao.save(selectGroupAlarm);
+				});
+			}
+			result = "등록 완료";
+			status = HttpStatus.OK;
+		} catch (Exception e) {
+			logger.error("막차를 위한 그룹 알람 등록 실패 : {}", e);
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+
+		return new ResponseEntity<String>(result, status);
+	}
+	
 }
