@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import firebase from "firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import TypeSelectButton from "./TypeSelectButton";
 import TypeBusInput from "./TypeBusInput";
 import TypeSubwayInput from "./TypeSubwayInput";
 import TypePathInput from "./TypePathInput";
+import { getRouteLastWith, getRouteLastWithout } from "../../../api/RouteApi";
 
 const CardAddContainer = styled.View`
   position: absolute;
@@ -120,7 +123,7 @@ const ButtonText = styled.Text`
   font-weight: bold;
 `;
 
-const CardAdd = ({ setPopCardAdd }) => {
+const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
   const [alarmName, setAlarmName] = useState("");
   // 알람종류 => 경로 : 0, 버스 : 1, 지하철 : 2
   const [alarmType, setAlarmType] = useState(0);
@@ -166,8 +169,19 @@ const CardAdd = ({ setPopCardAdd }) => {
     setShow(true);
   };
 
+  const getLastDateTime = () => {
+    const nowDate = new Date();
+    const year = nowDate.getFullYear();
+    const month = `0${1 + nowDate.getMonth()}`.slice(-2);
+    const day = `0${nowDate.getDate()}`.slice(-2);
+    const hours = 11;
+    const minutes = 50;
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  };
+
   // api 호출 일어날 곳
-  const saveCard = () => {
+  const saveCard = async () => {
     if (alarmName === "") {
       alert("알림 이름을 입력해주세요.");
     } else if (inputValue1 === null) {
@@ -177,9 +191,95 @@ const CardAdd = ({ setPopCardAdd }) => {
     } else if (timeType === 1 && alarmTime === "") {
       alert("시간을 설정해주세요");
     } else {
-      alert(
-        `알림이름 : ${alarmName}\n알림타입 : ${alarmType}\n${inputValue1.address_name}\n[${inputValue1.x}, ${inputValue1.y}]\n${inputValue2.address_name}\n[${inputValue2.x}, ${inputValue2.y}]\n알림타입 : ${timeType}\n설정시간 : ${alarmTime} `
-      );
+      // console.log(
+      //   `알림이름 : ${alarmName}\n알림타입 : ${alarmType}\n${inputValue1.address_name}\n
+      //   [${inputValue1.x}, ${inputValue1.y}]\n${inputValue2.address_name}\n
+      //   [${inputValue2.x}, ${inputValue2.y}]\n시간타입 : ${timeType}\n설정시간 : ${alarmTime} `
+      // );
+
+      // 카드 추가 분기
+      // (로그인, 비로그인) * (경로, 버스, 지하철) * (막차, 특정시간) = 12가지 분기 생길 예정
+      // eslint-disable-next-line no-lonely-if
+      if (isLoggedIn) {
+        // 로그인
+        if (alarmType === 0) {
+          // 경로
+          if (timeType === 0) {
+            // 막차
+            const req = {
+              alarmName,
+              arriveTime: getLastDateTime(),
+              endAddress: inputValue2.address_name,
+              endX: inputValue2.x,
+              endY: inputValue2.y,
+              startAddress: inputValue1.address_name,
+              startX: inputValue1.x,
+              startY: inputValue1.y,
+              uid: firebase.auth().currentUser.uid,
+            };
+
+            const { status, data } = await getRouteLastWith(req);
+
+            if (status === 200) {
+              // console.log(data);
+              setAlarmList([...alarmList, data]);
+              setPopCardAdd(false);
+            } else {
+              console.log(status);
+              console.log(data);
+            }
+          }
+        }
+      } else if (!isLoggedIn) {
+        // 비로그인
+        if (alarmType === 0) {
+          // 경로
+          if (timeType === 0) {
+            // 막차
+            const req = {
+              alarmName,
+              arriveTime: getLastDateTime(),
+              endAddress: inputValue2.address_name,
+              endX: inputValue2.x,
+              endY: inputValue2.y,
+              startAddress: inputValue1.address_name,
+              startX: inputValue1.x,
+              startY: inputValue1.y,
+            };
+
+            const { status, data } = await getRouteLastWithout(req);
+
+            if (status === 200) {
+              const dataSet = {
+                alarmname: alarmName,
+                endaddress: inputValue2.address_name,
+                endlongitude: inputValue2.x,
+                endlatitude: inputValue2.y,
+                startaddress: inputValue1.address_name,
+                startlongitude: inputValue1.x,
+                startlatitude: inputValue1.y,
+                groupinfo: 0,
+                arrivetime: data.arriveTime,
+                totaltime: data.totaltime,
+                routeinfo: JSON.stringify(data.routeinfo),
+              };
+
+              const alarmCount = await AsyncStorage.getItem("alarmCount");
+              await AsyncStorage.setItem(
+                `alarmData${alarmCount}`,
+                JSON.stringify(dataSet)
+              );
+              await AsyncStorage.setItem(
+                "alarmCount",
+                String(alarmCount * 1 + 1)
+              );
+              // console.log(await AsyncStorage.getItem(`alarmData${alarmCount}`));
+              setAlarmList([...alarmList, dataSet]);
+              setPopCardAdd(false);
+            }
+          }
+        }
+      }
     }
   };
 

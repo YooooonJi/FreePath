@@ -60,6 +60,17 @@ const registerForPushNotificationsAsync = async () => {
   return token;
 };
 
+const getToday = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = `0${1 + date.getMonth()}`.slice(-2);
+  const day = `0${date.getDate()}`.slice(-2);
+  const hours = `0${date.getHours()}`.slice(-2);
+  const minutes = `0${date.getMinutes()}`.slice(-2);
+
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
+
 const Test = () => {
   // axios 테스트 관련
   const [apiStatus, setApiStatus] = useState("");
@@ -143,7 +154,12 @@ const Test = () => {
               {apiData}
             </Text>
           </View>
-          <Button title="빈 테스트 1" onPress={() => {}} />
+          <Button
+            title="빈 테스트 1"
+            onPress={() => {
+              console.log(getToday());
+            }}
+          />
           <Button title="빈 테스트 2" onPress={() => {}} />
         </View>
       </TestView>
