@@ -36,10 +36,16 @@ public class RouteController {
 	@Autowired
 	private FinalRouteService finalRouteService;
 
-	@ApiOperation(value = "경로 찾기 api")
-	@PostMapping("/find")
-	public Object findRoute(@Valid @RequestBody RouteFindRequest routeFindRequest) {
-		return routeService.findRoute(routeFindRequest);
+	@ApiOperation(value = "경로 찾기 api without User")
+	@PostMapping("/find/without")
+	public ResponseEntity<Map<String, Object>> findRouteWithoutUser(@Valid @RequestBody RouteFindWithoutRequest routeFindWithoutRequest) {
+		return routeService.findRouteWithoutUser(routeFindWithoutRequest);
+	}
+	
+	@ApiOperation(value = "경로 찾기 api with User")
+	@PostMapping("/find/with")
+	public ResponseEntity<Route> findRouteWithUser(@Valid @RequestBody RouteFindRequest routeFindRequest) {
+		return routeService.findRouteWithUser(routeFindRequest);
 	}
 
 	@ApiOperation(value = "막차 경로 찾기 api without User")

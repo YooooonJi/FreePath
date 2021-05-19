@@ -15,6 +15,7 @@ import com.ssafy.project.model.group.GroupAlarmRegisterRequest;
 import com.ssafy.project.model.group.GroupRequest;
 import com.ssafy.project.service.group.GroupAlarmService;
 import com.ssafy.project.service.route.FinalRouteService;
+import com.ssafy.project.service.route.RouteService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -26,6 +27,9 @@ public class GroupAlarmController {
 
 	@Autowired
 	private GroupAlarmService groupAlarmService;
+	
+	@Autowired
+	private RouteService routeService;
 	
 	@Autowired
 	private FinalRouteService finalRouteService;
@@ -40,6 +44,12 @@ public class GroupAlarmController {
 	@GetMapping("/take/{uid}")
 	public ResponseEntity<GroupAlarm> takeGroup(@PathVariable("uid") String uid) {
 		return groupAlarmService.takeGroup(uid);
+	}
+	
+	@ApiOperation(value = "경로를 위한 그룹 알람 등록")
+	@PostMapping("/register/route")
+	public ResponseEntity<String> registerRoute(@Valid @RequestBody GroupAlarmRegisterRequest groupAlarmRegisterRequest) {
+		return routeService.registerRoute(groupAlarmRegisterRequest);
 	}
 	
 	@ApiOperation(value = "막차를 위한 그룹 알람 등록")
