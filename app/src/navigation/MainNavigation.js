@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Home from "../screens/Home";
+import Group from "../screens/Group";
 import Profile from "../screens/Profile";
 import Test from "../screens/Test";
 
@@ -73,7 +74,12 @@ const MainNavigation = ({
           />
         )}
       />
-      <Tab.Screen name="Group" children={() => <Test />} />
+      <Tab.Screen
+        name="Group"
+        children={() => (
+          <Group setPopMenu={setPopMenu} isLoggedIn={isLoggedIn} />
+        )}
+      />
       <Tab.Screen
         name="Profile"
         children={() => (

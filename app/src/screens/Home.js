@@ -166,7 +166,7 @@ const Home = ({
         const alarmCount = await AsyncStorage.getItem("alarmCount");
         // console.log(alarmCount);
 
-        for (let i = 0; i < alarmCount; i++) {
+        for (let i = 0; i < alarmCount; i += 1) {
           const curData = await AsyncStorage.getItem(`alarmData${i}`);
           alarmArray.push(JSON.parse(curData));
         }
@@ -200,12 +200,14 @@ const Home = ({
           <BoardContainer setup={setup} boardHeight={screenHeight - 273}>
             <BoardLabelBox>
               <BoardLabelTagText>내 알림</BoardLabelTagText>
-              <BoardLabelSetupText
-                setup={setup}
-                onPress={() => setSetup(!setup)}
-              >
-                {setup ? "완료" : "편집"}
-              </BoardLabelSetupText>
+              {alarmList.length > 0 && (
+                <BoardLabelSetupText
+                  setup={setup}
+                  onPress={() => setSetup(!setup)}
+                >
+                  {setup ? "완료" : "편집"}
+                </BoardLabelSetupText>
+              )}
             </BoardLabelBox>
             {alarmList &&
               alarmList.map((al, index) => (
