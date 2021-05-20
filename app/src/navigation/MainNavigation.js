@@ -80,7 +80,7 @@ const MainNavigation = ({
         <Tab.Screen
           name="Group"
           children={() => (
-            <Group setPopMenu={setPopMenu} isLoggedIn={isLoggedIn} />
+            <Test setPopMenu={setPopMenu} isLoggedIn={isLoggedIn} />
           )}
         />
         <Tab.Screen

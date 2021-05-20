@@ -113,30 +113,30 @@ const Test = () => {
     };
   }, []);
 
-  // const onPressTest1 = () => {
-  //   const dateSplit = "2021-05-20 23:35".split(" ");
-  //   const split1 = dateSplit[0].split("-");
-  //   const split2 = dateSplit[1].split(":");
+  const onPressTest1 = () => {
+    const dateSplit = "2021-05-20 23:35".split(" ");
+    const split1 = dateSplit[0].split("-");
+    const split2 = dateSplit[1].split(":");
 
-  //   const arrivetime = new Date(
-  //     Date.UTC(split1[0], split1[1] * 1 - 1, split1[2], split2[0], split2[1])
-  //   );
-  //   const now = new Date();
-  //   const nowtime = new Date(
-  //     Date.UTC(
-  //       now.getFullYear(),
-  //       now.getMonth(),
-  //       now.getDate(),
-  //       now.getHours(),
-  //       now.getSeconds()
-  //     )
-  //   );
+    const arrivetime = new Date(
+      Date.UTC(split1[0], split1[1] * 1 - 1, split1[2], split2[0], split2[1])
+    );
+    const now = new Date();
+    const nowtime = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getSeconds()
+      )
+    );
 
-  //   console.log(arrivetime);
-  //   console.log(nowtime);
+    console.log(arrivetime);
+    console.log(nowtime);
 
-  //   console.log((arrivetime - nowtime) / 60000);
-  // };
+    console.log((arrivetime - nowtime) / 60000);
+  };
 
   return (
     <SafeAreaView>
