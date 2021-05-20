@@ -711,7 +711,7 @@ public class RouteServiceImpl implements RouteService {
 				path = CheckCustom(path, user);
 
 				// 세부 경로들 계산
-				loop: for (int i = 0; i < path.size() - 1; i++) {
+				loop: for (int i = 0; i < path.size(); i++) {
 					JSONObject infos = (JSONObject) path.get(i);
 
 					// step1.경로 전체 소요시간 구하기
