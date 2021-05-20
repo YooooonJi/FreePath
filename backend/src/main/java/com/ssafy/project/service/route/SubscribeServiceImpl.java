@@ -24,7 +24,9 @@ import org.springframework.stereotype.Service;
 import com.ssafy.project.dao.route.SubscribeDao;
 import com.ssafy.project.dao.user.CustomDao;
 import com.ssafy.project.model.api.ApiProperties;
+import com.ssafy.project.model.route.Subscribe;
 import com.ssafy.project.model.route.SubscribeRequest;
+import com.ssafy.project.model.route.SubscribeWithoutRequest;
 import com.ssafy.project.model.user.Custom;
 
 @Service
@@ -43,23 +45,21 @@ public class SubscribeServiceImpl implements SubscribeService {
 	static int startBusStationIdx = 0;
 
 	@Override
-	public ResponseEntity<Map<String, Object>> findRoute(SubscribeRequest subscribeRequest) {
+	public ResponseEntity<Map<String, Object>> findSubscribeWithoutUser(SubscribeWithoutRequest subscribeWithoutRequest) {
 
 		HttpStatus status = null;
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 
 		String encodingStationName = "";
 		try {
-			encodingStationName = URLEncoder.encode(subscribeRequest.getStationname(), "UTF-8");
+			encodingStationName = URLEncoder.encode(subscribeWithoutRequest.getStationname(), "UTF-8");
 		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 		final String openUrl = "https://api.odsay.com/v1/api/searchStation?lang=0&stationName=" + encodingStationName + "&apiKey=" + apiProperties.getKey();
 
 		try {
-
 			URL url = new URL(openUrl);
 
 			HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
@@ -67,39 +67,31 @@ public class SubscribeServiceImpl implements SubscribeService {
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
 
-			String startTime = new String();
+			String startTime = "";
 
-			// 현재시간
-			Calendar today = Calendar.getInstance();
-			String start[] = subscribeRequest.getStartTime().split(" ");
+			Calendar today = Calendar.getInstance(); // 현재시간
+			String start[] = subscribeWithoutRequest.getStartTime().split(" ");
 
-			// 프로필 설정 스페어 타임
 			int spareTime = 0;
-			if (subscribeRequest.getUid() != "") {
-				Custom custom = customDao.findCustomByUid(subscribeRequest.getUid());
-				spareTime = custom.getSparetime();
-			}
 
-			// 버스 정류장 구독
-			if (subscribeRequest.getType() == 1) {
-
+			if (subscribeWithoutRequest.getType() == 1) { // 버스 정류장 구독
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(br);
 				JSONObject response = (JSONObject) obj.get("result");
 				JSONArray station = (JSONArray) response.get("station");
-
+	
 				// 세부 경로들 계산
-				for (int i = 0; i < station.size() - 1; i++) {
+				for (int i = 0; i < station.size(); i++) {
 					JSONObject infos = (JSONObject) station.get(i);
 
 					String arsID = String.valueOf(infos.get("arsID"));
-					String tmpStationID = subscribeRequest.getStationid();
+					String tmpStationID = subscribeWithoutRequest.getStationid();
 					String stringStationID = tmpStationID.substring(0, 2) + "-" + tmpStationID.substring(2, 5);
 
 					// 정류장 중 사용자가 선택한 정류장이라면
 					if (arsID.equals(stringStationID)) {
 						int stationID = Integer.parseInt(String.valueOf(infos.get("stationID")));
-						int busID = searchBusId(subscribeRequest.getBusno());
+						int busID = searchBusId(subscribeWithoutRequest.getBusno());
 
 						startTime = CalculateTime(RealTimeBus(busID, stationID, start[1]), spareTime, 2);
 
@@ -108,18 +100,14 @@ public class SubscribeServiceImpl implements SubscribeService {
 				}
 
 				urlConnection.disconnect();
-			}
-			// 지하철 역 구독
-			else if (subscribeRequest.getType() == 2) {
-				startTime = CalculateTime(TimeTableSubway(Integer.parseInt(subscribeRequest.getStationid()), subscribeRequest.getUpdown(), start[1]), spareTime, 2);
+			} else if (subscribeWithoutRequest.getType() == 2) { // 지하철 역 구독
+				startTime = CalculateTime(TimeTableSubway(Integer.parseInt(subscribeWithoutRequest.getStationid()), subscribeWithoutRequest.getUpdown(), start[1]), spareTime, 2);
 			}
 
 			/* 결과 출발 시간 만들기 */
 			StringBuilder sb = new StringBuilder();
-			// String[] arriveTime = routeFindRequest.getArriveTime().split(" ");
-
 			sb.append(start[0] + " "); // 년-월-날
-			sb.append(startTime);// 시간
+			sb.append(startTime); // 시간
 
 			Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(sb.toString());
 			Calendar lastDate = Calendar.getInstance();
@@ -130,13 +118,107 @@ public class SubscribeServiceImpl implements SubscribeService {
 			resultMap.put("arrivetime", sb.toString());
 			resultMap.put("totaltime", remainSecond);
 
-
 			status = HttpStatus.OK;
 		} catch (Exception e) {
 			logger.error("버스/지하철 구독 실시간 계산 실패 : {}", e);
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
+
+	@Override
+	public ResponseEntity<Subscribe> findSubscribeWithUser(SubscribeRequest subscribeRequest) {
+		HttpStatus status = null;
+		Subscribe resultSubscribe = null;
+
+		String encodingStationName = "";
+		try {
+			encodingStationName = URLEncoder.encode(subscribeRequest.getStationname(), "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
+
+		final String openUrl = "https://api.odsay.com/v1/api/searchStation?lang=0&stationName=" + encodingStationName + "&apiKey=" + apiProperties.getKey();
+
+		try {
+			Subscribe subscribe = new Subscribe();
+
+			subscribe.setAlarmname(subscribeRequest.getAlarmname());
+			subscribe.setBusno(subscribeRequest.getBusno());
+			subscribe.setStationid(Integer.parseInt(subscribeRequest.getStationid()));
+			subscribe.setStationname(subscribeRequest.getStationname());
+			subscribe.setUid(subscribeRequest.getUid());
+			subscribe.setUpdown(subscribeRequest.getUpdown());
+
+			URL url = new URL(openUrl);
+
+			HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+			urlConnection.setRequestMethod("GET");
+
+			BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+
+			String startTime = "";
+
+			Calendar today = Calendar.getInstance(); // 현재시간
+			String start[] = subscribeRequest.getStartTime().split(" ");
+
+			/* 프로필 설정 스페어 타임 */
+			Custom custom = customDao.findCustomByUid(subscribeRequest.getUid());
+			int spareTime = custom.getSparetime();
+
+			if (subscribeRequest.getType() == 1) { // 버스 정류장 구독
+
+				JSONParser parser = new JSONParser();
+				JSONObject obj = (JSONObject) parser.parse(br);
+				JSONObject response = (JSONObject) obj.get("result");
+				JSONArray station = (JSONArray) response.get("station");
+
+				// 세부 경로들 계산
+				for (int i = 0; i < station.size(); i++) {
+					JSONObject infos = (JSONObject) station.get(i);
+
+					String arsID = String.valueOf(infos.get("arsID"));
+					String tmpStationID = subscribeRequest.getStationid();
+					String stringStationID = tmpStationID.substring(0, 2) + "-" + tmpStationID.substring(2, 5);
+
+					if (arsID.equals(stringStationID)) { // 정류장 중 사용자가 선택한 정류장이라면
+						int stationID = Integer.parseInt(String.valueOf(infos.get("stationID")));
+						int busID = searchBusId(subscribeRequest.getBusno());
+
+						startTime = CalculateTime(RealTimeBus(busID, stationID, start[1]), spareTime, 2);
+
+						break;
+					}
+				}
+
+				urlConnection.disconnect();
+			} else if (subscribeRequest.getType() == 2) { // 지하철 역 구독
+				startTime = CalculateTime(TimeTableSubway(Integer.parseInt(subscribeRequest.getStationid()), subscribeRequest.getUpdown(), start[1]), spareTime, 2);
+			}
+
+			/* 결과 출발 시간 만들기 */
+			StringBuilder sb = new StringBuilder();
+
+			sb.append(start[0] + " "); // 년-월-날
+			sb.append(startTime);// 시간
+
+			Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(sb.toString());
+			Calendar lastDate = Calendar.getInstance();
+			lastDate.setTime(date);
+
+			long remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
+
+			subscribe.setArrivetime(sb.toString());
+			subscribe.setTotaltime((int) remainSecond);
+
+			resultSubscribe = subscribeDao.save(subscribe);
+
+			status = HttpStatus.OK;
+		} catch (Exception e) {
+			logger.error("버스/지하철 구독 실시간 계산 실패 : {}", e);
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+		return new ResponseEntity<Subscribe>(resultSubscribe, status);
 	}
 
 	@Override
@@ -236,7 +318,6 @@ public class SubscribeServiceImpl implements SubscribeService {
 			}
 
 			urlConnection.disconnect();
-
 		} catch (Exception e) {
 			logger.error("지하철 실시간 계산 실패 : {}", e);
 		}
@@ -250,14 +331,12 @@ public class SubscribeServiceImpl implements SubscribeService {
 	public String RealTimeBus(int busID, int startBusStationId, String startTime) {
 
 		ArrayList<Integer> busDirTime = BusStationTime(busID, startBusStationId);
-
 		String realStartTime = "";
 
 		// 시간 시,분 계산
 		String[] tmpTime = startTime.split(":");
 		int hour = Integer.parseInt(tmpTime[0]);
 		int minute = Integer.parseInt(tmpTime[1]);
-
 
 		Calendar cal = Calendar.getInstance();
 		int nowHour = cal.get(Calendar.HOUR_OF_DAY);
@@ -302,22 +381,14 @@ public class SubscribeServiceImpl implements SubscribeService {
 						realStartTime = busTmpTime;
 						break;
 					}
-					// 도착한 시간이 현재 출발해야 하는 시간보다 늦다면
-
 				}
-
 			}
-
 			urlConnection.disconnect();
-
 		} catch (Exception e) {
 			logger.error("버스 실시간 위치정보 계산 실패 : {}", e);
 		}
 		return realStartTime;
-
-
 	}
-
 
 	// 버스 정류장 사이 별 소요시간
 	public ArrayList<Integer> BusStationTime(int busID, int startBusStationId) {
@@ -385,4 +456,5 @@ public class SubscribeServiceImpl implements SubscribeService {
 		}
 		return resultTime;
 	}
+
 }

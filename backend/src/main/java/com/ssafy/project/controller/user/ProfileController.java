@@ -36,6 +36,12 @@ public class ProfileController {
 	public ResponseEntity<String> join(@Valid @RequestBody Ggomjilak user) {
 		return profileService.join(user);
 	}
+	
+	@ApiOperation(value = "이메일로 사용자의 기본 정보 전달")
+	@GetMapping("/basic/{email}")
+	public ResponseEntity<Ggomjilak> getBasic(@PathVariable("email") String email) {
+		return profileService.getBasic(email);
+	}
 
 	@ApiOperation(value = "사용자의 전체 정보 전달")
 	@GetMapping("/total/{uid}")

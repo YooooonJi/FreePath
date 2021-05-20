@@ -1,10 +1,11 @@
 package com.ssafy.project.service.route;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
+import com.ssafy.project.model.route.Subscribe;
 import com.ssafy.project.model.route.SubscribeRequest;
+import com.ssafy.project.model.route.SubscribeWithoutRequest;
 
 public interface SubscribeService {
 	public Object TimeTableSubway(int stationID, int wayCode, String startTime);
@@ -15,7 +16,9 @@ public interface SubscribeService {
 
 	public String CalculateTime(String nowTime, int tmpTime, int type);
 
-	ResponseEntity<Map<String, Object>> findRoute(SubscribeRequest subscribeRequest);
+	public ResponseEntity<Map<String, Object>> findSubscribeWithoutUser(SubscribeWithoutRequest subscribeWithoutRequest);
+	
+	public ResponseEntity<Subscribe> findSubscribeWithUser(SubscribeRequest subscribeRequest);
 
 	int searchBusId(int busNo);
 }

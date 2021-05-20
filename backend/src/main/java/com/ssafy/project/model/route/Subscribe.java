@@ -25,21 +25,9 @@ public class Subscribe {
 	@Column(name = "totaltime")
 	private int totaltime;
 
-	@Column(name = "address")
-	private String address;
-
-	@Column(name = "latitude")
-	private double latitude;
-
-	@Column(name = "longitude")
-	private double longitude;
-
 	@Column(name = "busno")
 	private int busno;
-
-	@Column(name = "busid")
-	private int busid;
-
+	
 	@Column(name = "stationname")
 	private String stationname;
 
@@ -55,6 +43,7 @@ public class Subscribe {
 	@Column(name = "alarmname")
 	private String alarmname;
 
-	@Column(name = "groupinfo")
-	private int groupinfo;
+	@Column(name = "arrivetime")
+	private String arrivetime;
+	
 }

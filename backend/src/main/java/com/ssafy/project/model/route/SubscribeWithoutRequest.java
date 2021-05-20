@@ -3,9 +3,7 @@ package com.ssafy.project.model.route;
 import lombok.Data;
 
 @Data
-public class SubscribeRequest {
-
-	private String uid; // 사용자 uid
+public class SubscribeWithoutRequest {
 
 	private int type; // 1: 버스 , 2: 지하철
 
