@@ -651,7 +651,7 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 				LocationId locationId = new LocationId(1, user); // 무조건 집에서 출발한다고 가정
 				Location userLocation = locationDao.findLocationByLocationid(locationId);
 
-				String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=" + userLocation.getLatitude() + "&SY=" + userLocation.getLongitude() + "&EX="
+				String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=" + userLocation.getLongitude() + "&SY=" + userLocation.getLatitude() + "&EX="
 						+ groupAlarmRegisterRequest.getEndX() + "&EY=" + groupAlarmRegisterRequest.getEndY() + "&apiKey=" + apiProperties.getKey();
 
 				System.out.println(openUrl);
