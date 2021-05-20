@@ -82,8 +82,8 @@ const GroupMember = () => {
 
   return (
     <GroupMemberContainer>
-      {member}
-      {memberAddButton}
+      {/* {member}
+      {memberAddButton} */}
     </GroupMemberContainer>
   );
 };

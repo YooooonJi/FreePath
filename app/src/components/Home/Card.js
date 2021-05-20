@@ -60,6 +60,7 @@ const CardTitleText = styled.Text`
 const CardAddressText = styled.Text`
   margin-left: 1px;
   color: ${(props) => props.theme.card.addr};
+  font-weight: bold;
   font-size: 12px;
 `;
 
@@ -87,8 +88,9 @@ const CardRightBox = styled.View`
 
 const TimeLeftText = styled.Text`
   color: ${(props) => props.theme.card.timer};
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 12px;
+  font-weight: bold;
 `;
 
 const CardSetupBox = styled.View`
@@ -103,7 +105,7 @@ const CardDeleteBox = styled.View`
   align-items: center;
   justify-content: center;
   border-top-right-radius: 10px;
-  background-color: ${(props) => props.theme.card.circle.bg};
+  background-color: ${(props) => props.theme.card.edit.delete};
 `;
 
 const CardEditBox = styled.View`
@@ -113,12 +115,23 @@ const CardEditBox = styled.View`
   align-items: center;
   justify-content: center;
   border-bottom-right-radius: 10px;
-  background-color: rgba(0, 0, 0, 0.25);
+  background-color: ${(props) => props.theme.card.edit.update};
 `;
 
 const Card = ({ data, setup }) => {
+  const [cardType, setCardType] = useState(-1);
   const [expandShow, setExpandShow] = useState(false);
   const [seconds, setSeconds] = useState(0);
+
+  const updownArr = ["", "상행", "하행"];
+
+  useEffect(() => {
+    if (data.updown === undefined) {
+      setCardType(3);
+    } else {
+      setCardType(data.updown);
+    }
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -127,7 +140,9 @@ const Card = ({ data, setup }) => {
     return () => clearInterval(timer);
   }, [seconds]);
 
-  const splitTime = data.arrivetime.split(" ")[1].split(":");
+  // console.log(data.timetype);
+
+  const splitTime = data.inputtime.split(" ")[1].split(":");
 
   const calcLeftTime = (term, sec) => {
     const dateSplit = term.split(" ");
@@ -151,7 +166,7 @@ const Card = ({ data, setup }) => {
     const timeInterval = (arrivetime - nowtime) / 1000;
 
     if (timeInterval < 0) {
-      return "막차 종료";
+      return "시간 초과";
     }
 
     const secToMinutes = parseInt(timeInterval / 60);
@@ -178,49 +193,128 @@ const Card = ({ data, setup }) => {
 
   return (
     <CardContainer>
-      {expandShow && <CardExpand data={data.routeinfo} />}
-      <CardView>
-        <CardLeftBox>
-          <CardOnOffBox>
-            <Icon name="map" size={20} color="#FFFFFF" />
-            <CardOnOffText>ON</CardOnOffText>
-          </CardOnOffBox>
-          <CardInfoBox>
-            <CardTitleText>{data.alarmname}</CardTitleText>
-            <CardAddressText>{data.startaddress}</CardAddressText>
-            <CardAddressText>{data.endaddress}</CardAddressText>
-            <CardTimeTagText>
-              {`${splitTime[0]}시 `}
-              {`${splitTime[1]}분 출발`}
-            </CardTimeTagText>
-          </CardInfoBox>
-        </CardLeftBox>
-        {!setup && (
-          <CardRightBox>
-            <TimeLeftText>
-              {calcLeftTime(data.arrivetime, seconds)}
-            </TimeLeftText>
-            <Icon
-              name={expandShow ? "keyboard-arrow-up" : "keyboard-arrow-down"}
-              size={30}
-              color="rgba(0, 0, 0, 0.5)"
-              onPress={() => {
-                setExpandShow(!expandShow);
-              }}
-            />
-          </CardRightBox>
-        )}
-        {setup && (
-          <CardSetupBox>
-            <CardDeleteBox>
-              <Icon name="delete" size={30} color="#ffffff" />
-            </CardDeleteBox>
-            <CardEditBox>
-              <Icon name="edit" size={30} color="#ffffff" />
-            </CardEditBox>
-          </CardSetupBox>
-        )}
-      </CardView>
+      {cardType === 3 && expandShow && <CardExpand data={data.routeinfo} />}
+      {cardType === 3 && (
+        <CardView>
+          <CardLeftBox>
+            <CardOnOffBox>
+              <Icon name="map" size={20} color="#FFFFFF" />
+              <CardOnOffText>ON</CardOnOffText>
+            </CardOnOffBox>
+            <CardInfoBox>
+              <CardTitleText>{data.alarmname}</CardTitleText>
+              <CardAddressText>{data.startaddress}</CardAddressText>
+              <CardAddressText>{data.endaddress}</CardAddressText>
+              <CardTimeTagText>
+                {data.timetype === 0
+                  ? `막차`
+                  : `${splitTime[0]}:${splitTime[1]}`}
+              </CardTimeTagText>
+            </CardInfoBox>
+          </CardLeftBox>
+          {!setup && (
+            <CardRightBox>
+              <TimeLeftText>
+                {calcLeftTime(data.arrivetime, seconds)}
+              </TimeLeftText>
+              <Icon
+                name={expandShow ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+                size={30}
+                color="rgba(0, 0, 0, 0.5)"
+                onPress={() => {
+                  setExpandShow(!expandShow);
+                }}
+              />
+            </CardRightBox>
+          )}
+          {setup && (
+            <CardSetupBox>
+              <CardDeleteBox>
+                <Icon name="delete" size={30} color="#ffffff" />
+              </CardDeleteBox>
+              <CardEditBox>
+                <Icon name="edit" size={30} color="#ffffff" />
+              </CardEditBox>
+            </CardSetupBox>
+          )}
+        </CardView>
+      )}
+      {cardType === 0 && (
+        <CardView>
+          <CardLeftBox>
+            <CardOnOffBox>
+              <Icon name="map" size={20} color="#FFFFFF" />
+              <CardOnOffText>ON</CardOnOffText>
+            </CardOnOffBox>
+            <CardInfoBox>
+              <CardTitleText>{data.alarmname}</CardTitleText>
+              <CardAddressText style={{ marginTop: 16 }}>
+                {`${data.stationname}(${data.stationid}) - ${data.busno}번`}
+              </CardAddressText>
+              <CardTimeTagText>
+                {`${splitTime[0]}:`}
+                {`${splitTime[1]}`}
+              </CardTimeTagText>
+            </CardInfoBox>
+          </CardLeftBox>
+          {!setup && (
+            <CardRightBox>
+              <TimeLeftText>
+                {/* {calcLeftTime(data.arrivetime, seconds)} */}
+                반복 알림
+              </TimeLeftText>
+            </CardRightBox>
+          )}
+          {setup && (
+            <CardSetupBox>
+              <CardDeleteBox>
+                <Icon name="delete" size={30} color="#ffffff" />
+              </CardDeleteBox>
+              <CardEditBox>
+                <Icon name="edit" size={30} color="#ffffff" />
+              </CardEditBox>
+            </CardSetupBox>
+          )}
+        </CardView>
+      )}
+      {(cardType === 1 || cardType === 2) && (
+        <CardView>
+          <CardLeftBox>
+            <CardOnOffBox>
+              <Icon name="map" size={20} color="#FFFFFF" />
+              <CardOnOffText>ON</CardOnOffText>
+            </CardOnOffBox>
+            <CardInfoBox>
+              <CardTitleText>{data.alarmname}</CardTitleText>
+              <CardAddressText style={{ marginTop: 16 }}>
+                {`${data.stationname} ${data.updownname}`}
+              </CardAddressText>
+              <CardTimeTagText>
+                {`${splitTime[0]}:`}
+                {`${splitTime[1]}`}
+              </CardTimeTagText>
+            </CardInfoBox>
+          </CardLeftBox>
+          {!setup && (
+            <CardRightBox>
+              <TimeLeftText>
+                {/* {calcLeftTime(data.arrivetime, seconds)} */}
+                반복 알림
+              </TimeLeftText>
+            </CardRightBox>
+          )}
+          {setup && (
+            <CardSetupBox>
+              <CardDeleteBox>
+                <Icon name="delete" size={30} color="#ffffff" />
+              </CardDeleteBox>
+              <CardEditBox>
+                <Icon name="edit" size={30} color="#ffffff" />
+              </CardEditBox>
+            </CardSetupBox>
+          )}
+        </CardView>
+      )}
     </CardContainer>
   );
 };

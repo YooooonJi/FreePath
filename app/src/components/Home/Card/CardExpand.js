@@ -1,6 +1,6 @@
 import React from "react";
 import { Dimensions, View } from "react-native";
-import styled from "styled-components/native";
+import styled, { useTheme } from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import PathTransport from "./PathTransport";
 import PathWalk from "./PathWalk";
@@ -16,7 +16,7 @@ const CardExpandView = styled.View`
   width: 100%;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
-  background-color: white;
+  background-color: ${(props) => props.theme.card.expand.bg};
   elevation: 3;
 `;
 
@@ -35,7 +35,7 @@ const DepartureBox = styled.View`
   height: 20px;
   width: 20px;
   border-radius: 10px;
-  background-color: #f46262;
+  background-color: ${(props) => props.theme.card.expand.depart};
 `;
 
 const ArrivalBox = styled(DepartureBox)`
@@ -49,6 +49,7 @@ const DetailContainer = styled.View`
 `;
 
 const CardExpand = ({ data }) => {
+  const theme = useTheme();
   const jsonData = JSON.parse(data);
 
   const {
@@ -60,7 +61,7 @@ const CardExpand = ({ data }) => {
     <CardExpandView>
       <PathContainer>
         <ArrivalBox>
-          <Icon name="flag" size={15} color="#ffffff" />
+          <Icon name="flag" size={15} color={theme.card.expand.flag} />
         </ArrivalBox>
         {subPath &&
           subPath.reverse().map((sp, index) => {
@@ -79,7 +80,7 @@ const CardExpand = ({ data }) => {
                   key={index}
                   minute={sp.sectionTime}
                   width={(sp.sectionTime * screenWidth) / totalTime}
-                  color="#d1d2a2"
+                  color={theme.card.expand.bus}
                 />
               );
             }
@@ -89,14 +90,14 @@ const CardExpand = ({ data }) => {
                   key={index}
                   minute={sp.sectionTime}
                   width={(sp.sectionTime * screenWidth) / totalTime}
-                  color="#19bf66"
+                  color={theme.card.expand.subway}
                 />
               );
             }
             return null;
           })}
         <DepartureBox>
-          <Icon name="place" size={15} color="#ffffff" />
+          <Icon name="place" size={15} color={theme.card.expand.flag} />
         </DepartureBox>
       </PathContainer>
       <DetailContainer>
@@ -109,7 +110,7 @@ const CardExpand = ({ data }) => {
                     type="bus"
                     number={sp.lane[0].busNo}
                     stop={sp.startName}
-                    color="#d1d2a2"
+                    color={theme.card.expand.bus}
                   />
                   <BusDetail count={sp.stationCount} stop={sp.endName} />
                 </View>
@@ -122,7 +123,7 @@ const CardExpand = ({ data }) => {
                   type="tram"
                   number={`${sp.lane[0].subwayCode}호선`}
                   stop={`${sp.startName} 승차  ››  ${sp.endName} 하차`}
-                  color="#19bf66"
+                  color={theme.card.expand.subway}
                 />
               );
             }

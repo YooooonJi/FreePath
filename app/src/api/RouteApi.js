@@ -55,3 +55,41 @@ export const getRouteLastWith = async (req) => {
 
   return { status, data };
 };
+
+// 경로 & 특정시간 & 비로그인
+export const getRouteWithout = async (req) => {
+  let status;
+  let data;
+
+  await axios
+    .post(`http://k4a104.p.ssafy.io:8080/route/find/without`, req)
+    .then((res) => {
+      status = res.status;
+      data = res.data;
+    })
+    .catch((e) => {
+      status = e.response.status;
+      data = e.config;
+    });
+
+  return { status, data };
+};
+
+// 경로 & 특정시간 & 로그인
+export const getRouteWith = async (req) => {
+  let status;
+  let data;
+
+  await axios
+    .post(`http://k4a104.p.ssafy.io:8080/route/find/with`, req)
+    .then((res) => {
+      status = res.status;
+      data = res.data;
+    })
+    .catch((e) => {
+      status = e.response.status;
+      data = e.config;
+    });
+
+  return { status, data };
+};

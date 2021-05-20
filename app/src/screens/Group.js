@@ -22,7 +22,7 @@ const Group = ({ setPopMenu, isLoggedIn }) => (
         <GroupScreenContainer>
           <MenuButton setPopMenu={setPopMenu} />
           <GroupMember />
-          <GroupAlarm />
+          {/* <GroupAlarm /> */}
         </GroupScreenContainer>
       )}
     </ScrollView>

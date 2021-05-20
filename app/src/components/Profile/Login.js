@@ -34,9 +34,8 @@ const IconExit = styled(Icon)`
 const SloganText = styled.Text`
   color: white;
   font-size: 28px;
-  line-height: 31px;
-  font-family: "5";
   margin-bottom: 10px;
+  font-weight: bold;
 `;
 
 const LoginButtonBox = styled.View``;
@@ -61,8 +60,8 @@ const SocialLoginTouch = styled.TouchableOpacity`
 const SocialLoginButtonText = styled.Text`
   width: 100%;
   text-align: center;
+  font-weight: bold;
   font-size: 18px;
-  font-family: "5";
   color: ${(props) => props.textColor};
 `;
 
@@ -90,7 +89,7 @@ const EmailLoginButtonText = styled.Text`
   width: 100%;
   text-align: center;
   font-size: 18px;
-  font-family: "5";
+  font-weight: bold;
   color: white;
 `;
 
@@ -98,8 +97,6 @@ const LoginBottomText = styled.Text`
   width: 100%;
   text-align: center;
   font-size: 12px;
-  line-height: 14px;
-  font-family: "4";
   margin-bottom: 25px;
   color: white;
   text-decoration: underline;
@@ -121,8 +118,9 @@ const Login = ({ setPopLogin, setPopSignIn }) => {
         <IconExitButton onPress={onPressExit}>
           <IconExit name="close" size={40} />
         </IconExitButton>
-        <SloganText>프리패스 슬로건</SloganText>
-        <SloganText>슬로건 프리패스 슬로건</SloganText>
+        <SloganText style={{ fontSize: 24 }}>개인 맞춤형</SloganText>
+        <SloganText style={{ fontSize: 24 }}>대중교통 알림 서비스</SloganText>
+        <SloganText style={{ fontSize: 48 }}>프리패스</SloganText>
       </LoginTopBox>
       <LoginButtonBox>
         <SocialLoginTouch bgColor="#FFDC02">

@@ -14,11 +14,11 @@ const PathWalkContainer = styled.View`
   height: 20px;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
-  background-color: #f1eaea;
+  background-color: ${(props) => props.theme.card.expand.walk};
 `;
 
 const PathWalkText = styled.Text`
-  color: #968282;
+  color: ${(props) => props.theme.card.expand.walktext};
   font-size: 12px;
   font-weight: bold;
 `;

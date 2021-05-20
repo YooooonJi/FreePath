@@ -36,10 +36,13 @@ const InputIconBox = styled.TouchableOpacity`
 let subwayStationList;
 let nextSubwayStation;
 
-const TypeSubwayInput = () => {
+const TypeSubwayInput = ({
+  getInputValue1,
+  getInputValue2,
+  setSubwayUpdown,
+}) => {
   const [subwayStation, setSubwayStation] = useState("");
   const [subwayLine, setSubwayLine] = useState("");
-  const [subwayUpdown, setSubwayUpdown] = useState(0);
   const [popModal, setPopModal] = useState(false);
   const [modalData, setModalData] = useState([]);
   const subwayStationInput = useRef();
@@ -89,9 +92,9 @@ const TypeSubwayInput = () => {
 
         temp.push({
           key,
-          label: `${subwayStationList[index].STATION_NM} ${
-            subwayStationList[index].LINE_NUM
-          } ${key % 2 === 0 ? "상행" : "하행"}`,
+          label: `${subwayStationList[index].STATION_NM} ${subwayStationList[
+            index
+          ].LINE_NUM.slice(1)} ${key % 2 === 0 ? "상행" : "하행"}`,
         });
       }
 
@@ -112,9 +115,15 @@ const TypeSubwayInput = () => {
     setSubwayLine(
       `${subwayStationList[index].LINE_NUM} ${
         key % 2 === 0 ? "상행" : "하행"
-      } ${nextSubwayStation}`
+      } ${nextSubwayStation}`.slice(1)
     );
     setSubwayUpdown((key % 2) + 1);
+    getInputValue1(subwayStationList[index]);
+    getInputValue2(
+      `${subwayStationList[index].LINE_NUM} ${
+        key % 2 === 0 ? "상행" : "하행"
+      } ${nextSubwayStation}`.slice(1)
+    );
   };
 
   return (
