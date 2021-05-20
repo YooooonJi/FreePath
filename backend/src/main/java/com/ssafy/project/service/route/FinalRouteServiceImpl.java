@@ -181,6 +181,7 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 
 			remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
 
+			resultMap.put("inputtime", routeFindWithoutRequest.getArriveTime());
 			resultMap.put("arrivetime", sb.toString());
 			resultMap.put("routeinfo", (JSONObject) path.get(lastOneIdx));
 			resultMap.put("totaltime", remainSecond);
@@ -355,6 +356,7 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 
 			remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
 
+			route.setInputtime(routeFindRequest.getArriveTime());
 			route.setArrivetime(sb.toString());
 			route.setRouteinfo(((JSONObject) path.get(lastOneIdx)).toString());
 			route.setTotaltime((int) remainSecond);

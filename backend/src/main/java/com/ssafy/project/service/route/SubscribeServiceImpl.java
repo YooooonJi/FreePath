@@ -79,7 +79,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 				JSONObject obj = (JSONObject) parser.parse(br);
 				JSONObject response = (JSONObject) obj.get("result");
 				JSONArray station = (JSONArray) response.get("station");
-	
+
 				// 세부 경로들 계산
 				for (int i = 0; i < station.size(); i++) {
 					JSONObject infos = (JSONObject) station.get(i);
@@ -115,6 +115,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 
 			long remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
 
+			resultMap.put("inputtime", subscribeWithoutRequest.getStartTime());
 			resultMap.put("arrivetime", sb.toString());
 			resultMap.put("totaltime", remainSecond);
 
@@ -208,6 +209,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 
 			long remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
 
+			subscribe.setInputtime(subscribeRequest.getStartTime());
 			subscribe.setArrivetime(sb.toString());
 			subscribe.setTotaltime((int) remainSecond);
 
@@ -254,7 +256,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 			urlConnection.disconnect();
 
 		} catch (Exception e) {
-			logger.error("지하철 실시간 계산 실패 : {}", e);
+			logger.error("버스 ID 전달 실패 : {}", e);
 		}
 		return busID;
 	}

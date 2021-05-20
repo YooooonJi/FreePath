@@ -46,4 +46,7 @@ public class Subscribe {
 	@Column(name = "arrivetime")
 	private String arrivetime;
 	
+	@Column(name = "inputtime")
+	private String inputtime;
+	
 }
