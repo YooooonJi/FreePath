@@ -680,6 +680,7 @@ public class RouteServiceImpl implements RouteService {
 				route.setEndlongitude(groupAlarmRegisterRequest.getEndX());
 				route.setEndlatitude(groupAlarmRegisterRequest.getEndY());
 				route.setGroupinfo(groupAlarm.getGroupalarmid().getGroupid());
+				route.setInputtime(groupAlarmRegisterRequest.getInputtime());
 				route.setTimetype(1);
 
 				if (!groupAlarmRegisterRequest.getAlarmName().isEmpty()) {

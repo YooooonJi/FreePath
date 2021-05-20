@@ -666,6 +666,7 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 				route.setEndlongitude(groupAlarmRegisterRequest.getEndX());
 				route.setEndlatitude(groupAlarmRegisterRequest.getEndY());
 				route.setGroupinfo(groupAlarm.getGroupalarmid().getGroupid());
+				route.setInputtime(groupAlarmRegisterRequest.getInputtime());
 				route.setTimetype(0);
 
 				if (!groupAlarmRegisterRequest.getAlarmName().isEmpty()) {
