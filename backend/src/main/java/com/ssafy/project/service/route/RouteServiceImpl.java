@@ -160,7 +160,7 @@ public class RouteServiceImpl implements RouteService {
 					}
 				}
 			}
-			
+
 			/* 결과 출발 시간 만들기 */
 			StringBuilder sb = new StringBuilder();
 			String[] arriveTime = routeFindWithoutRequest.getArriveTime().split(" ");

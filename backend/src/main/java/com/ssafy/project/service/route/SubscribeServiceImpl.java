@@ -93,9 +93,9 @@ public class SubscribeServiceImpl implements SubscribeService {
 					JSONObject infos = (JSONObject) station.get(i);
 
 					String arsID = String.valueOf(infos.get("arsID"));
-					String tmpStationID=subscribeRequest.getStationid();
-					String stringStationID=tmpStationID.substring(0,2)+"-"+tmpStationID.substring(2,5);
-					
+					String tmpStationID = subscribeRequest.getStationid();
+					String stringStationID = tmpStationID.substring(0, 2) + "-" + tmpStationID.substring(2, 5);
+
 					// 정류장 중 사용자가 선택한 정류장이라면
 					if (arsID.equals(stringStationID)) {
 						int stationID = Integer.parseInt(String.valueOf(infos.get("stationID")));
@@ -120,7 +120,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 
 			sb.append(start[0] + " "); // 년-월-날
 			sb.append(startTime);// 시간
-			
+
 			Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(sb.toString());
 			Calendar lastDate = Calendar.getInstance();
 			lastDate.setTime(date);
@@ -156,7 +156,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 			JSONParser parser = new JSONParser();
 			JSONObject obj = (JSONObject) parser.parse(br);
 			JSONObject response = (JSONObject) obj.get("result");
-			//JSONObject totalCityList = (JSONObject) response.get("totalCityList");
+			// JSONObject totalCityList = (JSONObject) response.get("totalCityList");
 			JSONArray lane = (JSONArray) response.get("lane");
 
 			for (int i = 0; i < lane.size(); i++) {
@@ -216,7 +216,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 			for (int i = 0; i < time.size() - 1; i++) {
 				JSONObject smallTime = (JSONObject) time.get(i);
 				int subwayHour = Integer.parseInt(String.valueOf(smallTime.get("Idx")));
-				
+
 				// 버스 시간표 hour과 같을 때, 최소 차이의 minute 구하기
 				if (hour == subwayHour) {
 					String[] subwayMinute = String.valueOf(smallTime.get("list")).split(" ");
@@ -240,7 +240,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 		} catch (Exception e) {
 			logger.error("지하철 실시간 계산 실패 : {}", e);
 		}
-		
+
 		return realStartTime;
 	}
 
