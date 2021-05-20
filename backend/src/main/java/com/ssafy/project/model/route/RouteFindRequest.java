@@ -24,4 +24,5 @@ public class RouteFindRequest {
 	private String endAddress;
 
 	private String alarmName;
+	
 }

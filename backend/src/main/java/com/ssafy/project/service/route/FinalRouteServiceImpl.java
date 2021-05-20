@@ -217,6 +217,7 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 			route.setEndaddress(routeFindRequest.getEndAddress());
 			route.setEndlongitude(routeFindRequest.getEndX());
 			route.setEndlatitude(routeFindRequest.getEndY());
+			route.setTimetype(0);
 
 			if (!routeFindRequest.getAlarmName().isEmpty()) {
 				route.setAlarmname(routeFindRequest.getAlarmName());

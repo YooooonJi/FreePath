@@ -60,4 +60,7 @@ public class Route {
 	
 	@Column(name = "inputtime")
 	private String inputtime;
+	
+	@Column(name = "timetype")
+	private int timetype;
 }
