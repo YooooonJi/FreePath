@@ -11,7 +11,7 @@ import com.ssafy.project.model.group.GroupAlarmId;
 @Repository
 public interface GroupAlarmDao extends JpaRepository<GroupAlarm, GroupAlarmId> {
 
-	@Query(value = "select count(*) from groupalarm group by groupid", nativeQuery = true)
+	@Query(value = "select max(groupid) from groupalarm", nativeQuery = true)
 	long countAllGroupByGroupId();
 
 	GroupAlarm findGroupAlarmByGroupalarmidUid(String uid);
