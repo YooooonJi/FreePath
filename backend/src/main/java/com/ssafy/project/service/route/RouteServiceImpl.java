@@ -160,7 +160,7 @@ public class RouteServiceImpl implements RouteService {
 					}
 				}
 			}
-
+			
 			/* 결과 출발 시간 만들기 */
 			StringBuilder sb = new StringBuilder();
 			String[] arriveTime = routeFindWithoutRequest.getArriveTime().split(" ");
@@ -733,19 +733,16 @@ public class RouteServiceImpl implements RouteService {
 
 							// 지하철 운행시간 검색
 							if (trafficType == 1) {
-								// System.out.println("지하철 실시간 검색");
 								int stationID = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
 								int wayCode = Integer.parseInt(String.valueOf(smallSubPath.get("wayCode")));
 								String tmpTime = CalculateTime(startTime, walkTime, 1);
 								String realStartTime = CalculateTime(TimeTableSubway(stationID, wayCode, tmpTime), walkTime, 2);
 								startTime = realStartTime;
-								// System.out.println("지하철 실시간 시간:" + realStartTime);
 								break loop;
 							}
 
 							// 버스 실시간 검색
 							else if (trafficType == 2) {
-								// System.out.println("버스 실시간 검색");
 								int startBusStationId = Integer.parseInt(String.valueOf(smallSubPath.get("startID")));
 								JSONArray lane = (JSONArray) smallSubPath.get("lane");
 								JSONObject smallLane = (JSONObject) lane.get(0);
