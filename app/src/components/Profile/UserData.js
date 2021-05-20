@@ -23,7 +23,7 @@ const UserDataIconBox = styled.View`
   justify-content: center;
   width: 40px;
   height: 40px;
-  background-color: #ce5a5a;
+  background-color: #e96466;
   border-radius: 10px;
   elevation: 4;
   margin-left: -6px;
