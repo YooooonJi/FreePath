@@ -49,4 +49,7 @@ public class Subscribe {
 	@Column(name = "inputtime")
 	private String inputtime;
 	
+	@Column(name = "updownname")
+	private String updownname;
+	
 }

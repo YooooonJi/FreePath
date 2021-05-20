@@ -150,6 +150,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 			subscribe.setStationname(subscribeRequest.getStationname());
 			subscribe.setUid(subscribeRequest.getUid());
 			subscribe.setUpdown(subscribeRequest.getUpdown());
+			subscribe.setUpdownname(subscribeRequest.getUpdownname());
 
 			URL url = new URL(openUrl);
 

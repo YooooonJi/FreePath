@@ -209,6 +209,7 @@ public class RouteServiceImpl implements RouteService {
 			route.setEndaddress(routeFindRequest.getEndAddress());
 			route.setEndlongitude(routeFindRequest.getEndX());
 			route.setEndlatitude(routeFindRequest.getEndY());
+			route.setTimetype(1);
 
 			if (!routeFindRequest.getAlarmName().isEmpty()) {
 				route.setAlarmname(routeFindRequest.getAlarmName());

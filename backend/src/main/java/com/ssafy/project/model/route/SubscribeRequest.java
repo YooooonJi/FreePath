@@ -19,4 +19,6 @@ public class SubscribeRequest {
 	private String startTime; // yyyy-mm-dd hh:mm
 
 	private String alarmname; // 알람 이름
+	
+	private String updownname;
 }
