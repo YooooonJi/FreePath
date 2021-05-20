@@ -57,4 +57,7 @@ public class Route {
 
 	@Column(name = "arrivetime")
 	private String arrivetime;
+	
+	@Column(name = "inputtime")
+	private String inputtime;
 }

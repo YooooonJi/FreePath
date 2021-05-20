@@ -174,6 +174,7 @@ public class RouteServiceImpl implements RouteService {
 
 			long remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
 
+			resultMap.put("inputtime", routeFindWithoutRequest.getArriveTime());
 			resultMap.put("arrivetime", sb.toString());
 			resultMap.put("routeinfo", resultObject);
 			resultMap.put("totaltime", remainSecond);
@@ -328,6 +329,7 @@ public class RouteServiceImpl implements RouteService {
 
 			long remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
 
+			route.setInputtime(routeFindRequest.getArriveTime());
 			route.setArrivetime(sb.toString());
 			route.setRouteinfo(resultObject.toString());
 			route.setTotaltime((int) remainSecond);
