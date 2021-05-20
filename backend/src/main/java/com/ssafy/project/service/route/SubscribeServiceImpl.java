@@ -116,8 +116,18 @@ public class SubscribeServiceImpl implements SubscribeService {
 			long remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
 
 			resultMap.put("inputtime", subscribeWithoutRequest.getStartTime());
-			resultMap.put("arrivetime", sb.toString());
-			resultMap.put("totaltime", remainSecond);
+			
+			if (remainSecond > 0) {
+				resultMap.put("arrivetime", sb.toString());
+				resultMap.put("totaltime", remainSecond);
+			} else {
+				Date dateInput = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(subscribeWithoutRequest.getStartTime());
+				Calendar inputDate = Calendar.getInstance();
+				inputDate.setTime(dateInput);
+				
+				resultMap.put("arrivetime", today);
+				resultMap.put("totaltime", (inputDate.getTimeInMillis() - today.getTimeInMillis()) / 1000);
+			}
 
 			status = HttpStatus.OK;
 		} catch (Exception e) {
@@ -211,8 +221,18 @@ public class SubscribeServiceImpl implements SubscribeService {
 			long remainSecond = (lastDate.getTimeInMillis() - today.getTimeInMillis()) / 1000;
 
 			subscribe.setInputtime(subscribeRequest.getStartTime());
-			subscribe.setArrivetime(sb.toString());
-			subscribe.setTotaltime((int) remainSecond);
+			
+			if(remainSecond > 0) {
+				subscribe.setArrivetime(sb.toString());
+				subscribe.setTotaltime((int) remainSecond);
+			}else {
+				Date dateInput = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(subscribeRequest.getStartTime());
+				Calendar inputDate = Calendar.getInstance();
+				inputDate.setTime(dateInput);
+				
+				subscribe.setArrivetime(startTime);
+				subscribe.setTotaltime((int) (inputDate.getTimeInMillis() - today.getTimeInMillis()) / 1000);
+			}
 
 			resultSubscribe = subscribeDao.save(subscribe);
 
