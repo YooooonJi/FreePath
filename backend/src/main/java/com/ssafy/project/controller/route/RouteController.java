@@ -60,9 +60,9 @@ public class RouteController {
 		return finalRouteService.findLastWithUser(routeFindRequest);
 	}
 
-	@ApiOperation(value = "그룹 정보를 포함하지 않는 경로 정보 가져오기")
+	@ApiOperation(value = "사용자 알람 정보 가져오기")
 	@GetMapping("/info/{uid}")
-	public ResponseEntity<List<Route>> info(@PathVariable("uid") String uid) {
+	public ResponseEntity<List<Object>> info(@PathVariable("uid") String uid) {
 		return finalRouteService.info(uid);
 	}
 

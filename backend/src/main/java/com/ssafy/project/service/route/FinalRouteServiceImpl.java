@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.ssafy.project.dao.group.GroupAlarmDao;
 import com.ssafy.project.dao.route.RouteDao;
+import com.ssafy.project.dao.route.SubscribeDao;
 import com.ssafy.project.dao.user.CustomDao;
 import com.ssafy.project.dao.user.LocationDao;
 import com.ssafy.project.model.api.ApiProperties;
@@ -35,6 +37,7 @@ import com.ssafy.project.model.group.GroupAlarmRegisterRequest;
 import com.ssafy.project.model.route.Route;
 import com.ssafy.project.model.route.RouteFindRequest;
 import com.ssafy.project.model.route.RouteFindWithoutRequest;
+import com.ssafy.project.model.route.Subscribe;
 import com.ssafy.project.model.user.Custom;
 import com.ssafy.project.model.user.Location;
 import com.ssafy.project.model.user.LocationId;
@@ -56,6 +59,9 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 
 	@Autowired
 	private CustomDao customDao;
+
+	@Autowired
+	private SubscribeDao subscribeDao;
 
 	public static final Logger logger = LoggerFactory.getLogger(FinalRouteServiceImpl.class);
 
@@ -325,7 +331,7 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 			}
 
 			lastOneTime -= custom.getSparetime(); // 사용자 여분 시간 추가
-			
+
 			if (lastOneTime % 100 >= 60)
 				lastOneTime -= 40;
 
@@ -519,20 +525,68 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 	}
 
 	@Override
-	public ResponseEntity<List<Route>> info(String uid) {
+	public ResponseEntity<List<Object>> info(String uid) {
 
 		HttpStatus status = null;
-		List<Route> resultList = null;
+		List<Object> resultList = new ArrayList<Object>();
 
 		try {
-			resultList = routeDao.findAllByUidWithoutGroupInfo(uid);
+			List<Route> routeList = routeDao.findAllByUidWithoutGroupInfo(uid);
+			List<Subscribe> subscribeList = subscribeDao.findAllByUid(uid);
+
+			if (!routeList.isEmpty() && subscribeList.isEmpty()) {
+				Collections.sort(routeList, new Comparator<Route>() {
+
+					@Override
+					public int compare(Route o1, Route o2) {
+						return o1.getRegisterdate().compareTo(o1.getRegisterdate());
+					}
+
+				});
+
+				resultList.addAll(routeList);
+			} else if (routeList.isEmpty() && !subscribeList.isEmpty()) {
+				Collections.sort(subscribeList, new Comparator<Subscribe>() {
+
+					@Override
+					public int compare(Subscribe o1, Subscribe o2) {
+						return o1.getRegisterdate().compareTo(o1.getRegisterdate());
+					}
+
+				});
+
+				resultList.addAll(subscribeList);
+			} else if (!routeList.isEmpty() && !subscribeList.isEmpty()) {
+				while (!routeList.isEmpty() && !subscribeList.isEmpty()) {
+					if (routeList.get(0).getRegisterdate().compareTo(subscribeList.get(0).getRegisterdate()) > 0) {
+						resultList.add(subscribeList.get(0));
+						subscribeList.remove(0);
+					} else if (routeList.get(0).getRegisterdate().compareTo(subscribeList.get(0).getRegisterdate()) < 0) {
+						resultList.add(routeList.get(0));
+						routeList.remove(0);
+					}
+				}
+
+				if (!routeList.isEmpty()) {
+					while(!routeList.isEmpty()) {
+						resultList.add(routeList.get(0));
+						routeList.remove(0);
+					}
+				} else if (!subscribeList.isEmpty()) {
+					while(!subscribeList.isEmpty()) {
+						resultList.add(subscribeList.get(0));
+						subscribeList.remove(0);
+					}
+				}
+			}
+
 			status = HttpStatus.OK;
 		} catch (Exception e) {
-			logger.error("그룹 정보를 포함하지 않는 경로 정보 가져오기 실패 : {}", e);
+			logger.error("사용자 알람 정보 가져오기 실패 : {}", e);
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
 
-		return new ResponseEntity<List<Route>>(resultList, status);
+		return new ResponseEntity<List<Object>>(resultList, status);
 	}
 
 	@Override

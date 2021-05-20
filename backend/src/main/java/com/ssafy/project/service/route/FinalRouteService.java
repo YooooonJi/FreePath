@@ -19,7 +19,7 @@ public interface FinalRouteService {
 	
 	public int findBusLastStartTime(int busStationStartId, int busId, int startTime, int dayOfWeek);
 
-	public ResponseEntity<List<Route>> info(String uid);
+	public ResponseEntity<List<Object>> info(String uid);
 
 	public ResponseEntity<List<Route>> infoGroup(String uid);
 
