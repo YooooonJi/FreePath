@@ -300,9 +300,13 @@ public class RouteServiceImpl implements RouteService {
 								switch (custom.getSpeed()) {
 									case 2: // 느림
 										sectionTime += sectionTime / 2;
+										smallSubPath.put("sectionTime", Integer
+												.toString(Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) + Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) / 2));
 										break;
 									case 6: // 빠름
 										sectionTime -= sectionTime / 2;
+										smallSubPath.put("sectionTime", Integer
+												.toString(Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) - Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) / 2));
 										break;
 								}
 							}

@@ -14,9 +14,9 @@ public interface FinalRouteService {
 	public ResponseEntity<Map<String, Object>> findLastWithoutUser(RouteFindWithoutRequest routeFindWithoutRequest);
 
 	public ResponseEntity<Route> findLastWithUser(RouteFindRequest routeFindRequest);
-	
+
 	public int findSubwayLastStartTime(int subwayStartId, int subwayCode, int startTime, int dayOfWeek);
-	
+
 	public int findBusLastStartTime(int busStationStartId, int busId, int startTime, int dayOfWeek);
 
 	public ResponseEntity<List<Object>> info(String uid);
@@ -24,6 +24,6 @@ public interface FinalRouteService {
 	public ResponseEntity<List<Route>> infoGroup(String uid);
 
 	public ResponseEntity<String> delete(int routeId);
-	
+
 	public ResponseEntity<String> registerLast(GroupAlarmRegisterRequest groupAlarmRegisterRequest);
 }
