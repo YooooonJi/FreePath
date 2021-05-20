@@ -285,9 +285,13 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 							switch (custom.getSpeed()) {
 								case 2: // 느림
 									subPathStartTime -= Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) / 2;
+									smallSubPath.put("sectionTime", Integer
+											.toString(Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) + Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) / 2));
 									break;
 								case 6: // 빠름
 									subPathStartTime += Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) / 2;
+									smallSubPath.put("sectionTime", Integer
+											.toString(Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) - Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) / 2));
 									break;
 							}
 						}
@@ -571,12 +575,12 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 				}
 
 				if (!routeList.isEmpty()) {
-					while(!routeList.isEmpty()) {
+					while (!routeList.isEmpty()) {
 						resultList.add(routeList.get(0));
 						routeList.remove(0);
 					}
 				} else if (!subscribeList.isEmpty()) {
-					while(!subscribeList.isEmpty()) {
+					while (!subscribeList.isEmpty()) {
 						resultList.add(subscribeList.get(0));
 						subscribeList.remove(0);
 					}

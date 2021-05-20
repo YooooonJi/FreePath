@@ -17,7 +17,7 @@ public interface SubscribeService {
 	public String CalculateTime(String nowTime, int tmpTime, int type);
 
 	public ResponseEntity<Map<String, Object>> findSubscribeWithoutUser(SubscribeWithoutRequest subscribeWithoutRequest);
-	
+
 	public ResponseEntity<Subscribe> findSubscribeWithUser(SubscribeRequest subscribeRequest);
 
 	int searchBusId(int busNo);

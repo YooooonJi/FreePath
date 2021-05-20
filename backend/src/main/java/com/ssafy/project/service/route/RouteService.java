@@ -11,7 +11,7 @@ import com.ssafy.project.model.route.RouteFindWithoutRequest;
 public interface RouteService {
 
 	public ResponseEntity<Map<String, Object>> findRouteWithoutUser(RouteFindWithoutRequest routeFindWithoutRequest);// 경로 찾기
-	
+
 	public ResponseEntity<Route> findRouteWithUser(RouteFindRequest routeFindRequest);
 
 	public Object TimeTableSubway(int stationID, int wayCode, String startTime);
@@ -21,6 +21,6 @@ public interface RouteService {
 	public Object RealTimeBus(int busID, int startBusStationId, String startTime);
 
 	public ArrayList<Integer> BusStationTime(int busID, int startBusStationId);
-	
+
 	public ResponseEntity<String> registerRoute(GroupAlarmRegisterRequest groupAlarmRegisterRequest);
 }
