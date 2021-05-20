@@ -11,6 +11,7 @@ import MenuButton from "../components/Common/MenuButton";
 import LocationFavorite from "../components/Profile/LocationFavorite";
 import UserData from "../components/Profile/UserData";
 import { getAllProfile, updateCustom } from "../api/UserApi";
+import LionProfile from "../assets/images/lion_profile.png";
 
 const ProfileContainer = styled.View`
   display: flex;
@@ -63,14 +64,12 @@ const UpperContainer = styled.View`
   background-color: ${(props) => props.theme.profile.bg};
 `;
 
-const ProfileImage = styled.View`
+const ProfileImage = styled.Image`
   width: 100px;
   height: 100px;
   border-radius: 50px;
-  border: 3px solid #f4e7e7;
-  background-color: ${(props) => props.theme.board.bg};
-  elevation: 3;
   margin-top: 25px;
+  background-color: white;
 `;
 
 const ProfileNickname = styled.Text`
@@ -249,7 +248,10 @@ const Profile = ({
               <IconLogout name="logout" size={24} />
             </LogoutButtonContainer>
             <UpperContainer>
-              <ProfileImage />
+              <ProfileImage
+                source={LionProfile}
+                style={{ borderWidth: 3, borderColor: "#f4e7e7" }}
+              />
               <ProfileNickname>
                 {profileData.ggomjilak.nickname}
               </ProfileNickname>
@@ -266,7 +268,7 @@ const Profile = ({
                   <GuideText color="rgba(0, 0, 0, 0.5)">
                     알림 추가 시{" "}
                   </GuideText>
-                  <GuideText color="#CE5A5A">편리하게 </GuideText>
+                  <GuideText color="#E96466">편리하게 </GuideText>
                   <GuideText color="rgba(0, 0, 0, 0.5)">찾아보세요!</GuideText>
                 </GuideLineBox>
               </GuideContainer>
@@ -280,9 +282,9 @@ const Profile = ({
                   </GuideText>
                 </GuideLineBox>
                 <GuideLineBox>
-                  <GuideText color="#CE5A5A">맞춤 출발시간</GuideText>
+                  <GuideText color="#E96466">맞춤 출발시간</GuideText>
                   <GuideText color="rgba(0, 0, 0, 0.5)">과 </GuideText>
-                  <GuideText color="#CE5A5A">추천 경로</GuideText>
+                  <GuideText color="#E96466">추천 경로</GuideText>
                   <GuideText color="rgba(0, 0, 0, 0.5)">
                     를 안내해드립니다.
                   </GuideText>
