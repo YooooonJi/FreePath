@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.ssafy.project.dao.group.GroupAlarmDao;
 import com.ssafy.project.dao.route.RouteDao;
+import com.ssafy.project.dao.user.CustomDao;
 import com.ssafy.project.dao.user.LocationDao;
 import com.ssafy.project.model.api.ApiProperties;
 import com.ssafy.project.model.group.GroupAlarm;
@@ -34,6 +35,7 @@ import com.ssafy.project.model.group.GroupAlarmRegisterRequest;
 import com.ssafy.project.model.route.Route;
 import com.ssafy.project.model.route.RouteFindRequest;
 import com.ssafy.project.model.route.RouteFindWithoutRequest;
+import com.ssafy.project.model.user.Custom;
 import com.ssafy.project.model.user.Location;
 import com.ssafy.project.model.user.LocationId;
 
@@ -48,9 +50,12 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 
 	@Autowired
 	private LocationDao locationDao;
-	
+
 	@Autowired
 	private GroupAlarmDao groupAlarmDao;
+
+	@Autowired
+	private CustomDao customDao;
 
 	public static final Logger logger = LoggerFactory.getLogger(FinalRouteServiceImpl.class);
 
@@ -182,7 +187,6 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 		}
 
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
-
 	}
 
 	@Override
@@ -193,6 +197,8 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 
 		final String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=" + routeFindRequest.getStartX() + "&SY=" + routeFindRequest.getStartY() + "&EX="
 				+ routeFindRequest.getEndX() + "&EY=" + routeFindRequest.getEndY() + "&apiKey=" + apiProperties.getKey();
+
+		Custom custom = customDao.findCustomByUid(routeFindRequest.getUid());
 
 		try {
 			Route route = new Route();
@@ -265,6 +271,20 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 
 					/* 모든 TrafficType에 대해서 구간 시간을 뺀 뒤 그 시간에 탈 수 있는 막차를 구해야함! */
 					subPathStartTime -= Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime")));
+
+					if (trafficType == 3) {
+						if (Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) >= 2) {
+							switch (custom.getSpeed()) {
+								case 2: // 느림
+									subPathStartTime -= Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) / 2;
+									break;
+								case 6: // 빠름
+									subPathStartTime += Integer.parseInt(String.valueOf(smallSubPath.get("sectionTime"))) / 2;
+									break;
+							}
+						}
+					}
+
 					if (subPathStartTime % 100 >= 60)
 						subPathStartTime -= 40;
 
@@ -304,8 +324,22 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 				lastOneTime -= 2400;
 			}
 
+			lastOneTime -= custom.getSparetime(); // 사용자 여분 시간 추가
+			
+			if (lastOneTime % 100 >= 60)
+				lastOneTime -= 40;
+
+
+			if (arriveMonth < 10) {
+				sb.append(0);
+			}
 			sb.append(arriveMonth + "-"); // 월
+
+			if (arriveDay < 10) {
+				sb.append(0);
+			}
 			sb.append(arriveDay + " "); // 일
+
 			sb.append((lastOneTime / 100) + ":" + (lastOneTime % 100));
 
 			/* 현재 시간으로부터 막차 도착시간까지 남은 시간 초로 전달 */
@@ -551,7 +585,7 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 
 		try {
 			GroupAlarm groupAlarm = groupAlarmDao.findGroupAlarmByGroupalarmidUid(userList.get(0));
-			
+
 			for (String user : userList) {
 				LocationId locationId = new LocationId(1, user); // 무조건 집에서 출발한다고 가정
 				Location userLocation = locationDao.findLocationByLocationid(locationId);
@@ -685,10 +719,10 @@ public class FinalRouteServiceImpl implements FinalRouteService {
 				route.setTotaltime((int) remainSecond);
 
 				routeDao.save(route);
-				
+
 				GroupAlarmId groupAlarmId = new GroupAlarmId(groupAlarm.getGroupalarmid().getGroupid(), user);
 				Optional<GroupAlarm> groupAlarmOpt = groupAlarmDao.findOptionalByGroupalarmid(groupAlarmId);
-				
+
 				groupAlarmOpt.ifPresent(selectGroupAlarm -> {
 					selectGroupAlarm.setGalarmcnt(selectGroupAlarm.getGalarmcnt() + 1);
 					groupAlarmDao.save(selectGroupAlarm);
