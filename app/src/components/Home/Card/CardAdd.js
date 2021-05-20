@@ -259,7 +259,7 @@ const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
                 startlongitude: inputValue1.x,
                 startlatitude: inputValue1.y,
                 groupinfo: 0,
-                arrivetime: data.arriveTime,
+                arrivetime: data.arrivetime,
                 totaltime: data.totaltime,
                 routeinfo: JSON.stringify(data.routeinfo),
               };

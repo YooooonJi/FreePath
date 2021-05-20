@@ -34,21 +34,23 @@ const NumberContainer = styled.View`
 
 const NumberText = styled.Text`
   color: white;
-  font-size: 15px;
-  font-family: "5";
+  font-size: 14px;
+  font-weight: bold;
 `;
 
 const StopText = styled.Text`
-  font-size: 15px;
-  font-family: "4";
+  font-size: 14px;
+  font-weight: bold;
 `;
 
-const PathDetail = ({
-  type, number, stop, color,
-}) => (
+const PathDetail = ({ type, number, stop, color }) => (
   <PathDetailContainer>
     <TypeContainer color={color}>
-      <Icon name={type === "bus" ? "directions-bus" : "tram"} size={20} color="#ffffff" />
+      <Icon
+        name={type === "bus" ? "directions-bus" : "tram"}
+        size={20}
+        color="#ffffff"
+      />
     </TypeContainer>
     <NumberContainer color={color}>
       <NumberText>{number}</NumberText>

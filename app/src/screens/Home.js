@@ -211,13 +211,7 @@ const Home = ({
             </BoardLabelBox>
             {alarmList &&
               alarmList.map((al, index) => (
-                <Card
-                  key={index}
-                  title={al.alarmname}
-                  address="서울특별시 강남구 역삼동 테헤란로 212"
-                  time="10:30 AM"
-                  setup={setup}
-                />
+                <Card key={index} data={al} setup={setup} />
               ))}
             {!setup && alarmList && alarmList.length === 0 && (
               <GuideContainer>
