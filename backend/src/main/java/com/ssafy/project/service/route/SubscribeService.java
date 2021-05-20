@@ -1,5 +1,6 @@
 package com.ssafy.project.service.route;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;

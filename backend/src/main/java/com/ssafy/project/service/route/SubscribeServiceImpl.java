@@ -2,7 +2,9 @@ package com.ssafy.project.service.route;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,14 +22,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.ssafy.project.dao.route.SubscribeDao;
+import com.ssafy.project.dao.user.CustomDao;
 import com.ssafy.project.model.api.ApiProperties;
 import com.ssafy.project.model.route.SubscribeRequest;
+import com.ssafy.project.model.user.Custom;
 
 @Service
 public class SubscribeServiceImpl implements SubscribeService {
 
 	@Autowired
 	private SubscribeDao subscribeDao;
+
+	@Autowired
+	private CustomDao customDao;
 
 	@Autowired
 	private ApiProperties apiProperties;
@@ -41,30 +48,40 @@ public class SubscribeServiceImpl implements SubscribeService {
 		HttpStatus status = null;
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 
-		final String busUrl = "https://api.odsay.com/v1/api/searchStation?lang=0&stationName=" +subscribeRequest.getStationname() +"&apiKey=" + apiProperties.getKey();
-	
+		String encodingStationName = "";
 		try {
-			
+			encodingStationName = URLEncoder.encode(subscribeRequest.getStationname(), "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		final String openUrl = "https://api.odsay.com/v1/api/searchStation?lang=0&stationName=" + encodingStationName + "&apiKey=" + apiProperties.getKey();
+
+		try {
+
+			URL url = new URL(openUrl);
+
+			HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+			urlConnection.setRequestMethod("GET");
+
+			BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+
 			String startTime = new String();
-			
+
 			// 현재시간
 			Calendar today = Calendar.getInstance();
-			String start[]=subscribeRequest.getStartTime().split(" ");
-			
-			//현재위치에서 정류장까지 도보시간(일단 임의로 넣음)
-			int walkTime=10;
-			
-			//버스 정류장 구독
-			if(subscribeRequest.getType()==1) {
-				
-				URL url = new URL(busUrl);
+			String start[] = subscribeRequest.getStartTime().split(" ");
 
-				HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-				urlConnection.setRequestMethod("GET");
+			// 프로필 설정 스페어 타임
+			int spareTime = 0;
+			if (subscribeRequest.getUid() != "") {
+				Custom custom = customDao.findCustomByUid(subscribeRequest.getUid());
+				spareTime = custom.getSparetime();
+			}
 
-				//System.out.println(urlConnection.getInputStream());
-				
-				BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+			// 버스 정류장 구독
+			if (subscribeRequest.getType() == 1) {
 
 				JSONParser parser = new JSONParser();
 				JSONObject obj = (JSONObject) parser.parse(br);
@@ -75,30 +92,31 @@ public class SubscribeServiceImpl implements SubscribeService {
 				for (int i = 0; i < station.size() - 1; i++) {
 					JSONObject infos = (JSONObject) station.get(i);
 
-					int arsID = Integer.parseInt(String.valueOf(infos.get("arsID")));
-					
-					System.out.println(arsID);
-					//정류장 중 사용자가 선택한 정류장이라면
-					if(subscribeRequest.getStationid()==arsID) {
+					String arsID = String.valueOf(infos.get("arsID"));
+					String tmpStationID = subscribeRequest.getStationid();
+					String stringStationID = tmpStationID.substring(0, 2) + "-" + tmpStationID.substring(2, 5);
+
+					// 정류장 중 사용자가 선택한 정류장이라면
+					if (arsID.equals(stringStationID)) {
 						int stationID = Integer.parseInt(String.valueOf(infos.get("stationID")));
-						int busID=searchBusId(subscribeRequest.getBusno());
-						
-						startTime = CalculateTime(RealTimeBus(busID, stationID,start[1]), walkTime, 2);
-						
+						int busID = searchBusId(subscribeRequest.getBusno());
+
+						startTime = CalculateTime(RealTimeBus(busID, stationID, start[1]), spareTime, 2);
+
 						break;
 					}
 				}
-				
+
 				urlConnection.disconnect();
 			}
-			//지하철 역 구독
-			else if(subscribeRequest.getType()==2) {
-				String realStartTime = CalculateTime(TimeTableSubway(subscribeRequest.getStationid(),subscribeRequest.getUpdown() , start[1]), walkTime, 2);
+			// 지하철 역 구독
+			else if (subscribeRequest.getType() == 2) {
+				startTime = CalculateTime(TimeTableSubway(Integer.parseInt(subscribeRequest.getStationid()), subscribeRequest.getUpdown(), start[1]), spareTime, 2);
 			}
-			
+
 			/* 결과 출발 시간 만들기 */
 			StringBuilder sb = new StringBuilder();
-			//String[] arriveTime = routeFindRequest.getArriveTime().split(" ");
+			// String[] arriveTime = routeFindRequest.getArriveTime().split(" ");
 
 			sb.append(start[0] + " "); // 년-월-날
 			sb.append(startTime);// 시간
@@ -112,7 +130,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 			resultMap.put("arrivetime", sb.toString());
 			resultMap.put("totaltime", remainSecond);
 
-			
+
 			status = HttpStatus.OK;
 		} catch (Exception e) {
 			logger.error("버스/지하철 구독 실시간 계산 실패 : {}", e);
@@ -120,13 +138,13 @@ public class SubscribeServiceImpl implements SubscribeService {
 		}
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
-	
+
 	@Override
 	public int searchBusId(int busNo) {
-		
-		final String openUrl = "https://api.odsay.com/v1/api/searchBusLane?lang=0&busNo=" + busNo +"&apiKey=" + apiProperties.getKey();
-		int busID=0;
-		
+
+		final String openUrl = "https://api.odsay.com/v1/api/searchBusLane?lang=0&busNo=" + busNo + "&apiKey=" + apiProperties.getKey();
+		int busID = 0;
+
 		try {
 
 			URL url = new URL(openUrl);
@@ -138,16 +156,16 @@ public class SubscribeServiceImpl implements SubscribeService {
 			JSONParser parser = new JSONParser();
 			JSONObject obj = (JSONObject) parser.parse(br);
 			JSONObject response = (JSONObject) obj.get("result");
-			JSONObject totalCityList = (JSONObject) response.get("totalCityList");
-			JSONArray lane = (JSONArray) totalCityList.get("lane");
+			// JSONObject totalCityList = (JSONObject) response.get("totalCityList");
+			JSONArray lane = (JSONArray) response.get("lane");
 
-			for (int i = 0; i <lane.size(); i++) {
+			for (int i = 0; i < lane.size(); i++) {
 				JSONObject smallLane = (JSONObject) lane.get(i);
-				
-				String busCityName =String.valueOf(smallLane.get("busCityName"));
-				
-				if(busCityName.equals("서울")) {
-					busID=Integer.parseInt(String.valueOf(smallLane.get("busID")));
+
+				String busCityName = String.valueOf(smallLane.get("busCityName"));
+
+				if (busCityName.equals("서울")) {
+					busID = Integer.parseInt(String.valueOf(smallLane.get("busID")));
 					break;
 				}
 			}
@@ -156,9 +174,9 @@ public class SubscribeServiceImpl implements SubscribeService {
 		} catch (Exception e) {
 			logger.error("지하철 실시간 계산 실패 : {}", e);
 		}
-		return busID;	
+		return busID;
 	}
-	
+
 	@Override
 	public String TimeTableSubway(int stationID, int wayCode, String startTime) {
 
@@ -222,6 +240,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 		} catch (Exception e) {
 			logger.error("지하철 실시간 계산 실패 : {}", e);
 		}
+
 		return realStartTime;
 	}
 
@@ -234,7 +253,6 @@ public class SubscribeServiceImpl implements SubscribeService {
 
 		String realStartTime = "";
 
-		// System.out.println("실시간 반영 전 출발시간:"+startTime);
 		// 시간 시,분 계산
 		String[] tmpTime = startTime.split(":");
 		int hour = Integer.parseInt(tmpTime[0]);
@@ -276,15 +294,12 @@ public class SubscribeServiceImpl implements SubscribeService {
 					}
 
 					String busTmpTime = CalculateTime(nowTime, busTimeSum, 1);
-					// System.out.println("실시간 버스 타임:"+busTmpTime+" "+busTimeSum);
 
 					String[] busRealTime = busTmpTime.split(":");
 					int realHour = Integer.parseInt(busRealTime[0]);
 					int realMinute = Integer.parseInt(busRealTime[1]);
-					// System.out.println("값비교:"+hour*60+minute+" "+realHour * 60 + realMinute);
 					if ((hour * 60 + minute) >= (realHour * 60 + realMinute)) {
 						realStartTime = busTmpTime;
-						// System.out.println("최종실시간반영버스타임:"+realStartTime);
 						break;
 					}
 					// 도착한 시간이 현재 출발해야 하는 시간보다 늦다면
@@ -334,7 +349,6 @@ public class SubscribeServiceImpl implements SubscribeService {
 
 				int distance1 = Integer.parseInt(String.valueOf(smallStation1.get("stationDistance")));
 				int distance2 = Integer.parseInt(String.valueOf(smallStation2.get("stationDistance")));
-				// System.out.println(distance1+" "+distance2);
 
 				int stationId = Integer.parseInt(String.valueOf(smallStation1.get("stationID")));
 
@@ -344,18 +358,11 @@ public class SubscribeServiceImpl implements SubscribeService {
 
 				// 정류장 별 거리차이를 m-> km로 변환
 				double diffDistance = (double) (distance2 - distance1) / 1000;
-				// System.out.println("diff:" + diffDistance);
 
 				// 버스 속력 20km/h 로 가정, 반올림 하여 시간 계산
 				int diffTime = (int) Math.ceil(diffDistance * 3);
 				busDirTime.add(diffTime);
-				// System.out.println("difftime:"+diffTime);
 			}
-
-			// System.out.println("버스 정류장별 소요시간");
-			// for (int i = 0; i < busDirTime.size(); i++) {
-			// System.out.println("idx:"+i+"time: "+busDirTime.get(i));
-			// }
 
 			urlConnection.disconnect();
 

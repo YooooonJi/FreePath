@@ -6,13 +6,14 @@ import lombok.Data;
 @Data
 public class SubscribeRequest {
 	
+	private String uid;//사용자 uid
+	
 	private int type;//1: 버스 , 2: 지하철
 	
 	private int busno;//버스번호 or 지하철 호선
-	private int busid;//버스 고유 번호 arsid
 	
 	private String stationname;//버스정류장이름 or 지하철역이름
-	private int stationid;//버스정류장 고유 번호 or 지하철역 번호
+	private String stationid;//버스정류장 고유 arsid 번호 or 지하철역 번호
 	
 	private int updown;//1: 상행 , 2: 하행
 	
