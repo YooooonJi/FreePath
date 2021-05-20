@@ -14,6 +14,7 @@ import com.ssafy.project.dao.user.CustomDao;
 import com.ssafy.project.dao.user.LocationDao;
 import com.ssafy.project.dao.user.GgomjilakDao;
 import com.ssafy.project.model.user.Custom;
+import com.ssafy.project.model.user.EmailRequest;
 import com.ssafy.project.model.user.Location;
 import com.ssafy.project.model.user.LocationId;
 import com.ssafy.project.model.user.LocationRequest;
@@ -92,13 +93,13 @@ public class ProfileServiceImpl implements ProfileService {
 	}
 
 	@Override
-	public ResponseEntity<Ggomjilak> getBasic(String email) {
+	public ResponseEntity<Ggomjilak> getBasic(EmailRequest emailRequest) {
 		
 		HttpStatus status = null;
 		Ggomjilak ggomjilak = null;
 		
 		try {
-			ggomjilak = ggomjilakDao.findGgomjilakByEmail(email);
+			ggomjilak = ggomjilakDao.findGgomjilakByEmail(emailRequest.getEmail());
 			status = HttpStatus.OK;
 		} catch (Exception e) {
 			logger.error("기본 정보 조회 실패 : {}", e);

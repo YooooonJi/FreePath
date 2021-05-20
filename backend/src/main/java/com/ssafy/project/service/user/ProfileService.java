@@ -3,6 +3,7 @@ package com.ssafy.project.service.user;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import com.ssafy.project.model.user.Custom;
+import com.ssafy.project.model.user.EmailRequest;
 import com.ssafy.project.model.user.Location;
 import com.ssafy.project.model.user.LocationRequest;
 import com.ssafy.project.model.user.Ggomjilak;
@@ -11,7 +12,7 @@ public interface ProfileService {
 
 	public ResponseEntity<String> join(Ggomjilak user);
 	
-	public ResponseEntity<Ggomjilak> getBasic(String email);
+	public ResponseEntity<Ggomjilak> getBasic(EmailRequest emailRequest);
 
 	public ResponseEntity<Map<String, Object>> getTotal(String uid);
 
