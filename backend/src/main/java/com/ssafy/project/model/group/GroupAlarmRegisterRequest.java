@@ -1,16 +1,17 @@
 package com.ssafy.project.model.group;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 
 @Data
 public class GroupAlarmRegisterRequest {
 
-	private List<String> uids;
+	private ArrayList<String> uids;
 
-	private float endX;
+	private double endX;
 
-	private float endY;
+	private double endY;
 
 	private String arriveTime;
 

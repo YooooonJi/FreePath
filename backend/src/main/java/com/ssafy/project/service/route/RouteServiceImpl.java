@@ -667,7 +667,7 @@ public class RouteServiceImpl implements RouteService {
 				LocationId locationId = new LocationId(1, user); // 무조건 집에서 출발한다고 가정
 				Location userLocation = locationDao.findLocationByLocationid(locationId);
 
-				String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=" + userLocation.getLongitude() + "&SY=" + userLocation.getLatitude() + "&EX="
+				String openUrl = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=" + userLocation.getLatitude() + "&SY=" + userLocation.getLongitude() + "&EX="
 						+ groupAlarmRegisterRequest.getEndX() + "&EY=" + groupAlarmRegisterRequest.getEndY() + "&apiKey=" + apiProperties.getKey();
 
 				Route route = new Route();
