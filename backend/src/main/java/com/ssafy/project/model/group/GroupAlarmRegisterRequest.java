@@ -19,6 +19,8 @@ public class GroupAlarmRegisterRequest {
 
 	private String alarmName;
 	
+	private String inputtime;
+	
 	private int timetype;
 	
 }
