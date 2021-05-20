@@ -11,4 +11,6 @@ public interface GgomjilakDao extends JpaRepository<Ggomjilak, String> {
 	Ggomjilak findGgomjilakByUid(String uid);
 
 	List<Ggomjilak> findGgomjilaksByUid(String uid);
+	
+	Ggomjilak findGgomjilakByEmail(String email);
 }

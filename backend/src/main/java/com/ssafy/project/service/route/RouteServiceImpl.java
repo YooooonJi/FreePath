@@ -93,7 +93,7 @@ public class RouteServiceImpl implements RouteService {
 			JSONArray path = (JSONArray) response.get("path");
 
 			// 세부 경로들 계산
-			loop: for (int i = 0; i < path.size() - 1; i++) {
+			loop: for (int i = 0; i < path.size(); i++) {
 				JSONObject infos = (JSONObject) path.get(i);
 
 				// step1.경로 전체 소요시간 구하기
@@ -213,7 +213,7 @@ public class RouteServiceImpl implements RouteService {
 				route.setAlarmname(routeFindRequest.getAlarmName());
 			}
 
-			String startTime = new String();
+			String startTime = "";
 			JSONObject resultObject = new JSONObject();
 
 			// 현재시간
@@ -237,7 +237,7 @@ public class RouteServiceImpl implements RouteService {
 			path = CheckCustom(path, routeFindRequest.getUid());
 
 			// 세부 경로들 계산
-			loop: for (int i = 0; i < path.size() - 1; i++) {
+			loop: for (int i = 0; i < path.size(); i++) {
 				JSONObject infos = (JSONObject) path.get(i);
 
 				// step1.경로 전체 소요시간 구하기
@@ -248,6 +248,7 @@ public class RouteServiceImpl implements RouteService {
 
 				// step2.실시간 반영 전 출발시간(도착시간-소요시간)구하기
 				startTime = CalculateTime(arriveTime[1], totalTime, 2);
+
 				resultObject = infos;
 
 				String[] start = startTime.split(":");

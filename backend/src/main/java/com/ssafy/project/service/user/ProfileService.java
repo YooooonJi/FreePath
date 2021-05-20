@@ -10,6 +10,8 @@ import com.ssafy.project.model.user.Ggomjilak;
 public interface ProfileService {
 
 	public ResponseEntity<String> join(Ggomjilak user);
+	
+	public ResponseEntity<Ggomjilak> getBasic(String email);
 
 	public ResponseEntity<Map<String, Object>> getTotal(String uid);
 

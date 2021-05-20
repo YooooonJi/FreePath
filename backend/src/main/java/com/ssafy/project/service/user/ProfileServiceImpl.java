@@ -92,6 +92,23 @@ public class ProfileServiceImpl implements ProfileService {
 	}
 
 	@Override
+	public ResponseEntity<Ggomjilak> getBasic(String email) {
+		
+		HttpStatus status = null;
+		Ggomjilak ggomjilak = null;
+		
+		try {
+			ggomjilak = ggomjilakDao.findGgomjilakByEmail(email);
+			status = HttpStatus.OK;
+		} catch (Exception e) {
+			logger.error("기본 정보 조회 실패 : {}", e);
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+		
+		return new ResponseEntity<Ggomjilak>(ggomjilak, status);
+	}
+	
+	@Override
 	public ResponseEntity<Map<String, Object>> getTotal(String uid) {
 
 		HttpStatus status = null;
