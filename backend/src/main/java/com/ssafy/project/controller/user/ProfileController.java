@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.project.model.user.Custom;
+import com.ssafy.project.model.user.EmailRequest;
 import com.ssafy.project.model.user.Location;
 import com.ssafy.project.model.user.LocationRequest;
 import com.ssafy.project.model.user.Ggomjilak;
@@ -38,9 +39,9 @@ public class ProfileController {
 	}
 	
 	@ApiOperation(value = "이메일로 사용자의 기본 정보 전달")
-	@GetMapping("/basic/{email}")
-	public ResponseEntity<Ggomjilak> getBasic(@PathVariable("email") String email) {
-		return profileService.getBasic(email);
+	@PostMapping("/basic")
+	public ResponseEntity<Ggomjilak> getBasic(@Valid @RequestBody EmailRequest emailRequest) {
+		return profileService.getBasic(emailRequest);
 	}
 
 	@ApiOperation(value = "사용자의 전체 정보 전달")
