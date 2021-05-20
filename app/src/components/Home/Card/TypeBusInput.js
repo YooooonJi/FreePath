@@ -36,7 +36,7 @@ const InputIconBox = styled.TouchableOpacity`
 let busStopList;
 let busNoList;
 
-const TypeBusInput = () => {
+const TypeBusInput = ({ getInputValue1, getInputValue2 }) => {
   const [busStop, setBusStop] = useState("");
   const [busStopArsId, setBusStopArsId] = useState("");
   const [busNo, setBusNo] = useState("");
@@ -47,6 +47,7 @@ const TypeBusInput = () => {
 
   const selectBusNo = (index) => {
     setBusNo(busNoList[index].busRouteNm[0]);
+    getInputValue2(busNoList[index].busRouteNm[0]);
   };
 
   const searchBusNo = async (arsId) => {
@@ -103,6 +104,8 @@ const TypeBusInput = () => {
       `${busStopList[index].stNm[0]} (${busStopList[index].arsId[0]})`
     );
     setBusStopArsId(busStopList[index].arsId[0]);
+    getInputValue1(busStopList[index]);
+
     busStopInput.current.blur();
   };
 

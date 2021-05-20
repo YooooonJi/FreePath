@@ -8,7 +8,13 @@ import TypeSelectButton from "./TypeSelectButton";
 import TypeBusInput from "./TypeBusInput";
 import TypeSubwayInput from "./TypeSubwayInput";
 import TypePathInput from "./TypePathInput";
-import { getRouteLastWith, getRouteLastWithout } from "../../../api/RouteApi";
+import {
+  getRouteLastWith,
+  getRouteLastWithout,
+  getRouteWith,
+  getRouteWithout,
+} from "../../../api/RouteApi";
+import { getSubsWith, getSubsWithout } from "../../../api/SubscribeApi";
 
 const CardAddContainer = styled.View`
   position: absolute;
@@ -124,6 +130,17 @@ const ButtonText = styled.Text`
 `;
 
 const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
+  const now = new Date();
+  const nowtime = new Date(
+    Date.UTC(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours() - 9,
+      now.getMinutes()
+    )
+  );
+
   const [alarmName, setAlarmName] = useState("");
   // 알람종류 => 경로 : 0, 버스 : 1, 지하철 : 2
   const [alarmType, setAlarmType] = useState(0);
@@ -133,9 +150,11 @@ const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
   const [timeType, setTimeType] = useState(0);
   const [alarmTime, setAlarmTime] = useState("");
 
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(nowtime);
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
+
+  const [subwayUpdown, setSubwayUpdown] = useState(0);
 
   const getAlarmType = (type) => {
     setAlarmType(type);
@@ -159,9 +178,20 @@ const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
       />
     );
   } else if (alarmType === 1) {
-    inputType = <TypeBusInput />;
+    inputType = (
+      <TypeBusInput
+        getInputValue1={getInputValue1}
+        getInputValue2={getInputValue2}
+      />
+    );
   } else {
-    inputType = <TypeSubwayInput />;
+    inputType = (
+      <TypeSubwayInput
+        getInputValue1={getInputValue1}
+        getInputValue2={getInputValue2}
+        setSubwayUpdown={setSubwayUpdown}
+      />
+    );
   }
 
   const onPressAlarmTime = () => {
@@ -174,7 +204,7 @@ const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
     const year = nowDate.getFullYear();
     const month = `0${1 + nowDate.getMonth()}`.slice(-2);
     const day = `0${nowDate.getDate()}`.slice(-2);
-    const hours = 11;
+    const hours = 23;
     const minutes = 50;
 
     return `${year}-${month}-${day} ${hours}:${minutes}`;
@@ -196,6 +226,9 @@ const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
       //   [${inputValue1.x}, ${inputValue1.y}]\n${inputValue2.address_name}\n
       //   [${inputValue2.x}, ${inputValue2.y}]\n시간타입 : ${timeType}\n설정시간 : ${alarmTime} `
       // );
+
+      // console.log(inputValue1);
+      // console.log(inputValue2);
 
       // 카드 추가 분기
       // (로그인, 비로그인) * (경로, 버스, 지하철) * (막차, 특정시간) = 12가지 분기 생길 예정
@@ -219,6 +252,91 @@ const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
             };
 
             const { status, data } = await getRouteLastWith(req);
+
+            if (status === 200) {
+              // console.log(data);
+              setAlarmList([...alarmList, data]);
+              setPopCardAdd(false);
+            } else {
+              console.log(status);
+              console.log(data);
+            }
+          } else if (timeType === 1) {
+            // 특정시간
+            const req = {
+              alarmName,
+              arriveTime: alarmTime,
+              endAddress: inputValue2.address_name,
+              endX: inputValue2.x,
+              endY: inputValue2.y,
+              startAddress: inputValue1.address_name,
+              startX: inputValue1.x,
+              startY: inputValue1.y,
+              uid: firebase.auth().currentUser.uid,
+              timeType,
+            };
+
+            // console.log(req);
+
+            const { status, data } = await getRouteWith(req);
+
+            if (status === 200) {
+              // console.log(data);
+              setAlarmList([...alarmList, data]);
+              setPopCardAdd(false);
+            } else {
+              console.log(status);
+              console.log(data);
+            }
+          }
+        } else if (alarmType === 1) {
+          // 버스
+          if (timeType === 1) {
+            // 특정시간
+            const req = {
+              alarmname: alarmName,
+              busno: inputValue2,
+              startTime: alarmTime,
+              stationid: inputValue1.arsId[0],
+              stationname: inputValue1.stNm[0],
+              type: alarmType,
+              uid: firebase.auth().currentUser.uid,
+              updown: 0,
+              updownname: "",
+            };
+
+            console.log(req);
+
+            const { status, data } = await getSubsWith(req);
+
+            if (status === 200) {
+              // console.log(data);
+              setAlarmList([...alarmList, data]);
+              setPopCardAdd(false);
+            } else {
+              console.log(status);
+              console.log(data);
+            }
+          }
+        } else if (alarmType === 2) {
+          // 지하철
+          if (timeType === 1) {
+            // 특정시간
+            const req = {
+              alarmname: alarmName,
+              busno: 0,
+              startTime: alarmTime,
+              stationid: inputValue1.STATION_CD, // 역번호
+              stationname: inputValue1.STATION_NM, // 역이름
+              type: alarmType,
+              uid: firebase.auth().currentUser.uid,
+              updown: subwayUpdown, // 상행하행
+              updownname: inputValue2,
+            };
+
+            // console.log(req);
+
+            const { status, data } = await getSubsWith(req);
 
             if (status === 200) {
               // console.log(data);
@@ -262,6 +380,140 @@ const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
                 arrivetime: data.arrivetime,
                 totaltime: data.totaltime,
                 routeinfo: JSON.stringify(data.routeinfo),
+                inputtime: data.inputtime,
+                timetype: timeType,
+              };
+
+              const alarmCount = await AsyncStorage.getItem("alarmCount");
+              await AsyncStorage.setItem(
+                `alarmData${alarmCount}`,
+                JSON.stringify(dataSet)
+              );
+              await AsyncStorage.setItem(
+                "alarmCount",
+                String(alarmCount * 1 + 1)
+              );
+              // console.log(await AsyncStorage.getItem(`alarmData${alarmCount}`));
+              setAlarmList([...alarmList, dataSet]);
+              setPopCardAdd(false);
+            }
+          } else if (timeType === 1) {
+            // 특정시간
+            const req = {
+              alarmName,
+              arriveTime: alarmTime,
+              endAddress: inputValue2.address_name,
+              endX: inputValue2.x,
+              endY: inputValue2.y,
+              startAddress: inputValue1.address_name,
+              startX: inputValue1.x,
+              startY: inputValue1.y,
+            };
+
+            const { status, data } = await getRouteWithout(req);
+
+            if (status === 200) {
+              const dataSet = {
+                alarmname: alarmName,
+                endaddress: inputValue2.address_name,
+                endlongitude: inputValue2.x,
+                endlatitude: inputValue2.y,
+                startaddress: inputValue1.address_name,
+                startlongitude: inputValue1.x,
+                startlatitude: inputValue1.y,
+                groupinfo: 0,
+                arrivetime: data.arrivetime,
+                totaltime: data.totaltime,
+                routeinfo: JSON.stringify(data.routeinfo),
+                inputtime: data.inputtime,
+                timeType,
+              };
+
+              const alarmCount = await AsyncStorage.getItem("alarmCount");
+              await AsyncStorage.setItem(
+                `alarmData${alarmCount}`,
+                JSON.stringify(dataSet)
+              );
+              await AsyncStorage.setItem(
+                "alarmCount",
+                String(alarmCount * 1 + 1)
+              );
+              // console.log(await AsyncStorage.getItem(`alarmData${alarmCount}`));
+              setAlarmList([...alarmList, dataSet]);
+              setPopCardAdd(false);
+            }
+          }
+        } else if (alarmType === 1) {
+          // 버스
+          if (timeType === 1) {
+            // 특정시간
+            const req = {
+              alarmname: alarmName,
+              busno: inputValue2,
+              startTime: alarmTime,
+              stationid: inputValue1.arsId[0],
+              stationname: inputValue1.stNm[0],
+              type: alarmType,
+              updown: 0,
+            };
+
+            const { status, data } = await getSubsWithout(req);
+
+            if (status === 200) {
+              const dataSet = {
+                totaltime: data.totaltime,
+                busno: inputValue2,
+                stationname: inputValue1.stNm[0],
+                stationid: inputValue1.arsId[0],
+                updown: 0,
+                alarmname: alarmName,
+                arrivetime: data.arrivetime,
+                inputtime: alarmTime,
+              };
+
+              const alarmCount = await AsyncStorage.getItem("alarmCount");
+              await AsyncStorage.setItem(
+                `alarmData${alarmCount}`,
+                JSON.stringify(dataSet)
+              );
+              await AsyncStorage.setItem(
+                "alarmCount",
+                String(alarmCount * 1 + 1)
+              );
+              // console.log(await AsyncStorage.getItem(`alarmData${alarmCount}`));
+              setAlarmList([...alarmList, dataSet]);
+              setPopCardAdd(false);
+            }
+          }
+        } else if (alarmType === 2) {
+          // 지하철
+          if (timeType === 1) {
+            // 특정시간
+            const req = {
+              alarmname: alarmName,
+              busno: 0,
+              startTime: alarmTime,
+              stationid: inputValue1.STATION_CD, // 역번호
+              stationname: inputValue1.STATION_NM, // 역이름
+              type: alarmType,
+              updown: subwayUpdown, // 상행하행
+            };
+
+            // console.log(req);
+
+            const { status, data } = await getSubsWithout(req);
+
+            if (status === 200) {
+              const dataSet = {
+                totaltime: data.totaltime,
+                busno: 0,
+                stationname: inputValue1.STATION_NM,
+                stationid: inputValue1.STATION_CD,
+                updown: subwayUpdown,
+                alarmname: alarmName,
+                arrivetime: data.arrivetime,
+                inputtime: alarmTime,
+                updownname: inputValue2,
               };
 
               const alarmCount = await AsyncStorage.getItem("alarmCount");
@@ -294,10 +546,12 @@ const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
             is24Hour
             display="spinner"
             onChange={(event, selected) => {
-              if (event.type === "dismissed") {
-                setShow(false);
-                return;
-              }
+              // console.log(selected);
+
+              // if (event.type === "dismissed") {
+              //   setShow(false);
+              //   return;
+              // }
 
               if (selected !== undefined) {
                 if (mode === "date") {
@@ -306,13 +560,13 @@ const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
                 }
 
                 if (mode === "time") {
-                  setAlarmTime(
-                    `${JSON.stringify(selected.toJSON()).slice(
-                      1,
-                      11
-                    )} ${JSON.stringify(selected.toJSON()).slice(12, 17)}`
-                  );
-
+                  const strSel = JSON.stringify(selected.toJSON());
+                  const splitSel = strSel.split("T");
+                  const splitHours = splitSel[1].split(":");
+                  const alarmSet = `${splitSel[0].split('"')[1]} ${
+                    splitHours[0] * 1 + 9
+                  }:${splitHours[1]}`;
+                  setAlarmTime(alarmSet);
                   setShow(false);
                   setMode("date");
                 }

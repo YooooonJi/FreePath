@@ -1,16 +1,17 @@
 // 앱 테마색 설정
 
 const colors = {
-  white: "#FFFFFF",
-  black: "#000000",
-  mandy: "#DD5254",
-  prim: "#F9F1F7",
-  bonjour: "#EDE9EC",
-  shadylady: "#ADA9AC",
-  fallgreen: "#E7E8B7",
+  havelockblue: "#5B79E1", // 메인컬러퍼렁
+  mandy: "#E96466", // 서브컬러뻘겅
+  white: "#FFFFFF", // 하양이
+  black: "#000000", // 깜장이
+  selago: "#EBF0FC", // 하늘이
+  thatch: "#BE9D9D", // 밝은빨강
+  hintofred: "#f1eaea", // 더 밝은 빨강
+  pastelgreen: "#79e15b",
+  greenhaze: "#009D3E",
   domino: "#958164",
-  havelockblue: "#5B79E1",
-  burningsand: "#D68C6D"
+  burningsand: "#D68C6D",
 };
 
 const DefaultTheme = {
@@ -26,19 +27,33 @@ const DefaultTheme = {
     },
   },
   card: {
-    bg: colors.prim,
+    bg: colors.selago,
     title: colors.black,
-    addr: colors.shadylady,
+    addr: colors.thatch,
     timer: colors.mandy,
+    edit: {
+      delete: colors.mandy,
+      update: colors.thatch,
+    },
     time: {
-      bg: colors.fallgreen,
-      text: colors.domino,
+      bg: colors.havelockblue,
+      text: colors.white,
     },
     circle: {
       bg: colors.mandy,
       text: colors.white,
     },
-    add: colors.shadylady,
+    add: colors.thatch,
+    expand: {
+      bg: colors.white,
+      depart: colors.mandy,
+      flag: colors.white,
+      walk: colors.hintofred,
+      walktext: colors.thatch,
+      transtext: colors.white,
+      bus: colors.pastelgreen,
+      subway: colors.greenhaze,
+    },
   },
   menu: {
     title: colors.black,
@@ -46,8 +61,8 @@ const DefaultTheme = {
     login: {
       info: colors.mandy,
     },
-    line: colors.bonjour,
-    copyright: colors.shadylady,
+    line: colors.pastelgreen,
+    copyright: colors.thatch,
   },
   login: {
     bg: colors.havelockblue,
@@ -55,7 +70,7 @@ const DefaultTheme = {
     kakao: colors.kakaoyellow,
   },
   profile: {
-    bg: colors.burningsand,
+    bg: colors.havelockblue,
   },
 };
 

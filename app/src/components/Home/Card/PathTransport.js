@@ -17,7 +17,7 @@ const PathTransportContainer = styled.View`
 `;
 
 const PathTransportText = styled.Text`
-  color: white;
+  color: ${(props) => props.theme.card.expand.transtext};
   font-size: 12px;
   font-weight: bold;
 `;
