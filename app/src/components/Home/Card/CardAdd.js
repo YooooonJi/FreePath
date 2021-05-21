@@ -132,13 +132,11 @@ const ButtonText = styled.Text`
 const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
   const now = new Date();
   const nowtime = new Date(
-    Date.UTC(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      now.getHours() - 9,
-      now.getMinutes()
-    )
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    now.getHours(),
+    now.getMinutes()
   );
 
   const [alarmName, setAlarmName] = useState("");
@@ -560,12 +558,10 @@ const CardAdd = ({ isLoggedIn, setPopCardAdd, alarmList, setAlarmList }) => {
                 }
 
                 if (mode === "time") {
-                  const strSel = JSON.stringify(selected.toJSON());
-                  const splitSel = strSel.split("T");
-                  const splitHours = splitSel[1].split(":");
-                  const alarmSet = `${splitSel[0].split('"')[1]} ${
-                    splitHours[0] * 1 + 9
-                  }:${splitHours[1]}`;
+                  const strSel = new Date(selected) + 9;
+                  const splitSel = strSel.split(" ");
+                  const splitHMS = splitSel[4].split(":");
+                  const alarmSet = `${splitSel[3]}-05-${splitSel[2]} ${splitHMS[0]}:${splitHMS[1]}`;
                   setAlarmTime(alarmSet);
                   setShow(false);
                   setMode("date");

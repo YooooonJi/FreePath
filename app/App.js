@@ -19,6 +19,7 @@ import NotoSansKRLight from "./src/assets/fonts/NotoSansKR-Light.otf";
 import NotoSansKRThin from "./src/assets/fonts/NotoSansKR-Thin.otf";
 import SignUp from "./src/components/Profile/SignUp";
 import Loading from "./src/screens/Loading";
+import GroupCardAdd from "./src/components/Group/GroupCardAdd";
 
 const firebaseConfig = {
   apiKey: Constants.manifest.extra.firebaseApiKey,
@@ -50,6 +51,7 @@ const App = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [popMenu, setPopMenu] = useState(false);
   const [popCardAdd, setPopCardAdd] = useState(false);
+  const [popGroupCardAdd, setPopGroupCardAdd] = useState(false);
   const [popLogin, setPopLogin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [popSignIn, setPopSignIn] = useState(false);
@@ -60,6 +62,9 @@ const App = () => {
   // 알람카드 추가 시 뒤에 추가됨
   // 상태 변경 시 대시보드 rerendering 됨
   const [alarmList, setAlarmList] = useState([]);
+  const [groupAlarmList, setGroupAlarmList] = useState([]);
+
+  const [members, setMembers] = useState([]);
 
   useEffect(() => {
     const AsyncStorageInit = async () => {
@@ -91,6 +96,9 @@ const App = () => {
             isLoggedIn={isLoggedIn}
             alarmList={alarmList}
             setAlarmList={setAlarmList}
+            members={members}
+            setMembers={setMembers}
+            setPopGroupCardAdd={setPopGroupCardAdd}
           />
         )}
       </SafeAreaProvider>
@@ -110,6 +118,15 @@ const App = () => {
           isLoggedIn={isLoggedIn}
           alarmList={alarmList}
           setAlarmList={setAlarmList}
+        />
+      )}
+      {popGroupCardAdd && (
+        <GroupCardAdd
+          setPopGroupCardAdd={setPopGroupCardAdd}
+          isLoggedIn={isLoggedIn}
+          groupAlarmList={groupAlarmList}
+          setGroupAlarmList={setGroupAlarmList}
+          members={members}
         />
       )}
       {popLogin && !isLoggedIn && (

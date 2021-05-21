@@ -78,7 +78,7 @@ const GuideText = styled.Text`
   font-weight: bold;
 `;
 
-const GroupAlarm = () => {
+const GroupAlarm = ({ groupAlarmList, setPopGroupCardAdd }) => {
   const screenHeight = Dimensions.get("window").height;
 
   const [setup, setSetup] = useState(false);
@@ -90,31 +90,30 @@ const GroupAlarm = () => {
           {setup ? "완료" : "편집"}
         </LabelSetupText>
       </LabelContainer>
-      <Card
-        key={0}
-        title="그룹알람"
-        address="서울특별시 강남구 역삼동 테헤란로 212"
-        time="10:30 AM"
-        setup={setup}
-      />
-      <GuideContainer>
-        <GuideLineBox>
-          <GuideText color="#5B79E1">친구</GuideText>
-          <GuideText color="rgba(0, 0, 0, 0.5)">
-            를 초대해 그룹을 만들고
-          </GuideText>
-        </GuideLineBox>
-        <GuideLineBox>
-          <GuideText color="#CE5A5A">그룹 알림</GuideText>
-          <GuideText color="rgba(0, 0, 0, 0.5)">을 등록해보세요!</GuideText>
-        </GuideLineBox>
-      </GuideContainer>
+      {groupAlarmList &&
+        groupAlarmList.map((ga, index) => (
+          <Card key={index} data={ga} setup={setup} />
+        ))}
+      {groupAlarmList && groupAlarmList.length === 0 && (
+        <GuideContainer>
+          <GuideLineBox>
+            <GuideText color="#5B79E1">친구</GuideText>
+            <GuideText color="rgba(0, 0, 0, 0.5)">
+              를 초대해 그룹을 만들고
+            </GuideText>
+          </GuideLineBox>
+          <GuideLineBox>
+            <GuideText color="#CE5A5A">그룹 알림</GuideText>
+            <GuideText color="rgba(0, 0, 0, 0.5)">을 등록해보세요!</GuideText>
+          </GuideLineBox>
+        </GuideContainer>
+      )}
       {!setup && (
         <CardContainer>
           <IconAddCircle
             name="add-circle"
             size={40}
-            onPress={() => alert("그룹알람 추가")}
+            onPress={() => setPopGroupCardAdd(true)}
           />
         </CardContainer>
       )}
