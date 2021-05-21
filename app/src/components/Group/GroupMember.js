@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import firebase from "firebase";
@@ -6,6 +6,7 @@ import ModalSelector from "react-native-modal-selector";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { findProfileByEmail, createGroup } from "../../api/GroupApi";
 import LionProfile from "../../assets/images/lion_profile.png";
+import CornProfile from "../../assets/images/corn_profile.png";
 
 const GroupMemberContainer = styled.View`
   flex-direction: row;
@@ -164,7 +165,7 @@ const GroupMember = ({ members, setIsCreated }) => {
         members.map((mem, index) => (
           <MemberContainer key={index}>
             <MemberImage
-              source={LionProfile}
+              source={index % 2 === 0 ? LionProfile : CornProfile}
               borderRadius={50}
               style={{ borderWidth: 3, borderColor: "#f4e7e7" }}
             />

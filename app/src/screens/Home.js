@@ -192,9 +192,9 @@ const Home = ({
             <CarouselImage source={Carousel} />
             <CarouselBgOpacity />
             <CarouselTextBox>
-              <CarouselText>늦은 밤,</CarouselText>
-              <CarouselText>당신의 귀가를</CarouselText>
-              <CarouselText>책임지겠습니다.</CarouselText>
+              <CarouselText>바쁜 일상생활,</CarouselText>
+              <CarouselText>당신만을 위한</CarouselText>
+              <CarouselText>스마트 비서를 만들어보세요.</CarouselText>
             </CarouselTextBox>
           </CarouselContainer>
           <BoardContainer setup={setup} boardHeight={screenHeight - 273}>

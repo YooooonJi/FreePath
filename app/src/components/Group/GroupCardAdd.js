@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import TypeSelectButton from "../Home/Card/TypeSelectButton";
+import TypeSelectButton from "./TypeSelectButton";
 import TypeBusInput from "../Home/Card/TypeBusInput";
 import TypeSubwayInput from "../Home/Card/TypeSubwayInput";
-import TypePathInput from "../Home/Card/TypePathInput";
+import TypePathInput from "./TypePathInput";
 import { addGroupAlarmLast, addGroupAlarmTime } from "../../api/GroupApi";
 
 const CardAddContainer = styled.View`
@@ -222,8 +222,6 @@ const GroupCardAdd = ({
   const saveCard = async () => {
     if (alarmName === "") {
       alert("알림 이름을 입력해주세요.");
-    } else if (inputValue1 === null) {
-      alert("출발지를 입력해주세요");
     } else if (inputValue2 === null) {
       alert("도착지를 입력해주세요");
     } else if (timeType === 1 && alarmTime === "") {

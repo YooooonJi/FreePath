@@ -88,7 +88,7 @@ const CardRightBox = styled.View`
 
 const TimeLeftText = styled.Text`
   color: ${(props) => props.theme.card.timer};
-  font-size: 14px;
+  font-size: 13px;
   margin-top: 12px;
   font-weight: bold;
 `;
