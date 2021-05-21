@@ -198,8 +198,8 @@ const SignUp = ({ setPopSignUp, setPopSignIn }) => {
       </IconExitButton>
       <SignUpUpper isFocus={isFocus} scrHeight={screenHeight}>
         <SloganBox>
-          <SloganText>어쩌구 저쩌구</SloganText>
-          <SloganText>프리패스</SloganText>
+          <SloganText>어서오세요,</SloganText>
+          <SloganText>프리패스입니다.</SloganText>
         </SloganBox>
         <SignUpInputWrapper>
           <SignUpInputBox>

@@ -4,6 +4,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import kakaologo from "../../assets/logos/kakao.png";
 import naverlogo from "../../assets/logos/naver.png";
 import googlelogo from "../../assets/logos/google.png";
+import LogoBlueNude from "../../assets/logos/logo_blue_nude.png";
 
 const LoginContainer = styled.View`
   position: absolute;
@@ -36,6 +37,18 @@ const SloganText = styled.Text`
   font-size: 28px;
   margin-bottom: 10px;
   font-weight: bold;
+`;
+
+const TitleSet = styled.View`
+  display: flex;
+  flex-direction: row;
+  /* align-items: flex-end; */
+`;
+
+const LogoImage = styled.Image`
+  margin-left: 10px;
+  width: 60px;
+  height: 60px;
 `;
 
 const LoginButtonBox = styled.View``;
@@ -120,7 +133,10 @@ const Login = ({ setPopLogin, setPopSignIn }) => {
         </IconExitButton>
         <SloganText style={{ fontSize: 24 }}>개인 맞춤형</SloganText>
         <SloganText style={{ fontSize: 24 }}>대중교통 알림 서비스</SloganText>
-        <SloganText style={{ fontSize: 48 }}>프리패스</SloganText>
+        <TitleSet>
+          <SloganText style={{ fontSize: 48 }}>프리패스</SloganText>
+          <LogoImage source={LogoBlueNude} />
+        </TitleSet>
       </LoginTopBox>
       <LoginButtonBox>
         <SocialLoginTouch bgColor="#FFDC02">
