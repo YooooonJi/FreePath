@@ -20,6 +20,9 @@ const MainNavigation = ({
   popLogin,
   alarmList,
   setAlarmList,
+  members,
+  setMembers,
+  setPopGroupCardAdd,
 }) => {
   const theme = useTheme();
   return (
@@ -80,7 +83,15 @@ const MainNavigation = ({
         <Tab.Screen
           name="Group"
           children={() => (
-            <Test setPopMenu={setPopMenu} isLoggedIn={isLoggedIn} />
+            <Group
+              setPopMenu={setPopMenu}
+              setPopLogin={setPopLogin}
+              popLogin={popLogin}
+              isLoggedIn={isLoggedIn}
+              members={members}
+              setMembers={setMembers}
+              setPopGroupCardAdd={setPopGroupCardAdd}
+            />
           )}
         />
         <Tab.Screen

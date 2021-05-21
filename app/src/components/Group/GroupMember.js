@@ -2,17 +2,19 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import firebase from "firebase";
-import { getGroupMember } from "../../api/GroupApi";
+import ModalSelector from "react-native-modal-selector";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { findProfileByEmail, createGroup } from "../../api/GroupApi";
+import LionProfile from "../../assets/images/lion_profile.png";
 
 const GroupMemberContainer = styled.View`
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   width: 100%;
   height: 200px;
   background-color: ${(props) => props.theme.profile.bg};
   padding: 0 60px;
-  padding-top: 70px;
 `;
 
 const MemberContainer = styled.View`
@@ -20,13 +22,11 @@ const MemberContainer = styled.View`
   justify-content: center;
 `;
 
-const MemberImage = styled.View`
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
-  border: 3px solid #f4e7e7;
+const MemberImage = styled.Image`
+  width: 60px;
+  height: 60px;
   background-color: ${(props) => props.theme.board.bg};
-  elevation: 3;
+  margin-top: 26px;
 `;
 
 const MemberText = styled.Text`
@@ -38,52 +38,140 @@ const MemberText = styled.Text`
 
 const IconAddCircle = styled(Icon)`
   color: ${(props) => props.theme.board.bg};
+  border-radius: 50px;
   elevation: 3;
 `;
 
-const GroupMember = () => {
-  const [memberCnt, setMemberCnt] = useState(1);
-  const member = [
-    <MemberContainer>
-      <MemberImage />
-      <MemberText>닉네임</MemberText>
-    </MemberContainer>,
-  ];
+const DataView = styled.View`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`;
+
+const DataTextInput = styled.TextInput`
+  padding: 5px;
+  width: 100%;
+  text-align: center;
+`;
+
+const DataTouchable = styled.TouchableOpacity`
+  position: absolute;
+  right: 10px;
+`;
+
+const GroupMember = ({ members, setIsCreated }) => {
   const memberAddButton = [];
 
-  useEffect(() => {
-    const asyncGetGroupMember = async () => {
-      const req = { uid: firebase.auth().currentUser.uid };
-      const { status, data } = await getGroupMember(req);
+  const [popModal1, setPopModal1] = useState(false);
+  const [email1, setEmail1] = useState();
+  const [latitude1, setLatitude1] = useState();
+  const [longitude1, setLongitude1] = useState();
 
-      if (status === 200 && data !== "") {
-        console.log(`그룹 멤버 있음 : ${data}`);
-        setMemberCnt(data.length);
-      }
-    };
+  const [searchData, setSearchData] = useState("");
 
-    asyncGetGroupMember();
-  });
+  // useEffect(() => {
+  //   const asyncGetGroupMember = async () => {
+  //     const req = { uid: firebase.auth().currentUser.uid };
+  //     const { status, data } = await getGroupMember(req);
 
-  const addGroupMember = () => {
-    alert("Add Group Member");
-    // email 입력 받고 email 검색 결과를 통해 멤버 추가
+  //     if (status === 200 && data !== "") {
+  //       console.log(`그룹 멤버 있음 : ${data}`);
+  //       setMemberCnt(data.length);
+  //     }
+  //   };
+
+  //   asyncGetGroupMember();
+  // });
+
+  const onPressAddCircle = () => {
+    setPopModal1(true);
   };
 
-  for (let cnt = 0; cnt < 4 - memberCnt; cnt += 1) {
+  for (let cnt = 0; cnt < 4 - members.length; cnt += 1) {
     memberAddButton.push(
       <IconAddCircle
+        key={cnt}
         name="add-circle"
-        size={50}
-        onPress={() => addGroupMember()}
+        size={60}
+        onPress={() => onPressAddCircle()}
       />
     );
   }
 
+  const asyncSearchUser = async () => {
+    const req = { email: email1 };
+
+    const { status, data } = await findProfileByEmail(req);
+
+    if (status === 200) {
+      setSearchData(data);
+      setEmail1(data.nickname);
+    }
+  };
+
+  const data1 = [
+    { key: 0, section: true, label: "그룹 초대하기" },
+    {
+      key: 1,
+      label: "",
+      component: (
+        <DataView>
+          <DataTextInput
+            value={email1}
+            placeholder="이메일 입력"
+            onChangeText={setEmail1}
+          />
+          <DataTouchable onPress={() => asyncSearchUser()}>
+            <MaterialIcons name="search" size={20} color="rgba(0, 0, 0, 1)" />
+          </DataTouchable>
+        </DataView>
+      ),
+    },
+  ];
+
   return (
     <GroupMemberContainer>
-      {/* {member}
-      {memberAddButton} */}
+      <ModalSelector
+        data={data1}
+        style={{
+          position: "absolute",
+        }}
+        touchableStyle={{ display: "none" }}
+        childrenContainerStyle={{ display: "none" }}
+        initValueTextStyle={{ display: "none" }}
+        optionStyle={{ padding: 0 }}
+        optionTextStyle={{ display: "none" }}
+        optionContainerStyle={{ padding: 0 }}
+        sectionStyle={{ padding: 10 }}
+        initValue=""
+        cancelText="초대"
+        onModalClose={async () => {
+          const req = {
+            uids: [firebase.auth().currentUser.uid, searchData.uid],
+          };
+
+          const { status, data } = await createGroup(req);
+
+          if (status === 200) {
+            setIsCreated(true);
+            setPopModal1(false);
+          }
+        }}
+        visible={popModal1}
+      />
+      {members &&
+        members.map((mem, index) => (
+          <MemberContainer key={index}>
+            <MemberImage
+              source={LionProfile}
+              borderRadius={50}
+              style={{ borderWidth: 3, borderColor: "#f4e7e7" }}
+            />
+            <MemberText>{mem.nickname}</MemberText>
+          </MemberContainer>
+        ))}
+      {memberAddButton}
     </GroupMemberContainer>
   );
 };
